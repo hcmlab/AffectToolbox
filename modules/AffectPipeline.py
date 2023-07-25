@@ -131,16 +131,16 @@ class AffectPipeline():
             self.VAD_MODULE = VoiceActivity(segment_length=480, sample_rate=16000, threshold=vad_threshold)
         if enable_ser_loop:
             from modules.module_ser import SpeechEmotion
-            self.ser = SpeechEmotion(self.SAMPLE_RATE)
+            self.SER_MODULE = SpeechEmotion(self.SAMPLE_RATE)
         if enable_stt_loop:
             from modules.module_stt import SpeechToText
-            self.stt = SpeechToText(self.SAMPLE_RATE, self._STT_MODEL_SIZE)
+            self.STT_MODULE = SpeechToText(self.SAMPLE_RATE, self._STT_MODEL_SIZE)
         if enable_sentiment_loop:
             from modules.module_sentiment import Sentiment
-            self.sentiment = Sentiment(model=sentiment_model)
+            self.SENTIMENT_MODULE = Sentiment(model=sentiment_model)
         if enable_face_er_loop:
             from modules.module_ier import EmotionFromCam
-            self.ier = EmotionFromCam()
+            self.IER_MODULE = EmotionFromCam()
         if enable_pose_loop:
             from modules.module_pose import PoseFromCam
             self.POSE_MODULE = PoseFromCam()
@@ -207,7 +207,7 @@ class AffectPipeline():
             signal.append(local_audio[m + i - 1])
 
         signal = np.asarray(signal, dtype=np.float32)
-        ser_prediction, _ = self.ser.process(signal.astype(np.float32), extract_embeddings=False)
+        ser_prediction, _ = self.SER_MODULE.process(signal.astype(np.float32), extract_embeddings=False)
         valence, arousal, dominance = (ser_prediction[0] * 2) - 1, (ser_prediction[1] * 2) - 1, (
                 ser_prediction[2] * 2) - 1
         qs.VALENCE_SPEECH.append(valence)
@@ -232,7 +232,7 @@ class AffectPipeline():
             signal.append(local_audio[m + i - 1])
 
         signal = np.asarray(signal, dtype=np.float32)
-        stt_prediction = self.stt.process(signal.astype(np.float32))
+        stt_prediction = self.STT_MODULE.process(signal.astype(np.float32))
         qs.TRANSCRIPT_SPEECH.append(stt_prediction)
 
         seconds_stt_loop = time.time() - time_stt_loop_start
@@ -248,7 +248,7 @@ class AffectPipeline():
         time_sentiment_loop_start = time.time()
         last_text = qs.TRANSCRIPT_SPEECH[-1]
 
-        prediction = self.sentiment.process(last_text)[0]
+        prediction = self.SENTIMENT_MODULE.process(last_text)[0]
         # Remove magic numbers
         qs.POS_SENTIMENT.append(prediction[0][1])
         qs.NEG_SENTIMENT.append(prediction[1][1])
@@ -269,10 +269,9 @@ class AffectPipeline():
         signal = []
         local_audio = qs.AUDIO_QUEUE.copy()
         _LEN_VAD_SIGNAL = 1024
-        m = (len(local_audio)) - (_LEN_VAD_SIGNAL)
+        m = (len(local_audio)) - _LEN_VAD_SIGNAL
         for i in range(0, _LEN_VAD_SIGNAL):
             signal.append(local_audio[m + i - 1])
-        # print(len(signal))
         signal = np.asarray(signal, dtype=np.float32)
         is_speech = self.VAD_MODULE.process(signal)
         is_speech = 1 if is_speech == True else 0
@@ -360,9 +359,10 @@ class AffectPipeline():
         img = cv2.normalize(img, None, -1.0, 1.0, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
 
         if type(img) == np.ndarray:
-            prediction = self.ier.predict(img)
+            prediction = self.IER_MODULE.predict(img)
             qs.VALENCE_FACE.append(prediction[0][0])
             qs.AROUSAL_FACE.append(prediction[0][1])
+
         seconds_er_loop = time.time() - time_er_loop_start
         er_timer = 1.0 / float(self._ER_LOOP_RATE) - seconds_er_loop
         if er_timer < 0.0:
@@ -439,21 +439,7 @@ class AffectPipeline():
     def fusion_loop(self):
         time_fusion_loop_start = time.time()
 
-        v_s = qs.VALENCE_SPEECH[len(qs.VALENCE_SPEECH) - 1]
-        a_s = qs.AROUSAL_SPEECH[len(qs.AROUSAL_SPEECH) - 1]
-        d_s = qs.DOMINANCE_SPEECH[len(qs.DOMINANCE_SPEECH) - 1]
-        vad = qs.VOICE_ACTIVITY[len(qs.VOICE_ACTIVITY) - 1]
-        v_f = qs.VALENCE_FACE[len(qs.VALENCE_FACE) - 1]
-        a_f = qs.AROUSAL_FACE[len(qs.AROUSAL_FACE) - 1]
-        analysis_values = {'vad': vad,
-                           'v_s': v_s,
-                           'a_s': a_s,
-                           'd_s': d_s,
-                           'v_f': v_f,
-                           'a_f': a_f
-                           }
-
-        fusion_result = self.FUSION_MODULE.update_fusion(analysis_values)
+        fusion_result = self.FUSION_MODULE.update_fusion()
         qs.FUSION.append(fusion_result)
 
         seconds_fusion_loop = time.time() - time_fusion_loop_start

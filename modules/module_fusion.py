@@ -59,7 +59,7 @@ class FusionModule():
 
         self.value_string = ''
 
-    def update_fusion(self, value_dict):
+    def update_fusion(self):
 
         # reset
         result_valence = 0.0
