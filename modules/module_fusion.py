@@ -1,7 +1,7 @@
 import math
 from collections import deque
 import time
-import modules.queue_system as qs
+import modules.QueueSystem as qs
 
 
 obj = time.gmtime(0)

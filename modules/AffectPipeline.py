@@ -5,21 +5,16 @@ import pyaudio
 import threading
 import cv2
 import soundfile
-
-
-
-
-
-from modules.video_decorator import VideoShow
-from modules.logger import LogModule
-
+from modules.VideoDecorator import VideoShow
+from modules.Logger import LogModule
 import socket
 import lxml.etree
 import lxml.builder
 from termcolor import colored
 import os
-import modules.queue_system as qs
+import modules.QueueSystem as qs
 import json
+
 
 class AffectPipeline():
     def __init__(self,
@@ -71,20 +66,20 @@ class AffectPipeline():
         self.SER_LOOP = enable_ser_loop
         self.STT_LOOP = enable_stt_loop
         self.SENTIMENT_LOOP = enable_sentiment_loop
+        self.POSE_LOOP = enable_pose_loop
+        self.FUSION_LOOP = enable_fusion_loop
+
         self.CAMERA_LOOP = enable_camera_loop
         self.PRINT_LOOP = enable_print_loop
         self.SEND_UDP_LOOP = enable_send_udp_loop
         self.SEND_KAFKA_LOOP = enable_send_kafka_loop
         self.FACE_ER_LOOP = enable_face_er_loop
         self.FACE_MESH_LOOP = enable_face_mesh_loop
-        self.FUSION_LOOP = enable_fusion_loop
 
         self.SHOW_FACE_MESH = show_face_mesh
         self.FACE_MESH_SHOW_FACE_EDGES = face_mesh_show_face_edges
         self.FACE_MESH_SHOW_FACE_PUPILS = face_mesh_show_face_pupils
         self.FACE_MESH_SHOW_FACE_CONTOUR = face_mesh_show_face_contour
-
-        self.POSE_LOOP = enable_pose_loop
 
         self.WEB_APP = enable_web_app
         self.WEB_APP_UDP_PORT = web_app_communication_port
@@ -92,7 +87,8 @@ class AffectPipeline():
             from res.unity_build.unity import start_web_app
             start_web_app(web_app_port)
 
-        self.LOGGING_MODULE = LogModule(enable_vad_loop, enable_ser_loop, enable_stt_loop, enable_sentiment_loop, enable_face_er_loop, enable_fusion_loop)
+        self.LOGGING_MODULE = LogModule(enable_vad_loop, enable_ser_loop, enable_stt_loop, enable_sentiment_loop,
+                                        enable_face_er_loop, enable_fusion_loop)
 
         self._SER_LOOP_RATE = ser_loop_rate
         self._STT_LOOP_RATE = stt_loop_rate
@@ -129,30 +125,28 @@ class AffectPipeline():
         self.CHUNK_SIZE = int(self.STEP * self.SAMPLE_RATE)
         self._LAST_IMAGE = None
 
-
-        #Initialize necessary modules
+        # Initialize necessary modules
         if enable_vad_loop:
-            from modules.vad import VoiceActivity
-            self.vad = VoiceActivity(segment_length=480, sample_rate=16000, threshold=vad_threshold)
+            from modules.module_vad import VoiceActivity
+            self.VAD_MODULE = VoiceActivity(segment_length=480, sample_rate=16000, threshold=vad_threshold)
         if enable_ser_loop:
-            from modules.ser import SpeechEmotion
+            from modules.module_ser import SpeechEmotion
             self.ser = SpeechEmotion(self.SAMPLE_RATE)
         if enable_stt_loop:
-            from modules.stt import SpeechToText
+            from modules.module_stt import SpeechToText
             self.stt = SpeechToText(self.SAMPLE_RATE, self._STT_MODEL_SIZE)
         if enable_sentiment_loop:
-            from modules.sentiment import Sentiment
+            from modules.module_sentiment import Sentiment
             self.sentiment = Sentiment(model=sentiment_model)
         if enable_face_er_loop:
-            from modules.ier import EmotionFromCam
+            from modules.module_ier import EmotionFromCam
             self.ier = EmotionFromCam()
         if enable_pose_loop:
-            from modules.pose import PoseFromCam
-            self.pose = PoseFromCam()
+            from modules.module_pose import PoseFromCam
+            self.POSE_MODULE = PoseFromCam()
         if enable_fusion_loop:
-            from modules.fusion import FusionModule
+            from modules.module_fusion import FusionModule
             self.FUSION_MODULE = FusionModule()
-
 
         self.audio = pyaudio.PyAudio()
         self.stream = self.audio.open(format=pyaudio.paFloat32,
@@ -162,10 +156,7 @@ class AffectPipeline():
                                       output=True,
                                       frames_per_buffer=self.CHUNK_SIZE)
 
-
-
         if self.CAMERA_LOOP or self.FACE_ER_LOOP or self.FACE_MESH_LOOP or self.POSE_LOOP:
-
             import mediapipe as mp
             self.cam_options = {"output_frame_size": 1,
                                 "cam_id": 0}
@@ -200,7 +191,7 @@ class AffectPipeline():
     def microphone_loop(self):
         data = self.stream.read(self.MICROPHONE_CHUNKS)
         signal = np.fromstring(data, np.float32)
-        #signal = np.frombuffer(data, dtype=np.int16)
+        # signal = np.frombuffer(data, dtype=np.int16)
         signal_list = signal.tolist()
 
         for n in range(0, len(signal_list)):
@@ -264,7 +255,7 @@ class AffectPipeline():
         qs.NEU_SENTIMENT.append(prediction[2][1])
 
         seconds_sentiment_loop = time.time() - time_sentiment_loop_start
-        #print(seconds_sentiment_loop)
+        # print(seconds_sentiment_loop)
 
         sentiment_timer = 1.0 / float(self._SENTIMENT_LOOP_RATE) - seconds_sentiment_loop
         if sentiment_timer < 0.0:
@@ -283,7 +274,7 @@ class AffectPipeline():
             signal.append(local_audio[m + i - 1])
         # print(len(signal))
         signal = np.asarray(signal, dtype=np.float32)
-        is_speech = self.vad.process(signal)
+        is_speech = self.VAD_MODULE.process(signal)
         is_speech = 1 if is_speech == True else 0
         qs.VOICE_ACTIVITY.append(is_speech)
         seconds_vad_loop = time.time() - time_vad_loop_start
@@ -433,9 +424,9 @@ class AffectPipeline():
         time_pose_loop_start = time.time()
 
         img = qs.RAW_IMAGE_QUEUE[len(qs.RAW_IMAGE_QUEUE) - 1]
-        self.pose.predict(img)
+        self.POSE_MODULE.predict(img)
 
-        self.video_shower_pose.frame = self.pose.image
+        self.video_shower_pose.frame = self.POSE_MODULE.image
 
         seconds_pose_loop = time.time() - time_pose_loop_start
         pose_timer = 1.0 / float(self._POSE_LOOP_RATE) - seconds_pose_loop
@@ -586,17 +577,22 @@ class AffectPipeline():
                       '#                    Active Loops:                     \t #\n'
                       '#--------------------------------------------------------#\n'
                       '# Voice Activity: \t\t\t\t\t' + str(self.VAD_LOOP) + ' \t\t\t\t #\n'
-                      '# Camera: \t\t\t\t\t\t\t' + str(self.CAMERA_LOOP) + '     \t\t\t #\n'
-                      '# Speech Valence/Arousal/Dominance: ' + str(self.SER_LOOP) + '     \t\t\t #\n'
-                      '# Face Valence/Arousal: \t\t\t' + str(self.FACE_ER_LOOP) + '     \t\t\t #\n'
-                      '# Print Results: \t\t\t\t\t' + str(self.PRINT_LOOP) + '     \t\t\t #\n'
-                      '# Send UDP: \t\t\t\t\t\t' + str(self.SEND_UDP_LOOP) + '     \t\t\t #\n'
-                      '# Send Kafka: \t\t\t\t\t\t' + str(self.SEND_KAFKA_LOOP) + '     \t\t\t #\n'
-                      '# Web Visualization: \t\t\t\t' + str(self.WEB_APP) + '     \t\t\t #\n'
-                      '# Fusion: \t\t\t\t\t\t\t' + str(self.FUSION_LOOP) + '     \t\t\t #\n'
-                      '##########################################################\n'
+                                                                            '# Camera: \t\t\t\t\t\t\t' + str(
+            self.CAMERA_LOOP) + '     \t\t\t #\n'
+                                '# Speech Valence/Arousal/Dominance: ' + str(self.SER_LOOP) + '     \t\t\t #\n'
+                                                                                              '# Face Valence/Arousal: \t\t\t' + str(
+            self.FACE_ER_LOOP) + '     \t\t\t #\n'
+                                 '# Print Results: \t\t\t\t\t' + str(self.PRINT_LOOP) + '     \t\t\t #\n'
+                                                                                        '# Send UDP: \t\t\t\t\t\t' + str(
+            self.SEND_UDP_LOOP) + '     \t\t\t #\n'
+                                  '# Send Kafka: \t\t\t\t\t\t' + str(self.SEND_KAFKA_LOOP) + '     \t\t\t #\n'
+                                                                                             '# Web Visualization: \t\t\t\t' + str(
+            self.WEB_APP) + '     \t\t\t #\n'
+                            '# Fusion: \t\t\t\t\t\t\t' + str(self.FUSION_LOOP) + '     \t\t\t #\n'
+                                                                                 '##########################################################\n'
 
                       , 'blue'))
+
         if self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP:
             self.microphone_loop()
         if self.CAMERA_LOOP or self.FACE_ER_LOOP or self.FACE_MESH_LOOP or self.POSE_LOOP:
