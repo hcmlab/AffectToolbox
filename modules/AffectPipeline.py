@@ -6,7 +6,7 @@ import threading
 import cv2
 import soundfile
 from modules.VideoDecorator import VideoShow
-from modules.logger import LogModule
+from modules.Logger import LogModule
 import socket
 import lxml.etree
 import lxml.builder
