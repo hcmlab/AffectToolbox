@@ -145,6 +145,7 @@ class FusionModule():
 
         # FACE - PERCEIVED DOMINANCE
         EVENTS_DOMINANCE.append(dominance_face_latest * self.face_boost_dominance, self.face_weight_dominance, self.face_speed)
+        qs.DOMINANCE_FACE.append(dominance_face_latest * self.face_boost_dominance)
 
         # VOICE - BUT ONLY IF VOICE ACTIVITY ...
         if qs.VOICE_ACTIVITY[len(qs.VOICE_ACTIVITY) - 1] != 0:

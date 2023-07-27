@@ -21,7 +21,6 @@ class AffectPipeline():
                  enable_vad_loop=True,
                  enable_ser_loop=True,
                  enable_stt_loop=True,
-                 enable_sentiment_loop=True,
                  enable_camera_loop=True,
                  enable_print_loop=True,
                  enable_send_udp_loop=True,
@@ -29,12 +28,13 @@ class AffectPipeline():
                  enable_face_er_loop=True,
                  enable_face_mesh_loop=True,
                  enable_pose_loop=True,
+                 enable_fusion_loop=True,
+                 enable_sentiment_loop=True,
                  show_face_mesh=True,
                  enable_web_app=False,
                  face_mesh_show_face_edges=True,
                  face_mesh_show_face_pupils=False,
                  face_mesh_show_face_contour=False,
-                 enable_fusion_loop=True,
                  ser_loop_rate=2.0,
                  stt_loop_rate=0.1,
                  sentiment_loop_rate=2.0,
@@ -88,7 +88,7 @@ class AffectPipeline():
             start_web_app(web_app_port)
 
         self.LOGGING_MODULE = LogModule(enable_vad_loop, enable_ser_loop, enable_stt_loop, enable_sentiment_loop,
-                                        enable_face_er_loop, enable_fusion_loop)
+                                        enable_face_er_loop, enable_pose_loop, enable_fusion_loop)
 
         self._SER_LOOP_RATE = ser_loop_rate
         self._STT_LOOP_RATE = stt_loop_rate
@@ -457,7 +457,11 @@ class AffectPipeline():
         vad = qs.VOICE_ACTIVITY[len(qs.VOICE_ACTIVITY) - 1]
         v_f = qs.VALENCE_FACE[len(qs.VALENCE_FACE) - 1]
         a_f = qs.AROUSAL_FACE[len(qs.AROUSAL_FACE) - 1]
+        d_f = qs.DOMINANCE_FACE[len(qs.DOMINANCE_FACE) - 1]
         m_f = qs.FUSION[len(qs.FUSION) - 1]
+        p = ''
+        if self.POSE_LOOP:
+            p = self.POSE_MODULE.value_string
 
         analysis_values = {'vad': vad,
                            'v_s': v_s,
@@ -469,7 +473,9 @@ class AffectPipeline():
                            's_neg': s_neg,
                            'v_f': v_f,
                            'a_f': a_f,
-                           'm_f': m_f
+                           'd_f': d_f,
+                           'm_f': m_f,
+                           'p': p
                            }
 
         self.LOGGING_MODULE.update_analysis(analysis_values)
@@ -557,34 +563,13 @@ class AffectPipeline():
         threading.Timer(send_timer, self.send_loop).start()
 
     def start(self):
-        print(colored('##########################################################\n'
-                      '#              Affect Toolbox Pipeline started           #\n'
-                      '##########################################################\n'
-                      '#                    Active Loops:                     \t #\n'
-                      '#--------------------------------------------------------#\n'
-                      '# Voice Activity: \t\t\t\t\t' + str(self.VAD_LOOP) + ' \t\t\t\t #\n'
-                                                                            '# Camera: \t\t\t\t\t\t\t' + str(
-            self.CAMERA_LOOP) + '     \t\t\t #\n'
-                                '# Speech Valence/Arousal/Dominance: ' + str(self.SER_LOOP) + '     \t\t\t #\n'
-                                                                                              '# Face Valence/Arousal: \t\t\t' + str(
-            self.FACE_ER_LOOP) + '     \t\t\t #\n'
-                                 '# Print Results: \t\t\t\t\t' + str(self.PRINT_LOOP) + '     \t\t\t #\n'
-                                                                                        '# Send UDP: \t\t\t\t\t\t' + str(
-            self.SEND_UDP_LOOP) + '     \t\t\t #\n'
-                                  '# Send Kafka: \t\t\t\t\t\t' + str(self.SEND_KAFKA_LOOP) + '     \t\t\t #\n'
-                                                                                             '# Web Visualization: \t\t\t\t' + str(
-            self.WEB_APP) + '     \t\t\t #\n'
-                            '# Fusion: \t\t\t\t\t\t\t' + str(self.FUSION_LOOP) + '     \t\t\t #\n'
-                                                                                 '##########################################################\n'
-
-                      , 'blue'))
-
         if self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP:
             self.microphone_loop()
         if self.CAMERA_LOOP or self.FACE_ER_LOOP or self.FACE_MESH_LOOP or self.POSE_LOOP:
             self.face_record_loop()
             time.sleep(1)
             self.face_crop_loop()
+
         time.sleep(2)
 
         if self.FACE_ER_LOOP:
@@ -605,7 +590,9 @@ class AffectPipeline():
             self.print_loop()
         if self.FACE_MESH_LOOP:
             self.face_mesh_loop()
+
         time.sleep(0.5)
+
         if self.FUSION_LOOP:
             self.fusion_loop()
 
