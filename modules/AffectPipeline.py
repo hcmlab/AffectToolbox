@@ -148,13 +148,14 @@ class AffectPipeline():
             from modules.module_fusion import FusionModule
             self.FUSION_MODULE = FusionModule()
 
-        self.audio = pyaudio.PyAudio()
-        self.stream = self.audio.open(format=pyaudio.paFloat32,
-                                      channels=self.CHANNELS,
-                                      rate=self.SAMPLE_RATE,
-                                      input=True,
-                                      output=True,
-                                      frames_per_buffer=self.CHUNK_SIZE)
+        if self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP:
+            self.audio = pyaudio.PyAudio()
+            self.stream = self.audio.open(format=pyaudio.paFloat32,
+                                          channels=self.CHANNELS,
+                                          rate=self.SAMPLE_RATE,
+                                          input=True,
+                                          output=True,
+                                          frames_per_buffer=self.CHUNK_SIZE)
 
         if self.CAMERA_LOOP or self.FACE_ER_LOOP or self.FACE_MESH_LOOP or self.POSE_LOOP:
             import mediapipe as mp
@@ -197,6 +198,30 @@ class AffectPipeline():
         for n in range(0, len(signal_list)):
             qs.AUDIO_QUEUE.append(signal_list[n])
         threading.Thread(target=self.microphone_loop).start()
+
+    def vad_loop(self):
+        time_vad_loop_start = time.time()
+        signal = []
+        local_audio = qs.AUDIO_QUEUE.copy()
+        _LEN_VAD_SIGNAL = 1024
+        m = (len(local_audio)) - _LEN_VAD_SIGNAL
+        for i in range(0, _LEN_VAD_SIGNAL):
+            signal.append(local_audio[m + i - 1])
+        signal = np.asarray(signal, dtype=np.float32)
+        is_speech = self.VAD_MODULE.process(signal)
+        is_speech = 1 if is_speech == True else 0
+        qs.VOICE_ACTIVITY.append(is_speech)
+        seconds_vad_loop = time.time() - time_vad_loop_start
+        vad_timer = 1.0 / float(self._VAD_LOOP_RATE) - seconds_vad_loop
+        if vad_timer < 0.0:
+            # print(colored('VAD frequency is too high to be maintained. Please lower it and start again.', 'blue'))
+            self.LOGGING_MODULE.VOICE_OK = False
+        else:
+            self.LOGGING_MODULE.VOICE_OK = True
+
+        self.LOGGING_MODULE.TRACKING_VOICE = is_speech and self.LOGGING_MODULE.VOICE_OK
+        # os._exit(1)
+        threading.Timer(vad_timer, self.vad_loop).start()
 
     def ser_loop(self):
         time_ser_loop_start = time.time()
@@ -259,33 +284,10 @@ class AffectPipeline():
 
         sentiment_timer = 1.0 / float(self._SENTIMENT_LOOP_RATE) - seconds_sentiment_loop
         if sentiment_timer < 0.0:
-            self.LOGGING_MODULE.sentiment_OK = False
+            self.LOGGING_MODULE.SENTIMENT_OK = False
         else:
-            self.LOGGING_MODULE.sentiment_OK = True
+            self.LOGGING_MODULE.SENTIMENT_OK = True
         threading.Timer(sentiment_timer, self.sentiment_loop).start()
-
-    def vad_loop(self):
-        time_vad_loop_start = time.time()
-        signal = []
-        local_audio = qs.AUDIO_QUEUE.copy()
-        _LEN_VAD_SIGNAL = 1024
-        m = (len(local_audio)) - _LEN_VAD_SIGNAL
-        for i in range(0, _LEN_VAD_SIGNAL):
-            signal.append(local_audio[m + i - 1])
-        signal = np.asarray(signal, dtype=np.float32)
-        is_speech = self.VAD_MODULE.process(signal)
-        is_speech = 1 if is_speech == True else 0
-        qs.VOICE_ACTIVITY.append(is_speech)
-        seconds_vad_loop = time.time() - time_vad_loop_start
-        vad_timer = 1.0 / float(self._VAD_LOOP_RATE) - seconds_vad_loop
-        if vad_timer < 0.0:
-            # print(colored('VAD frequency is too high to be maintained. Please lower it and start again.', 'blue'))
-            self.LOGGING_MODULE.VAD_OK = False
-        else:
-            self.LOGGING_MODULE.VAD_OK = True
-
-        # os._exit(1)
-        threading.Timer(vad_timer, self.vad_loop).start()
 
     def face_record_loop(self):
         global video_shower_raw
@@ -350,6 +352,9 @@ class AffectPipeline():
             self.LOGGING_MODULE.CAMERA_OK = False
         else:
             self.LOGGING_MODULE.CAMERA_OK = True
+
+        self.LOGGING_MODULE.TRACKING_FACE = found_face and self.LOGGING_MODULE.CAMERA_OK
+
         threading.Timer(fc_timer, self.face_crop_loop).start()
 
     def face_er_loop(self):
@@ -431,9 +436,12 @@ class AffectPipeline():
         seconds_pose_loop = time.time() - time_pose_loop_start
         pose_timer = 1.0 / float(self._POSE_LOOP_RATE) - seconds_pose_loop
         if pose_timer < 0.0:
-            self.LOGGING_MODULE.CAMERA_OK = False
+            self.LOGGING_MODULE.BODY_OK = False
         else:
-            self.LOGGING_MODULE.CAMERA_OK = True
+            self.LOGGING_MODULE.BODY_OK = True
+
+        self.LOGGING_MODULE.TRACKING_BODY = self.LOGGING_MODULE.CAMERA_OK and self.LOGGING_MODULE.BODY_OK and self.POSE_MODULE.tracking
+
         threading.Timer(pose_timer, self.pose_loop).start()
 
     def fusion_loop(self):

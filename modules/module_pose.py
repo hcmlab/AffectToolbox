@@ -27,6 +27,7 @@ class PoseFromCam():
         self.overall_activation_right_last = 0.0
         self.overall_activation_min = math.inf
         self.overall_activation_max = -math.inf
+        self.tracking = False
 
     def predict(self, img):
         self.image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -47,7 +48,9 @@ class PoseFromCam():
 
     def features(self, landmarks):
         if not landmarks.pose_landmarks:
+            self.tracking = False
             return
+        self.tracking = True
 
         look_left = self.distance(landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE],
                                    landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_EAR])
