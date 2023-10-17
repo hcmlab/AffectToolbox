@@ -114,6 +114,7 @@ class AffectPipeline():
         self.POSE_LOOP = enable_pose_loop
         self.FUSION_LOOP = enable_fusion_loop
 
+
         self.CAMERA_LOOP = enable_camera_loop
         self.PRINT_LOOP = enable_print_loop
         self.SEND_UDP_LOOP = enable_send_udp_loop

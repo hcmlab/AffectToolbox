@@ -1,17 +1,12 @@
 from modules.AffectPipeline import AffectPipeline, DeviceManager
 
 dm = DeviceManager()
-
-
-
 mic_id = dm.choose_microphone()
 cam_id = dm.choose_camera()
 
-#exit()
-
 pipe = AffectPipeline(enable_vad_loop=True,
                       enable_ser_loop=True,
-                      enable_stt_loop=True,
+                      enable_stt_loop=False,
                       enable_camera_loop=True,
                       enable_print_loop=True,
                       enable_send_udp_loop=False,
