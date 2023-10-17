@@ -184,10 +184,14 @@ class AffectPipeline():
         self._SOCKET.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 32)
 
         if self.SEND_KAFKA_LOOP:
-            from kafka import KafkaProducer
-            kafka_adress = self._KAFKA_IP + ":" + str(self._KAFKA_PORT)
-            self._KAFKA_PRODUCER = KafkaProducer(bootstrap_servers=kafka_adress,
-                                                 value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+            try:
+                from kafka import KafkaProducer
+                kafka_adress = self._KAFKA_IP + ":" + str(self._KAFKA_PORT)
+                self._KAFKA_PRODUCER = KafkaProducer(bootstrap_servers=kafka_adress,
+                                                     value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+            except:
+                print(colored("NO KAFKA SERVER RUNNING. DISABLE KAFKA OR START KAFKA SERVER AND RETRY.","red"))
+                os._exit(1)
 
     def microphone_loop(self):
         data = self.stream.read(self.MICROPHONE_CHUNKS)
@@ -557,10 +561,9 @@ class AffectPipeline():
         if self.WEB_APP:
             self._SOCKET.sendto(command, (self._UDP_IP, self.WEB_APP_UDP_PORT))
         if self.SEND_KAFKA_LOOP:
-            string_from_byte = str({'p': v_s,
-                                    'a': a_s,
-                                    'd': d_s,
-                                    'fusion': m_f})
+            string_from_byte = str({'pleasure': m_f[0],
+                                    'arousal': m_f[1],
+                                    'dominance': m_f[2]})
             self._KAFKA_PRODUCER.send(self._KAFKA_TOPIC_NAME, string_from_byte)
         seconds_send_loop = time.time() - time_send_loop_start
         send_timer = 1.0 / float(self._SEND_LOOP_RATE) - seconds_send_loop
