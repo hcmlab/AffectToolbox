@@ -16,6 +16,49 @@ import modules.QueueSystem as qs
 import json
 
 
+class DeviceManager():
+    def __init__(self):
+        pass
+
+    def get_available_microphones(self):
+        import pyaudio
+
+        p = pyaudio.PyAudio()
+        info = p.get_host_api_info_by_index(0)
+        numdevices = info.get('deviceCount')
+
+        for i in range(0, numdevices):
+            if (p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) > 0:
+                print(i, " - ", p.get_device_info_by_host_api_device_index(0, i).get('name'))
+
+    def choose_microphone(self):
+        print("The following microphones are available:")
+        self.get_available_microphones()
+        print("Choose one option.")
+        a = input('').split(" ")[0]
+        return int(a)
+
+    def get_available_cameras(self):
+        from pygrabber.dshow_graph import FilterGraph
+
+
+        devices = FilterGraph().get_input_devices()
+
+        available_cameras = {}
+
+        for device_index, device_name in enumerate(devices):
+            available_cameras[device_index] = device_name
+            print(str(device_index) + " - " + device_name)
+
+
+
+    def choose_camera(self):
+        print("The following cameras are available:")
+        self.get_available_cameras()
+        print("Choose one option.")
+        a = input('').split(" ")[0]
+        return int(a)
+
 class AffectPipeline():
     def __init__(self,
                  enable_vad_loop=True,
@@ -35,6 +78,7 @@ class AffectPipeline():
                  face_mesh_show_face_edges=True,
                  face_mesh_show_face_pupils=False,
                  face_mesh_show_face_contour=False,
+                 camera_id=0,
                  ser_loop_rate=2.0,
                  stt_loop_rate=0.1,
                  sentiment_loop_rate=2.0,
@@ -57,6 +101,7 @@ class AffectPipeline():
                  vad_threshold=0.6,
                  face_padding=0.2,
                  microphone_chunks=16000,
+                 microphone_id=0,
                  stt_window_length=10,
                  stt_model_size="base",
                  sentiment_model='germansentiment'
@@ -108,6 +153,9 @@ class AffectPipeline():
         self._VAD_THRESHOLD = vad_threshold
 
         self.MICROPHONE_CHUNKS = microphone_chunks
+        self._MICROPHONE_ID = microphone_id
+
+        self._CAMERA_ID = camera_id
 
         self._UDP_IP = udp_ip
         self._UDP_PORT = udp_port
@@ -150,7 +198,8 @@ class AffectPipeline():
 
         if self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP:
             self.audio = pyaudio.PyAudio()
-            self.stream = self.audio.open(format=pyaudio.paFloat32,
+            self.stream = self.audio.open(input_device_index=self._MICROPHONE_ID,
+                                          format=pyaudio.paFloat32,
                                           channels=self.CHANNELS,
                                           rate=self.SAMPLE_RATE,
                                           input=True,
@@ -160,7 +209,7 @@ class AffectPipeline():
         if self.CAMERA_LOOP or self.FACE_ER_LOOP or self.FACE_MESH_LOOP or self.POSE_LOOP:
             import mediapipe as mp
             self.cam_options = {"output_frame_size": 1,
-                                "cam_id": 0}
+                                "cam_id": self._CAMERA_ID}
             self.capture = cv2.VideoCapture(self.cam_options["cam_id"])
 
             self.video_shower_raw = VideoShow("Raw", 25, 100, 300, 300).start()
