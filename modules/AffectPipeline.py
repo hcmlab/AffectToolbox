@@ -1,11 +1,8 @@
-import random
 import time
 import numpy as np
 import pyaudio
 import threading
 import cv2
-import soundfile
-from modules.VideoDecorator import VideoShow
 from modules.Logger import LogModule
 import socket
 import lxml.etree
@@ -14,6 +11,7 @@ from termcolor import colored
 import os
 import modules.QueueSystem as qs
 import json
+import tkinter
 
 
 class DeviceManager():
@@ -41,7 +39,6 @@ class DeviceManager():
     def get_available_cameras(self):
         from pygrabber.dshow_graph import FilterGraph
 
-
         devices = FilterGraph().get_input_devices()
 
         available_cameras = {}
@@ -50,8 +47,6 @@ class DeviceManager():
             available_cameras[device_index] = device_name
             print(str(device_index) + " - " + device_name)
 
-
-
     def choose_camera(self):
         print("The following cameras are available:")
         self.get_available_cameras()
@@ -59,8 +54,10 @@ class DeviceManager():
         a = input('').split(" ")[0]
         return int(a)
 
+
 class AffectPipeline():
     def __init__(self,
+                 enable_log_to_console=True,
                  enable_vad_loop=True,
                  enable_ser_loop=True,
                  enable_stt_loop=True,
@@ -107,13 +104,13 @@ class AffectPipeline():
                  sentiment_model='germansentiment'
                  ):
 
+        self.LOG_TO_CONSOLE = enable_log_to_console
         self.VAD_LOOP = enable_vad_loop
         self.SER_LOOP = enable_ser_loop
         self.STT_LOOP = enable_stt_loop
         self.SENTIMENT_LOOP = enable_sentiment_loop
         self.POSE_LOOP = enable_pose_loop
         self.FUSION_LOOP = enable_fusion_loop
-
 
         self.CAMERA_LOOP = enable_camera_loop
         self.PRINT_LOOP = enable_print_loop
@@ -132,9 +129,6 @@ class AffectPipeline():
         if self.WEB_APP:
             from res.unity_build.unity import start_web_app
             start_web_app(web_app_port)
-
-        self.LOGGING_MODULE = LogModule(enable_vad_loop, enable_ser_loop, enable_stt_loop, enable_sentiment_loop,
-                                        enable_face_er_loop, enable_pose_loop, enable_fusion_loop)
 
         self._SER_LOOP_RATE = ser_loop_rate
         self._STT_LOOP_RATE = stt_loop_rate
@@ -173,6 +167,15 @@ class AffectPipeline():
 
         self.CHUNK_SIZE = int(self.STEP * self.SAMPLE_RATE)
         self._LAST_IMAGE = None
+
+        self.tk_root = tkinter.Tk()  # main window
+        self.tk_root.title("AffectToolbox")
+        self.tk_root.geometry("1280x600")
+        self.tk_root.resizable(width="True", height="True")
+
+        self.LOGGING_MODULE = LogModule(self.tk_root, enable_log_to_console, enable_vad_loop, enable_ser_loop, enable_stt_loop,
+                                        enable_sentiment_loop, enable_face_er_loop, enable_face_mesh_loop,
+                                        enable_pose_loop, enable_fusion_loop)
 
         # Initialize necessary modules
         if enable_vad_loop:
@@ -213,11 +216,6 @@ class AffectPipeline():
                                 "cam_id": self._CAMERA_ID}
             self.capture = cv2.VideoCapture(self.cam_options["cam_id"])
 
-            self.video_shower_raw = VideoShow("Raw", 25, 100, 300, 300).start()
-            self.video_shower_preprocessed = VideoShow("Preprocessed", 350, 100, 300, 300).start()
-            self.video_shower_facemesh = VideoShow("FaceMesh", 675, 100, 300, 300).start()
-            self.video_shower_pose = VideoShow("Pose", 1000, 100, 300, 300).start()
-
             self.mp_face_detection = mp.solutions.face_detection
             self.mp_mesh_detection = mp.solutions.face_mesh
             self.mp_face_mesh = self.mp_mesh_detection.FaceMesh(static_image_mode=True,
@@ -240,7 +238,7 @@ class AffectPipeline():
                 self._KAFKA_PRODUCER = KafkaProducer(bootstrap_servers=kafka_adress,
                                                      value_serializer=lambda v: json.dumps(v).encode('utf-8'))
             except:
-                print(colored("NO KAFKA SERVER RUNNING. DISABLE KAFKA OR START KAFKA SERVER AND RETRY.","red"))
+                print(colored("NO KAFKA SERVER RUNNING. DISABLE KAFKA OR START KAFKA SERVER AND RETRY.", "red"))
                 os._exit(1)
 
     def microphone_loop(self):
@@ -344,12 +342,11 @@ class AffectPipeline():
         threading.Timer(sentiment_timer, self.sentiment_loop).start()
 
     def face_record_loop(self):
-        global video_shower_raw
         time_camera_loop_start = time.time()
         ret, img_captured = self.capture.read()
         img = img_captured.copy()
-        self.video_shower_raw.frame = img
-        qs.RAW_IMAGE_QUEUE.append(img)
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # added RGB conversion
+        qs.IMAGE_FACE_RAW.append(img_rgb)
 
         seconds_camera_loop = time.time() - time_camera_loop_start
         camera_timer = 1.0 / float(self._CAMERA_LOOP_RATE) - seconds_camera_loop
@@ -360,9 +357,8 @@ class AffectPipeline():
         threading.Timer(camera_timer, self.face_record_loop).start()
 
     def face_crop_loop(self):
-        global video_shower_preprocessed
         time_fc_loop_start = time.time()
-        img = qs.RAW_IMAGE_QUEUE[len(qs.RAW_IMAGE_QUEUE) - 1]
+        img = qs.IMAGE_FACE_RAW[len(qs.IMAGE_FACE_RAW) - 1]
 
         face_detection_results = self.face_detection.process(img[:, :, ::-1])
 
@@ -395,10 +391,11 @@ class AffectPipeline():
             cropped_img = img[origin_y:origin_y + bb_height, origin_x:origin_x + bb_width]
             img = cropped_img
 
-        if type(img) == np.ndarray:
-            img2 = cv2.normalize(img, None, -1.0, 1.0, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
-            self.video_shower_preprocessed.frame = (img2 + 1) / 2
-        qs.FACE_CROP_QUEUE.append(img)
+        # if type(img) == np.ndarray:
+            # img2 = cv2.normalize(img, None, -1.0, 1.0, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
+            # self.video_shower_preprocessed.frame = (img2 + 1) / 2
+
+        qs.IMAGE_FACE_PREPROCESSED.append(img)
 
         seconds_fc_loop = time.time() - time_fc_loop_start
         fc_timer = 1.0 / float(self._FC_LOOP_RATE) - seconds_fc_loop
@@ -412,9 +409,8 @@ class AffectPipeline():
         threading.Timer(fc_timer, self.face_crop_loop).start()
 
     def face_er_loop(self):
-        global video_shower_preprocessed
         time_er_loop_start = time.time()
-        img = qs.FACE_CROP_QUEUE[len(qs.FACE_CROP_QUEUE) - 1]
+        img = qs.IMAGE_FACE_PREPROCESSED[len(qs.IMAGE_FACE_PREPROCESSED) - 1]
         img = cv2.normalize(img, None, -1.0, 1.0, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
 
         if type(img) == np.ndarray:
@@ -432,7 +428,7 @@ class AffectPipeline():
 
     def face_mesh_loop(self):
         time_fm_loop_start = time.time()
-        img = qs.FACE_CROP_QUEUE[len(qs.FACE_CROP_QUEUE) - 1]
+        img = qs.IMAGE_FACE_PREPROCESSED[len(qs.IMAGE_FACE_PREPROCESSED) - 1]
         results = self.mp_face_mesh.process(img)
 
         if results.multi_face_landmarks is None:
@@ -467,7 +463,8 @@ class AffectPipeline():
                             landmark_drawing_spec=None,
                             connection_drawing_spec=self.mp_drawing_styles
                             .get_default_face_mesh_iris_connections_style())
-                self.video_shower_facemesh.frame = annotated_image
+
+                qs.IMAGE_FACE_MESH.append(annotated_image)
 
         seconds_fm_loop = time.time() - time_fm_loop_start
         fm_timer = 1.0 / float(self._FM_LOOP_RATE) - seconds_fm_loop
@@ -478,14 +475,10 @@ class AffectPipeline():
         threading.Timer(fm_timer, self.face_mesh_loop).start()
 
     def pose_loop(self):
-        global video_shower_pose
-
         time_pose_loop_start = time.time()
-
-        img = qs.RAW_IMAGE_QUEUE[len(qs.RAW_IMAGE_QUEUE) - 1]
+        img = qs.IMAGE_FACE_RAW[len(qs.IMAGE_FACE_RAW) - 1]
         self.POSE_MODULE.predict(img)
-
-        self.video_shower_pose.frame = self.POSE_MODULE.image
+        qs.IMAGE_BODY_SKEL.append(self.POSE_MODULE.image)
 
         seconds_pose_loop = time.time() - time_pose_loop_start
         pose_timer = 1.0 / float(self._POSE_LOOP_RATE) - seconds_pose_loop
@@ -524,6 +517,22 @@ class AffectPipeline():
         p = ''
         if self.POSE_LOOP:
             p = self.POSE_MODULE.value_string
+        img_raw = None
+        if self.CAMERA_LOOP:
+            if len(qs.IMAGE_FACE_RAW) >= 1:
+                img_raw = qs.IMAGE_FACE_RAW[len(qs.IMAGE_FACE_RAW) - 1]
+        img_preprocessed = None
+        if self.CAMERA_LOOP:
+            if len(qs.IMAGE_FACE_PREPROCESSED) >= 1:
+                img_preprocessed = qs.IMAGE_FACE_PREPROCESSED[len(qs.IMAGE_FACE_PREPROCESSED) - 1]
+        img_facemesh = None
+        if self.FACE_MESH_LOOP:
+            if len(qs.IMAGE_FACE_MESH) >= 1:
+                img_facemesh = qs.IMAGE_FACE_MESH[len(qs.IMAGE_FACE_MESH) - 1]
+        img_bodyskel = None
+        if self.POSE_LOOP:
+            if len(qs.IMAGE_BODY_SKEL) >= 1:
+                img_bodyskel = qs.IMAGE_BODY_SKEL[len(qs.IMAGE_BODY_SKEL) - 1]
 
         analysis_values = {'vad': vad,
                            'v_s': v_s,
@@ -540,7 +549,7 @@ class AffectPipeline():
                            'p': p
                            }
 
-        self.LOGGING_MODULE.update_analysis(analysis_values)
+        self.LOGGING_MODULE.update_analysis(analysis_values, img_raw, img_preprocessed, img_facemesh, img_bodyskel)
         threading.Timer(0.05, self.print_loop).start()
 
     def send_loop(self):
@@ -656,6 +665,8 @@ class AffectPipeline():
 
         if self.FUSION_LOOP:
             self.fusion_loop()
+
+        self.tk_root.mainloop()  # start tkinter main loop
 
 
 if __name__ == "__main__":

@@ -4,7 +4,8 @@ dm = DeviceManager()
 mic_id = dm.choose_microphone()
 cam_id = dm.choose_camera()
 
-pipe = AffectPipeline(enable_vad_loop=True,
+pipe = AffectPipeline(enable_log_to_console=True,
+                      enable_vad_loop=True,
                       enable_ser_loop=True,
                       enable_stt_loop=False,
                       enable_camera_loop=True,

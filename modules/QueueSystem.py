@@ -59,7 +59,7 @@ NEU_SENTIMENT = AffectDeque(maxlen=500)
 for i in range(0, 500):
     NEU_SENTIMENT.append(.0)
 
-NEG_SENTIMENT = deque(maxlen=500)
+NEG_SENTIMENT = AffectDeque(maxlen=500)
 for i in range(0, 500):
     NEG_SENTIMENT.append(.0)
 
@@ -71,12 +71,14 @@ VOICE_ACTIVITY = AffectDeque(maxlen=500)
 for i in range(0, 500000):
     VOICE_ACTIVITY.append(.0)
 
-AUDIO_QUEUE = deque(maxlen=500000)
+AUDIO_QUEUE = deque(maxlen=500000) # why not AffectDeque?
 for i in range(0, 500000):
     AUDIO_QUEUE.append(.0)
 
-RAW_IMAGE_QUEUE = AffectDeque(maxlen=500)
-FACE_CROP_QUEUE = AffectDeque(maxlen=500)
+IMAGE_FACE_RAW = AffectDeque(maxlen=500)
+IMAGE_FACE_PREPROCESSED = AffectDeque(maxlen=500)
+IMAGE_FACE_MESH = AffectDeque(maxlen=500)
+IMAGE_BODY_SKEL = AffectDeque(maxlen=500)
 
 FACE_MESH_QUEUE = AffectDeque(maxlen=500)
 for i in range(0, 500):
