@@ -632,7 +632,7 @@ class AffectPipeline():
             pass
         threading.Timer(send_timer, self.send_loop).start()
 
-    def start(self):
+    def start(self, window):
         if self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP:
             self.microphone_loop()
         if self.CAMERA_LOOP or self.FACE_ER_LOOP or self.FACE_MESH_LOOP or self.POSE_LOOP:
@@ -666,7 +666,9 @@ class AffectPipeline():
         if self.FUSION_LOOP:
             self.fusion_loop()
 
-        self.tk_root.mainloop()  # start tkinter main loop
+        window.START = True
+
+        #self.tk_root.mainloop()  # start tkinter main loop
 
 
 if __name__ == "__main__":
