@@ -3,6 +3,7 @@ from GUI.rounded_frame import RoundedFrame
 from GUI.horizontal_line_widget import HorLineWidget
 from GUI.vertical_line_widget import VerLineWidget
 from GUI.Image_window import ImageWindow
+from GUI.RightClickWidget import RightClickWidget
 from PyQt6.QtWidgets import QPushButton
 
 def initialize_ui(window):
@@ -50,32 +51,6 @@ def initialize_ui(window):
         window.rounded7 = RoundedFrame("FUSION", "#d9d9d9", "black", "25", True)
         window.rounded7.setFixedSize(int(window.screen_width *0.1) ,int(window.screen_height * 0.05))
         window.rounded7.setParent(window.bodyContainer)
-
-        # Create the lines from Column 7 to Column 8
-        window.hlineWidgetFtoA = HorLineWidget()
-        hlineFtoA_length = int(((window.column_width + 5) - window.circle7outer.radius - window.circle8_2.radius)- (0.5 * window.rounded7.width() - window.circle7outer.radius))
-        window.hlineWidgetFtoA.setFixedSize(hlineFtoA_length + 1, 1000)
-        window.hlineWidgetFtoA.setParent(window.bodyContainer)
-
-        window.vlineWidgetFtoP = VerLineWidget()
-        vlineFtoP_length = (window.column_height_light // 2) - ((window.column_height_light - window.circle8_1.height()) // 2 - int(window.circle8_1.height() *1.5) + window.circle8_1.height()//2)
-        window.vlineWidgetFtoP.setFixedSize(3, vlineFtoP_length)
-        window.vlineWidgetFtoP.setParent(window.bodyContainer)
-
-        window.hlineWidgetFtoP = HorLineWidget()
-        hlineFtoP_length = int(((window.column_width + 5) // 2) - window.circle8_1.radius)
-        window.hlineWidgetFtoP.setFixedSize(hlineFtoP_length + 1 , 3)
-        window.hlineWidgetFtoP.setParent(window.bodyContainer)
-
-        window.vlineWidgetFtoD = VerLineWidget()
-        vlineFtoD_length = abs(window.column_height_light//2 - ((window.column_height_light - window.circle8_3.height()) // 2  + int(window.circle8_3.height() *1.5) + window.circle8_3.height()//2 ))
-        window.vlineWidgetFtoD.setFixedSize(3, vlineFtoD_length + 4)
-        window.vlineWidgetFtoD.setParent(window.bodyContainer)
-
-        window.hlineWidgetFtoD = HorLineWidget()
-        hlineFtoD_length = int(((window.column_width + 5) // 2) - window.circle8_3.radius)
-        window.hlineWidgetFtoD.setFixedSize(hlineFtoD_length + 1 , 3)
-        window.hlineWidgetFtoD.setParent(window.bodyContainer)
 
         #Create Widgets for Column 6
 
@@ -259,12 +234,79 @@ def initialize_ui(window):
         window.rounded1_3.setFixedSize(70 ,35)
         window.rounded1_3.setParent(window.bodyContainer)
 
+
+        # Lines from Column 7 to 8
+        window.hlineWidgetFtoA1 = HorLineWidget()
+        # hlineFtoA_length = int(((window.column_width + 5) - window.circle7outer.radius - window.circle8_2.radius)- (0.5 * window.rounded7.width() - window.circle7outer.radius))
+        # window.hlineWidgetFtoA.setFixedSize(hlineFtoA_length + 1, 1000)
+        window.hlineWidgetFtoA1.setFixedSize(3, 3)
+        window.hlineWidgetFtoA1.setParent(window.bodyContainer)
+
+        window.hlineWidgetFtoA2 = HorLineWidget()
+        window.hlineWidgetFtoA2.setFixedSize(3, 3)
+        window.hlineWidgetFtoA2.setParent(window.bodyContainer)
+
+        window.vlineWidgetFtoP = VerLineWidget()
+        # vlineFtoP_length = (window.column_height_light // 2) - ((window.column_height_light - window.circle8_1.height()) // 2 - int(window.circle8_1.height() *1.5) + window.circle8_1.height()//2)
+        # window.vlineWidgetFtoP.setFixedSize(3, vlineFtoP_length)
+        window.vlineWidgetFtoP.setFixedSize(3, 3)
+        window.vlineWidgetFtoP.setParent(window.bodyContainer)
+
+        window.hlineWidgetFtoP = HorLineWidget()
+        # hlineFtoP_length = int(((window.column_width + 5) // 2) - window.circle8_1.radius)
+        # window.hlineWidgetFtoP.setFixedSize(hlineFtoP_length + 1 , 3)
+        window.hlineWidgetFtoP.setFixedSize(3, 3)
+        window.hlineWidgetFtoP.setParent(window.bodyContainer)
+
+        window.vlineWidgetFtoD = VerLineWidget()
+        # vlineFtoD_length = abs(window.column_height_light//2 - ((window.column_height_light - window.circle8_3.height()) // 2  + int(window.circle8_3.height() *1.5) + window.circle8_3.height()//2 ))
+        # window.vlineWidgetFtoD.setFixedSize(3, vlineFtoD_length + 4)
+        window.vlineWidgetFtoD.setFixedSize(3, 3)
+        window.vlineWidgetFtoD.setParent(window.bodyContainer)
+
+        window.hlineWidgetFtoD = HorLineWidget()
+        # hlineFtoD_length = int(((window.column_width + 5) // 2) - window.circle8_3.radius)
+        # window.hlineWidgetFtoD.setFixedSize(hlineFtoD_length + 1 , 3)
+        window.hlineWidgetFtoD.setFixedSize(3, 3)
+        window.hlineWidgetFtoD.setParent(window.bodyContainer)
+
         # Lines from column 6 to 7
 
-        window.collectorLine6to7 = VerLineWidget()
-        window.collectorLine6to7.setFixedSize(3, 3)
-        window.collectorLine6to7.setParent(window.bodyContainer)
-        
+        # window.collectorLine6to7 = VerLineWidget()
+        # window.collectorLine6to7.setFixedSize(3, 3)
+        # window.collectorLine6to7.setParent(window.bodyContainer)
+
+        window.collectorLine6to7_1 = VerLineWidget()
+        window.collectorLine6to7_1.setFixedSize(3, 3)
+        window.collectorLine6to7_1.setParent(window.bodyContainer)
+
+        window.collectorLine6to7_2 = VerLineWidget()
+        window.collectorLine6to7_2.setFixedSize(3, 3)
+        window.collectorLine6to7_2.setParent(window.bodyContainer)
+
+        window.collectorLine6to7_3 = VerLineWidget()
+        window.collectorLine6to7_3.setFixedSize(3, 3)
+        window.collectorLine6to7_3.setParent(window.bodyContainer)
+
+        window.collectorLine6to7_4 = VerLineWidget()
+        window.collectorLine6to7_4.setFixedSize(3, 3)
+        window.collectorLine6to7_4.setParent(window.bodyContainer)
+
+        window.collectorLine6to7_5 = VerLineWidget()
+        window.collectorLine6to7_5.setFixedSize(3, 3)
+        window.collectorLine6to7_5.setParent(window.bodyContainer)
+
+        window.collectorLine6to7_6 = VerLineWidget()
+        window.collectorLine6to7_6.setFixedSize(3, 3)
+        window.collectorLine6to7_6.setParent(window.bodyContainer)
+
+        window.collectorLine6to7_7 = VerLineWidget()
+        window.collectorLine6to7_7.setFixedSize(3, 3)
+        window.collectorLine6to7_7.setParent(window.bodyContainer)
+
+        window.collectorLine6to7_8 = VerLineWidget()
+        window.collectorLine6to7_8.setFixedSize(3, 3)
+        window.collectorLine6to7_8.setParent(window.bodyContainer)
 
         window.hlineWidgettoCol1 = HorLineWidget()
         window.hlineWidgettoCol1.setFixedSize(3, 3)
@@ -307,6 +349,10 @@ def initialize_ui(window):
         window.collectorLine5to6_1 = VerLineWidget()
         window.collectorLine5to6_1.setFixedSize(3, 3)
         window.collectorLine5to6_1.setParent(window.bodyContainer)
+
+        window.collectorLine5to6_1_1 = VerLineWidget()
+        window.collectorLine5to6_1_1.setFixedSize(3, 3)
+        window.collectorLine5to6_1_1.setParent(window.bodyContainer)
         
         window.hline1fromCol5to6_1 = HorLineWidget()
         window.hline1fromCol5to6_1.setFixedSize(3, 3)
@@ -336,9 +382,19 @@ def initialize_ui(window):
         window.hlineWidgetVertoP.setFixedSize(3, 3)
         window.hlineWidgetVertoP.setParent(window.bodyContainer)
 
+        #Facial to column 6
+
         window.collectorLine5to6_2 = VerLineWidget()
         window.collectorLine5to6_2.setFixedSize(3, 3)
         window.collectorLine5to6_2.setParent(window.bodyContainer)
+
+        window.collectorLine5to6_2_2 = VerLineWidget()
+        window.collectorLine5to6_2_2.setFixedSize(3, 3)
+        window.collectorLine5to6_2_2.setParent(window.bodyContainer)
+
+        window.collectorLine5to6_2_3 = VerLineWidget()
+        window.collectorLine5to6_2_3.setFixedSize(3, 3)
+        window.collectorLine5to6_2_3.setParent(window.bodyContainer)
 
         window.hline1fromCol5to6_2 = HorLineWidget()
         window.hline1fromCol5to6_2.setFixedSize(3, 3)
@@ -355,6 +411,8 @@ def initialize_ui(window):
         window.hlinetoCol5to6_2 = HorLineWidget()
         window.hlinetoCol5to6_2.setFixedSize(3, 3)
         window.hlinetoCol5to6_2.setParent(window.bodyContainer)
+
+        #Pose to column 6
 
         window.hLineWidgetPosetoVer = HorLineWidget()
         window.hLineWidgetPosetoVer.setFixedSize(3, 3)
@@ -494,11 +552,7 @@ def initialize_ui(window):
         # Create the layout
         window.createLayout()
 
-        
-
         # Install an event filter to catch the resize events of the bodyContainer
         window.bodyContainer.installEventFilter(window)
 
-
-        
         window.showMaximized()

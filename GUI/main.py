@@ -7,6 +7,7 @@ from GUI.Eventfilter import handleEventFilter
 from GUI.ui_initializer import initialize_ui
 from GUI.ClickEvents import connect
 from GUI.variables import initVariables
+from GUI.RightClickEvents import Rightconnect
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -16,6 +17,7 @@ class MainWindow(QMainWindow):
         self.initUI()
         initVariables(self)
         connect(self)
+        Rightconnect(self)
         
     def eventFilter(self, source, event):
         return handleEventFilter(self, source, event)

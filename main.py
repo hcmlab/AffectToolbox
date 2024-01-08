@@ -4,10 +4,8 @@ from PyQt6.QtWidgets import QApplication
 
 app = QApplication([])
 window = MainWindow()
-dm = DeviceManager()
-window.mic_id = dm.choose_microphone()
-window.cam_id = dm.choose_camera()
+# dm = DeviceManager()
+window.mic_id = 2 #dm.choose_microphone()
+window.cam_id = 0 #dm.choose_camera()
 window.show()
 app.exec()
-
-

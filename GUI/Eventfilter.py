@@ -48,31 +48,6 @@ def handleEventFilter(window, source, event):
                 (window.column_height_light - window.rounded7.height()) // 2
             )
 
-            window.hlineWidgetFtoA.move(
-                window.rounded7.x() + window.rounded7.width(),
-                (window.column_height_light) // 2
-            )
-                
-            window.vlineWidgetFtoP.move(
-                window.rounded7.x() + window.rounded7.width()//2 + window.column_width // 2,
-                (window.column_height_light) // 2 - window.vlineWidgetFtoP.height() 
-            )
-
-            window.hlineWidgetFtoP.move(
-                window.rounded7.x() + window.rounded7.width()//2 + window.column_width // 2 +3,
-                (window.column_height_light) // 2 - window.vlineWidgetFtoP.height() 
-            )
-
-            window.vlineWidgetFtoD.move(
-                window.rounded7.x() + window.rounded7.width()//2 + window.column_width // 2,
-                (window.column_height_light) // 2
-            )
-
-            window.hlineWidgetFtoD.move(
-                window.rounded7.x() + window.rounded7.width()//2 + window.column_width // 2 +3,
-                (window.column_height_light) // 2 + window.vlineWidgetFtoD.height() - 3
-            )
-
             # Column 6
             window.circle6_1.move(
                 (window.bodyContainer.width() - (int(window.bodyContainer.width() / 8) *3) + int(window.bodyContainer.width() / 16) - window.circle6_4.width() // 2) - 20,
@@ -276,19 +251,118 @@ def handleEventFilter(window, source, event):
                 window.rounded1_2.y() + window.rounded1_2.height() + window.rounded1_3.height()//2
             )
 
-            #window.updateLines()
+            #Lines from 7 to 8
+
+            hlineFtoA1_Length = abs(window.rounded7.x() + window.rounded7.width() - (window.rounded7.x() + window.rounded7.width()//2 + window.column_width // 2)) + 3
+            window.hlineWidgetFtoA1.setFixedSize(hlineFtoA1_Length, 3)
+            window.hlineWidgetFtoA1.move(
+                window.rounded7.x() + window.rounded7.width(),
+                (window.column_height_light) // 2
+            )
+
+            hlineFtoA2_Length = abs(window.circle8_2.x() -( window.hlineWidgetFtoA1.x() + hlineFtoA1_Length))
+            window.hlineWidgetFtoA2.setFixedSize(hlineFtoA2_Length, 3)
+            window.hlineWidgetFtoA2.move(
+                window.hlineWidgetFtoA1.x() + hlineFtoA1_Length,
+                (window.column_height_light) // 2
+            )
+
+            vlineFtoP_length = abs(window.hlineWidgetFtoA1.y() - (window.rounded8_1.y() + window.rounded8_1.height()//2))  
+            window.vlineWidgetFtoP.setFixedSize(3, vlineFtoP_length)
+            window.vlineWidgetFtoP.move(
+                window.hlineWidgetFtoA1.x() + hlineFtoA1_Length - 3,
+                (window.column_height_light) // 2 - window.vlineWidgetFtoP.height() 
+            )
+
+            hlineFtoP_length = abs(window.circle8_1.x() - window.vlineWidgetFtoP.x() - 3)
+            window.hlineWidgetFtoP.setFixedSize(hlineFtoP_length, 3) 
+            window.hlineWidgetFtoP.move(
+                window.vlineWidgetFtoP.x() + 3,
+                (window.column_height_light) // 2 - window.vlineWidgetFtoP.height() 
+            )
+
+            vlineFtoD_length = abs(window.hlineWidgetFtoA1.y() - (window.rounded8_3.y() + window.rounded8_3.height()//2))
+            window.vlineWidgetFtoD.setFixedSize(3, vlineFtoD_length )
+            window.vlineWidgetFtoD.move(
+                window.hlineWidgetFtoA1.x() + hlineFtoA1_Length - 3,
+                window.hlineWidgetFtoA1.y() + 3
+            )
+
+            hlineFtoD_length = abs(window.circle8_3.x() - window.vlineWidgetFtoD.x() - 3)
+            window.hlineWidgetFtoD.setFixedSize(hlineFtoD_length, 3)
+            window.hlineWidgetFtoD.move(
+                window.vlineWidgetFtoD.x() + 3 ,
+                (window.column_height_light) // 2 + window.vlineWidgetFtoD.height()
+            )
+
+
             # Lines from column 6 to 7
 
             collectorLine6to7_length =  window.rounded6_8.y() + window.rounded6_8.height()//2 - window.rounded6_1.y() - window.rounded6_1.height()//2 
-            window.collectorLine6to7.setFixedSize(3, collectorLine6to7_length)
+            # window.collectorLine6to7.setFixedSize(3, collectorLine6to7_length)
 
-            window.collectorLine6to7.move(
+            # window.collectorLine6to7.move(
+            #     window.rounded7.x() + window.rounded7.width()//2 - window.column_width // 2 - 6,
+            #     window.rounded6_1.y()+ window.rounded6_1.height()//2 +3
+            # )
+
+            collectorline_length = abs(window.hlineWidgettoCol2.y() - window.hlineWidgettoCol1.y())
+            window.collectorLine6to7_1.setFixedSize(3, collectorline_length)
+            window.collectorLine6to7_1.move(
                 window.rounded7.x() + window.rounded7.width()//2 - window.column_width // 2 - 6,
-                window.rounded6_1.y()+ window.rounded6_1.height()//2 +3
+                window.hlineWidgettoCol1.y() 
             )
-    
-            hlinetocol_length = abs(window.collectorLine6to7.x() - (window.rounded6_1.x() + window.rounded6_1.width()))
+
+            collectorline_length = abs(window.hlineWidgettoCol3.y() - window.hlineWidgettoCol2.y())
+            window.collectorLine6to7_2.setFixedSize(3, collectorline_length)
+            window.collectorLine6to7_2.move(
+                window.collectorLine6to7_1.x(),
+                window.hlineWidgettoCol2.y() 
+            )
+
+            collectorline_length = abs(window.hlineWidgettoCol4.y() - window.hlineWidgettoCol3.y()) 
+            window.collectorLine6to7_3.setFixedSize(3, collectorline_length)
+            window.collectorLine6to7_3.move(
+                window.collectorLine6to7_1.x(),
+                window.hlineWidgettoCol3.y() 
+            )
+
+            collectorline_length = abs(window.hlineWidgetColtoF.y() - window.hlineWidgettoCol4.y())
+            window.collectorLine6to7_4.setFixedSize(3, collectorline_length)
+            window.collectorLine6to7_4.move(
+                window.collectorLine6to7_1.x(),
+                window.hlineWidgettoCol4.y() 
+            )
+
+            collectorline_length = abs(window.hlineWidgettoCol5.y() - window.hlineWidgetColtoF.y())
+            window.collectorLine6to7_5.setFixedSize(3, collectorline_length)
+            window.collectorLine6to7_5.move(
+                window.collectorLine6to7_1.x(),
+                window.hlineWidgetColtoF.y() + 3
+            )
+
+            collectorline_length = abs(window.hlineWidgettoCol6.y() - window.hlineWidgettoCol5.y())
+            window.collectorLine6to7_6.setFixedSize(3, collectorline_length)
+            window.collectorLine6to7_6.move(
+                window.collectorLine6to7_1.x(),
+                window.hlineWidgettoCol5.y() +3
+            )
+
+            collectorline_length = abs(window.hlineWidgettoCol7.y() - window.hlineWidgettoCol6.y())
+            window.collectorLine6to7_7.setFixedSize(3, collectorline_length)
+            window.collectorLine6to7_7.move(
+                window.collectorLine6to7_1.x(),
+                window.hlineWidgettoCol6.y() +3
+            )
+
+            collectorline_length = abs(window.hlineWidgettoCol8.y() - window.hlineWidgettoCol7.y())
+            window.collectorLine6to7_8.setFixedSize(3, collectorline_length)
+            window.collectorLine6to7_8.move(
+                window.collectorLine6to7_1.x(),
+                window.hlineWidgettoCol7.y() +3
+            )
         
+            hlinetocol_length = abs(window.collectorLine6to7_1.x() - (window.rounded6_1.x() + window.rounded6_1.width()))
             window.hlineWidgettoCol1.setFixedSize(int(hlinetocol_length) + 3, 3)
             window.hlineWidgettoCol1.move(
                 window.rounded6_1.x() + window.rounded6_1.width(),
@@ -337,20 +411,27 @@ def handleEventFilter(window, source, event):
                 window.rounded6_8.y() + window.rounded6_8.height()//2
             )
 
-            hlinefromcol_length = abs(window.rounded7.x() - window.collectorLine6to7.x())
+            hlinefromcol_length = abs(window.rounded7.x() - window.collectorLine6to7_1.x())
             window.hlineWidgetColtoF.setFixedSize(hlinefromcol_length, 3)
             window.hlineWidgetColtoF.move(
-                window.collectorLine6to7.x(),
+                window.collectorLine6to7_1.x() ,
                 window.rounded7.y() + window.rounded7.height()//2
             )
 
             # Lines from column 5 to 6
 
-            collectorLine5to6_1_length = window.circle5_1_outer.y() + window.circle5_1_outer.height()//2 - (window.rounded6_3.y() + window.rounded6_3.height()//2)
-            window.collectorLine5to6_1.setFixedSize(3, abs(collectorLine5to6_1_length))
+            collectorLine5to6_1_length = window.circle5_1_outer.y() + window.circle5_1_outer.height()//2 - (window.rounded6_2.y() + window.rounded6_2.height()//2)
+            window.collectorLine5to6_1.setFixedSize(3, abs(collectorLine5to6_1_length) + 3)
             window.collectorLine5to6_1.move(
                 window.circle5_1_outer.x() + window.circle5_1_outer.width()//2 + window.column_width//2 +1,
                 window.circle5_1_outer.y() + window.circle5_1_outer.height()//2
+            )
+
+            collectorLine5to6_1_1_length = window.collectorLine5to6_1.y() - collectorLine5to6_1_length - (window.rounded6_3.y() + window.rounded6_3.height()//2)
+            window.collectorLine5to6_1_1.setFixedSize(3, abs(collectorLine5to6_1_1_length))
+            window.collectorLine5to6_1_1.move(
+                window.collectorLine5to6_1.x(),
+                window.rounded6_2.y() + window.rounded6_2.height()//2 + 3
             )
 
             hlinefromcol_length = abs(window.circle6_1.x() - window.collectorLine5to6_1.x())
@@ -360,9 +441,9 @@ def handleEventFilter(window, source, event):
                 window.rounded6_1.y() + window.rounded6_1.height()//2
             )
 
-            window.hline2fromCol5to6_1.setFixedSize(hlinefromcol_length, 3)
+            window.hline2fromCol5to6_1.setFixedSize(hlinefromcol_length - 3, 3)
             window.hline2fromCol5to6_1.move(
-                window.collectorLine5to6_1.x(),
+                window.collectorLine5to6_1.x() + 3,
                 window.rounded6_2.y() + window.rounded6_2.height()//2
             )
 
@@ -373,7 +454,7 @@ def handleEventFilter(window, source, event):
             )
             
             hlinetocol_length = abs(window.collectorLine5to6_1.x() - (window.circle5_1_outer.x() + window.circle5_1_outer.width() ))
-            window.hlinetoCol5to6_1.setFixedSize(hlinetocol_length, 3)
+            window.hlinetoCol5to6_1.setFixedSize(hlinetocol_length + 3, 3)
             window.hlinetoCol5to6_1.move(
                 window.circle5_1_outer.x() + window.circle5_1_outer.width(),
                 window.circle5_1_outer.y() + window.circle5_1_outer.height()//2
@@ -400,26 +481,40 @@ def handleEventFilter(window, source, event):
                 window.rounded6_4.y() + window.rounded6_4.height()//2
             )
 
-            collectorLine5to6_2_length = window.circle5_3_outer.y() + window.circle5_3_outer.height()//2 - (window.rounded6_7.y() + window.rounded6_7.height()//2)
-            window.collectorLine5to6_2.setFixedSize(3, abs(collectorLine5to6_2_length))
+            collectorLine5to6_2_length = window.circle5_3_outer.y() + window.circle5_3_outer.height()//2 - (window.rounded6_5.y() + window.rounded6_5.height()//2)
+            window.collectorLine5to6_2.setFixedSize(3, abs(collectorLine5to6_2_length) + 3)
             window.collectorLine5to6_2.move(
                 window.circle5_3_outer.x() + window.circle5_3_outer.width()//2 + window.column_width//2 +1,
                 window.circle5_3_outer.y() + window.circle5_3_outer.height()//2
             )
 
-            window.hline1fromCol5to6_2.setFixedSize(hlinefromcol_length, 3)
-            window.hline1fromCol5to6_2.move(
+            collectorLine5to6_2_2_length = window.collectorLine5to6_2.y() - collectorLine5to6_2_length - (window.rounded6_6.y() + window.rounded6_6.height()//2)
+            window.collectorLine5to6_2_2.setFixedSize(3, abs(collectorLine5to6_2_2_length))
+            window.collectorLine5to6_2_2.move(
                 window.collectorLine5to6_2.x(),
+                window.rounded6_5.y() + window.rounded6_5.height()//2 + 3
+            )
+
+            collectorLine5to6_2_3_length = window.collectorLine5to6_2_2.y() - collectorLine5to6_2_2_length - (window.rounded6_7.y() + window.rounded6_7.height()//2)
+            window.collectorLine5to6_2_3.setFixedSize(3, abs(collectorLine5to6_2_3_length))
+            window.collectorLine5to6_2_3.move(
+                window.collectorLine5to6_2.x(),
+                window.rounded6_6.y() + window.rounded6_6.height()//2 + 3
+            )
+
+            window.hline1fromCol5to6_2.setFixedSize(hlinefromcol_length - 3, 3)
+            window.hline1fromCol5to6_2.move(
+                window.collectorLine5to6_2.x() + 3,
                 window.rounded6_5.y() + window.rounded6_5.height()//2
             )
 
-            window.hline2fromCol5to6_2.setFixedSize(hlinefromcol_length, 3)
+            window.hline2fromCol5to6_2.setFixedSize(hlinefromcol_length - 3, 3)
             window.hline2fromCol5to6_2.move(
-                window.collectorLine5to6_2.x(),
-                window.rounded6_6.y() + window.rounded6_6.height()//2
+                window.collectorLine5to6_2.x() + 3,
+                window.rounded6_6.y() + window.rounded6_6.height()//2 
             )
 
-            window.hline3fromCol5to6_2.setFixedSize(hlinefromcol_length, 3)
+            window.hline3fromCol5to6_2.setFixedSize(hlinefromcol_length , 3)
             window.hline3fromCol5to6_2.move(
                 window.collectorLine5to6_2.x(),
                 window.rounded6_7.y() + window.rounded6_7.height()//2
@@ -455,7 +550,7 @@ def handleEventFilter(window, source, event):
             #Lines from 3 to 4 and 5
             hlineAudioToPara_length = abs(window.circle5_1_outer.x() - (window.rounded3_1.x() + window.rounded3_1.width()))
             hlineAudioToPara_length1 = (window.rounded3_1.x() + window.rounded3_1.width()//2 + window.column_width//2 + 2) - (window.rounded3_1.x() + window.rounded3_1.width())
-            window.hlineWidgetAudiotoPara1.setFixedSize(hlineAudioToPara_length1 , 3)
+            window.hlineWidgetAudiotoPara1.setFixedSize(hlineAudioToPara_length1 + 3, 3)
             window.hlineWidgetAudiotoPara1.move(
                 window.rounded3_1.x() + window.rounded3_1.width(),
                 window.rounded3_1.y() + window.rounded3_1.height()//2
@@ -463,15 +558,15 @@ def handleEventFilter(window, source, event):
 
             window.hlineWidgetAudiotoPara2.setFixedSize(hlineAudioToPara_length - hlineAudioToPara_length1 , 3)
             window.hlineWidgetAudiotoPara2.move(
-                window.rounded3_1.x() + window.rounded3_1.width()//2 + window.column_width//2 + 2,
+                window.rounded3_1.x() + window.rounded3_1.width()//2 + window.column_width//2 + 2 + 3,
                 window.rounded3_1.y() + window.rounded3_1.height()//2
             )
 
             verLineWidgetAudiotoVoice_length = abs(window.hlineWidgetAudiotoPara1.y() - (window.rounded4_1.y() + window.rounded4_1.height()//2))
-            window.verLineWidgetAudiotoVoice.setFixedSize(3, verLineWidgetAudiotoVoice_length)
+            window.verLineWidgetAudiotoVoice.setFixedSize(3, verLineWidgetAudiotoVoice_length - 3)
             window.verLineWidgetAudiotoVoice.move(
                 window.rounded3_1.x() + window.rounded3_1.width()//2 + window.column_width//2 + 2,
-                window.hlineWidgetAudiotoPara1.y()
+                window.hlineWidgetAudiotoPara1.y() + 3
             )
 
             hlineWidget_length = abs(window.rounded4_1.x() - window.verLineWidgetAudiotoVoice.x() )
@@ -481,10 +576,10 @@ def handleEventFilter(window, source, event):
                 window.verLineWidgetAudiotoVoice.y() + window.verLineWidgetAudiotoVoice.height()
             )
 
-            window.verLineWidgetVoicetoPara.setFixedSize(3, verLineWidgetAudiotoVoice_length)
+            window.verLineWidgetVoicetoPara.setFixedSize(3, verLineWidgetAudiotoVoice_length - 3)
             window.verLineWidgetVoicetoPara.move(
                 window.rounded4_1.x() + window.rounded4_1.width()//2 + window.column_width//2 + 2,
-                window.hlineWidgetAudiotoPara1.y()
+                window.hlineWidgetAudiotoPara1.y() + 3
             )
 
             window.hlineWidgetVoicetoPara.setFixedSize(hlineWidget_length +1, 3)
@@ -507,16 +602,16 @@ def handleEventFilter(window, source, event):
             )
 
             hlineWidgetVideotoFacial_length = abs(window.circle5_3_outer.x() - (window.rounded3_3.x() + window.rounded3_3.width()))
-            window.hlineWidgetVideotoFacial1.setFixedSize(hlineAudioToPara_length1, 3)
+            window.hlineWidgetVideotoFacial1.setFixedSize(hlineAudioToPara_length1 + 3, 3)
             window.hlineWidgetVideotoFacial1.move(
                 window.rounded3_3.x() + window.rounded3_3.width(),
                 window.rounded3_3.y() + window.rounded3_3.height()//2
             )
 
 
-            window.hlineWidgetVideotoFacial2.setFixedSize(hlineAudioToPara_length - hlineAudioToPara_length1, 3)
+            window.hlineWidgetVideotoFacial2.setFixedSize(hlineAudioToPara_length - hlineAudioToPara_length1 - 3, 3)
             window.hlineWidgetVideotoFacial2.move(
-                window.rounded3_3.x() + window.rounded3_3.width()//2 + window.column_width//2 + 2,
+                window.rounded3_3.x() + window.rounded3_3.width()//2 + window.column_width//2 + 2 + 3,
                 window.rounded3_3.y() + window.rounded3_3.height()//2
             )
 

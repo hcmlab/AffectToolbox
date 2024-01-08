@@ -3,9 +3,12 @@ from PyQt6.QtWidgets import QFrame, QLabel
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QFrame, QLabel, QVBoxLayout
 from PyQt6.QtCore import pyqtSignal
+from GUI.RightClickWindow import RightClickWindow
+from PyQt6.QtCore import QEvent
 
 class RoundedFrame(QFrame):
     clicked = pyqtSignal()
+    rightClicked = pyqtSignal(QEvent)
     def __init__(self, text="", color="#0071c1", text_color="#c9ffff", font_size=20, border=False):
         
         super(RoundedFrame, self).__init__()
@@ -24,7 +27,13 @@ class RoundedFrame(QFrame):
         self.label.resize(self.size())
 
     def mousePressEvent(self, event) -> None:
-        self.clicked.emit()
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.clicked.emit()
+        elif event.button() == Qt.MouseButton.RightButton:
+            print("Right button clicked")
+            self.rightClicked.emit(event)
+        super().mousePressEvent(event)
+        
         
     def toggleColor(self):
         if self.color == self.basecolor:
