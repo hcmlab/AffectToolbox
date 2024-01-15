@@ -1135,8 +1135,8 @@ def PlayButtonClick(window):
                       enable_stt_loop=False,
                       enable_camera_loop=window.CAMERA_LOOP,
                       enable_print_loop=False, #
-                      enable_send_udp_loop=False,
-                      enable_send_kafka_loop=False,
+                      enable_send_udp_loop=window.UDP,
+                      enable_send_kafka_loop=window.KAFKA,
                       enable_face_er_loop= False, #
                       enable_face_mesh_loop=False,
                       enable_pose_loop=False,
@@ -1156,12 +1156,12 @@ def PlayButtonClick(window):
                       send_loop_rate=2.0,
                       camera_loop_rate=4.0,
                       face_mesh_rate=4.0,
-                      udp_ip='127.0.0.1',
-                      udp_port=5006,
-                      kafka_ip='127.0.0.1',
-                      kafka_port=9092,
+                      udp_ip=window.UDP_IP,
+                      udp_port=window.UDP_PORT,
+                      kafka_ip=window.KAFKA_IP,
+                      kafka_port=window.KAFKA_PORT,
                       web_app_port=5000,
-                      kafka_topic_name='mithos',
+                      kafka_topic_name=window.KAFKA_TOPIC,
                       sample_rate=16000,
                       vad_threshold=0.25,
                       face_padding=0.2,
@@ -1181,6 +1181,38 @@ def PlayButtonClick(window):
         window.image.setParent(window.bodyContainer)
         window.image.show()
     window.pipe.start(window)
+
+def kafkaClick(window):
+
+    def turnOn():
+        window.kafka_button.setStyleSheet("background-color: green")
+    
+    def turnOff():
+        window.kafka_button.setStyleSheet("")
+
+    if window.KAFKA:
+        window.KAFKA = False
+        turnOff()
+    else:
+        window.KAFKA = True
+        turnOn()
+
+def udpClick(window):
+    
+        def turnOn():
+            window.udp_button.setStyleSheet("background-color: green")
+        
+        def turnOff():
+            window.udp_button.setStyleSheet("")
+    
+        if window.UDP:
+            window.UDP = False
+            turnOff()
+        else:
+            window.UDP = True
+            print(window.UDP_IP, window.UDP_PORT, window.KAFKA_TOPIC)
+            turnOn()
+    
     
 
 def connect(window):
@@ -1215,3 +1247,6 @@ def connect(window):
     window.rounded8_1.clicked.connect(lambda: PleasureClick(window))
     window.rounded8_2.clicked.connect(lambda: ArousalClick(window))
     window.rounded8_3.clicked.connect(lambda: DominanceClick(window))
+
+    window.kafka_button.leftClicked.connect(lambda: kafkaClick(window))
+    window.udp_button.leftClicked.connect(lambda: udpClick(window))

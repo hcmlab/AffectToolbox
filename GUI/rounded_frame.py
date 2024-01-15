@@ -30,7 +30,6 @@ class RoundedFrame(QFrame):
         if event.button() == Qt.MouseButton.LeftButton:
             self.clicked.emit()
         elif event.button() == Qt.MouseButton.RightButton:
-            print("Right button clicked")
             self.rightClicked.emit(event)
         super().mousePressEvent(event)
         

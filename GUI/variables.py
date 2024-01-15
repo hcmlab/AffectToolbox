@@ -31,5 +31,27 @@ def initVariables(window=None):
 
         window.POSE_DOMINANCE = False
 
+        #Kafka / UDP Variables
+        window.KAFKA = False
+        window.KAFKA_IP = '127.0.0.1'
+        window.KAFKA_PORT = 9092
+        window.KAFKA_TOPIC = 'mithos'
+
+        window.UDP = False
+        window.UDP_IP = '127.0.0.1'
+        window.UDP_PORT = 5006
+
         # Menu Variables
         window.TRANSCRIPTMENU = False
+
+        #Loop Rates
+        window.SER_LOOP_RATE = 1.0
+        window.STT_LOOP_RATE = 0.2
+        window.SENTIMENT_LOOP_RATE = 1.0    #Sentiment
+        window.VAD_LOOP_RATE = 4.0  #Audio
+        window.ER_LOOP_RATE = 2.0
+        window.POSE_LOOP_RATE = 4.0 #Pose
+        window.SEND_LOOP_RATE = 2.0 
+        window.CAMERA_LOOP_RATE = 4.0  #Camera
+        window.FACE_MESH_RATE = 4.0 #Face Tracking
+        window.SAMPLE_RATE = 16000  #Fusion

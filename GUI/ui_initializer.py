@@ -5,6 +5,8 @@ from GUI.vertical_line_widget import VerLineWidget
 from GUI.Image_window import ImageWindow
 from GUI.RightClickWidget import RightClickWidget
 from PyQt6.QtWidgets import QPushButton
+from GUI.Consoleoutput import ConsoleOutput
+from GUI.MyButton import MyButton
 
 def initialize_ui(window):
     # Create the containers
@@ -548,6 +550,22 @@ def initialize_ui(window):
         window.play_button = QPushButton("Start")
         window.play_button.setFixedSize(100, 50)
         window.play_button.setParent(window.bodyContainer)
+
+        window.stop_button = QPushButton("Stop")
+        window.stop_button.setFixedSize(100, 50)
+        window.stop_button.setParent(window.bodyContainer)
+
+        window.kafka_button = MyButton("Kafka")
+        window.kafka_button.setFixedSize(100, 50)
+        window.kafka_button.setParent(window.bodyContainer)
+
+        window.udp_button = MyButton("UDP")
+        window.udp_button.setFixedSize(100, 50)
+        window.udp_button.setParent(window.bodyContainer)
+
+        window.console = ConsoleOutput()
+        window.console.setFixedSize(300, 200)
+        window.console.setParent(window.bodyContainer)
 
         # Create the layout
         window.createLayout()

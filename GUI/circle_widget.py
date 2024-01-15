@@ -2,9 +2,11 @@ from PyQt6.QtCore import Qt, QRect
 from PyQt6.QtGui import QPainter, QColor, QFont, QPixmap
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
 from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import QEvent
 
 class CircleWidget(QWidget):
     clicked = pyqtSignal()
+    rightClicked = pyqtSignal(QEvent)
 
     def __init__(self, color="#f2f2f2", label=None, font_size=10, image_path=None, parent=None):
         super(CircleWidget, self).__init__(parent)
@@ -34,7 +36,11 @@ class CircleWidget(QWidget):
         painter.drawEllipse(0, 0, self.width(), self.height())
 
     def mousePressEvent(self, event) -> None:
-        self.clicked.emit()
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.clicked.emit()
+        elif event.button() == Qt.MouseButton.RightButton:
+            self.rightClicked.emit(event)
+        super().mousePressEvent(event)
     
     def toggleColor(self):
         if self.color == self.baseColor:
