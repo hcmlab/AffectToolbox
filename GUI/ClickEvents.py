@@ -1210,7 +1210,6 @@ def udpClick(window):
             turnOff()
         else:
             window.UDP = True
-            print(window.UDP_IP, window.UDP_PORT, window.KAFKA_TOPIC)
             turnOn()
     
     

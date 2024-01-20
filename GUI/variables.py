@@ -45,13 +45,13 @@ def initVariables(window=None):
         window.TRANSCRIPTMENU = False
 
         #Loop Rates
-        window.SER_LOOP_RATE = 1.0
-        window.STT_LOOP_RATE = 0.2
+        window.SER_LOOP_RATE = 1.0 #Speech Emotion Recognition
+        window.STT_LOOP_RATE = 0.2 #Speech to Text
         window.SENTIMENT_LOOP_RATE = 1.0    #Sentiment
-        window.VAD_LOOP_RATE = 4.0  #Audio
-        window.ER_LOOP_RATE = 2.0
+        window.VAD_LOOP_RATE = 4.0  #Voice Actitivity Detection
+        window.ER_LOOP_RATE = 2.0 #Emotion Recognition (Facial)
         window.POSE_LOOP_RATE = 4.0 #Pose
-        window.SEND_LOOP_RATE = 2.0 
+        window.SEND_LOOP_RATE = 2.0 #Kafka + UDP
         window.CAMERA_LOOP_RATE = 4.0  #Camera
         window.FACE_MESH_RATE = 4.0 #Face Tracking
-        window.SAMPLE_RATE = 16000  #Fusion
+        window.SAMPLE_RATE = 16000  #Audio Sample Rate

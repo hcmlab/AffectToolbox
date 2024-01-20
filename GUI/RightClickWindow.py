@@ -69,15 +69,15 @@ class RightClickWindow(QMainWindow):
             self.window.FACE_MESH_RATE = value
         elif name == "Fusion":
             self.window.SAMPLE_RATE = value
-        print(f"The {name}-Loop-Rate has been changed to {value}")
+        #print(f"The {name}-Loop-Rate has been changed to {value}")
 
     def AddDoubleSpinBox(self, baseValue=0.0, name=""):
         self.doublespinBoxLabel = QLabel(f"{name} Loop Rate:")
         self.doublespinBoxLabel.setFixedSize(300, 20)
         self.doublespinBox = QDoubleSpinBox()
         self.doublespinBox.setFixedSize(300, 20)
-        self.layout.addWidget(self.spinBoxLabel)
-        self.layout.addWidget(self.spinBox)
+        self.layout.addWidget(self.doublespinBoxLabel)
+        self.layout.addWidget(self.doublespinBox)
         self.doublespinBox.setValue(baseValue)
         self.doublespinBox.setSingleStep(0.1)
         self.doublespinBox.valueChanged.connect(lambda value: self.on_value_changed(value=value, name=name))
@@ -85,7 +85,7 @@ class RightClickWindow(QMainWindow):
     def on_value_changed(self, value, name=""):
         if name == "Fusion":
             self.window.SAMPLE_RATE = value
-        print(f"The {name}-Loop-Rate has been changed to {value}")
+        #print(f"The {name}-Loop-Rate has been changed to {value}")
 
     def AddSpinBox(self, baseValue=0, name=""):
         self.spinBoxLabel = QLabel(f"{name} Sample Rate:")
@@ -115,7 +115,7 @@ class RightClickWindow(QMainWindow):
             self.window.UDP_IP = text
         if name == "KAFKA":
             self.window.KAFKA_IP = text
-        print(f"The IP address has been changed to {text}")
+        #print(f"The IP address has been changed to {text}")
 
     def AddPort(self, baseValue=3000, name=""):
         self.portLabel = QLabel(f"{name}-Port:")
@@ -133,7 +133,7 @@ class RightClickWindow(QMainWindow):
             self.window.UDP_PORT = int(value)
         if name == "KAFKA":
             self.window.KAFKA_PORT = int(value)
-        print(f"The {name}-Port has been changed to {value}")
+        #print(f"The {name}-Port has been changed to {value}")
 
     def AddTopic(self, baseValue='mithos', name=""):
         self.topicLabel = QLabel(f"{name}-Topic:")
@@ -149,6 +149,6 @@ class RightClickWindow(QMainWindow):
         # Diese Methode wird aufgerufen, wenn der Text im QLineEdit geändert wird
         if name == "KAFKA":
             self.window.KAFKA_TOPIC = value
-        print(f"The {name}-Topic has been changed to {value}")
+        #print(f"The {name}-Topic has been changed to {value}")
             
         
