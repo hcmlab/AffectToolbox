@@ -23,19 +23,25 @@ class RightClickWindow(QMainWindow):
             self.AddIp(baseValue=window.KAFKA_IP, name="KAFKA")
             self.AddPort(baseValue=window.KAFKA_PORT, name="KAFKA")
             self.AddTopic(baseValue=window.KAFKA_TOPIC, name="KAFKA")
+            self.AddDoubleSpinBox(baseValue=window.SEND_LOOP_RATE, name="KAFKA")
         elif name == "UDP":
             self.AddIp(baseValue=window.UDP_IP, name="UDP")
             self.AddPort(baseValue=window.UDP_PORT, name="UDP")
+            self.AddDoubleSpinBox(baseValue=window.SEND_LOOP_RATE, name="UDP")
         elif name == "Sentiment":
             self.AddDoubleSpinBox(baseValue=window.SENTIMENT_LOOP_RATE, name="Sentiment")
         elif name == "Audio":
             self.AddDoubleSpinBox(baseValue=window.VAD_LOOP_RATE, name="Audio")
+            self.AddSpinBox(baseValue=window.SAMPLE_RATE, name="Audio")
         elif name == "Pose":
             self.AddDoubleSpinBox(baseValue=window.POSE_LOOP_RATE, name="Pose")
         elif name == "FaceTracking":
             self.AddDoubleSpinBox(baseValue=window.FACE_MESH_RATE, name="FaceTracking")
-        elif name == "Fusion":
-            self.AddSpinBox(baseValue=window.SAMPLE_RATE, name="Fusion")
+        elif name == "FacialExpression":
+            self.AddDoubleSpinBox(baseValue=window.ER_LOOP_RATE, name="FacialExpression")
+        elif name == "Transcript":
+            self.AddDoubleSpinBox(baseValue=window.STT_LOOP_RATE, name="Transcript")
+
 
         # Erstellen Sie ein QSpacerItem
         spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
@@ -57,8 +63,6 @@ class RightClickWindow(QMainWindow):
         value = round(value, 1)
         if name == "Camera":
             self.window.CAMERA_LOOP_RATE = value
-        elif name == "SER":
-            self.window.SER_LOOP_RATE = value
         elif name == "Sentiment":
             self.window.SENTIMENT_LOOP_RATE = value
         elif name == "Audio":
@@ -67,8 +71,14 @@ class RightClickWindow(QMainWindow):
             self.window.POSE_LOOP_RATE = value
         elif name == "FaceTracking":
             self.window.FACE_MESH_RATE = value
-        elif name == "Fusion":
-            self.window.SAMPLE_RATE = value
+        elif name == "FacialExpression":
+            self.window.ER_LOOP_RATE = value
+        elif name == "Transcript":
+            self.window.STT_LOOP_RATE = value
+        elif name == "KAFKA":
+            self.window.SEND_LOOP_RATE = value
+        elif name == "UDP":
+            self.window.SEND_LOOP_RATE = value
         #print(f"The {name}-Loop-Rate has been changed to {value}")
 
     def AddDoubleSpinBox(self, baseValue=0.0, name=""):
@@ -83,7 +93,7 @@ class RightClickWindow(QMainWindow):
         self.doublespinBox.valueChanged.connect(lambda value: self.on_value_changed(value=value, name=name))
 
     def on_value_changed(self, value, name=""):
-        if name == "Fusion":
+        if name == "Audio":
             self.window.SAMPLE_RATE = value
         #print(f"The {name}-Loop-Rate has been changed to {value}")
 

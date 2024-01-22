@@ -1,6 +1,7 @@
 from modules.AffectPipeline import AffectPipeline, DeviceManager
 from GUI.Image_window import ImageWindow
 from GUI.rounded_frame import RoundedFrame
+from GUI.AudioWidget import PlotWidget
 from time import sleep
 
 #Top Half
@@ -1130,7 +1131,7 @@ def PlayButtonClick(window):
     print("Play Button Clicked")
     
     window.pipe = AffectPipeline(enable_log_to_console=False,
-                      enable_vad_loop=False,
+                      enable_vad_loop=window.MIC_LOOP,
                       enable_ser_loop=False,
                       enable_stt_loop=False,
                       enable_camera_loop=window.CAMERA_LOOP,
@@ -1180,6 +1181,17 @@ def PlayButtonClick(window):
         window.image = ImageWindow(window=window)
         window.image.setParent(window.bodyContainer)
         window.image.show()
+    if window.MIC_LOOP:
+        # window.test = PlotWindow()
+        # window.test.playButtonClicked()
+        # window.test.show()
+        layout = window.bodyContainer.layout()
+        layout.removeWidget(window.rounded3_1)
+        window.rounded3_1.setParent(None)
+        window.audio = PlotWidget(window=window)
+        window.audio.setParent(window.bodyContainer)
+        window.audio.show()
+        window.audio.playButtonClicked()
     window.pipe.start(window)
 
 def kafkaClick(window):

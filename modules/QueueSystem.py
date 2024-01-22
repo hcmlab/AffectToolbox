@@ -51,6 +51,10 @@ TRANSCRIPT_SPEECH = AffectDeque(maxlen=100)
 for i in range(0, 100):
     TRANSCRIPT_SPEECH.append('')
 
+RMS_VALUES = AffectDeque(maxlen=500)
+for i in range(0, 500):
+    RMS_VALUES.append(.0)
+
 POS_SENTIMENT = AffectDeque(maxlen=500)
 for i in range(0, 500):
     POS_SENTIMENT.append(.0)
