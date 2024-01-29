@@ -236,20 +236,20 @@ def handleEventFilter(window, source, event):
             )
 
             # Column 1
-            window.rounded1_1.move(
-                (window.bodyContainer.width() - (int(window.bodyContainer.width() / 8) *8) + int(window.bodyContainer.width() / 8) - window.rounded1_1.width()),
-                window.circle2_2.y() - window.rounded1_1.height()//2
-            )
+            # window.rounded1_1.move(
+            #     (window.bodyContainer.width() - (int(window.bodyContainer.width() / 8) *8) + int(window.bodyContainer.width() / 8) - window.rounded1_1.width()),
+            #     window.circle2_2.y() - window.rounded1_1.height()//2
+            # )
 
-            window.rounded1_2.move(
-                window.rounded1_1.x(),
-                window.rounded1_1.y() + window.rounded1_1.height() + window.rounded1_2.height()//2
-            )
+            # window.rounded1_2.move(
+            #     window.rounded1_1.x(),
+            #     window.rounded1_1.y() + window.rounded1_1.height() + window.rounded1_2.height()//2
+            # )
 
-            window.rounded1_3.move(
-                window.rounded1_1.x(),
-                window.rounded1_2.y() + window.rounded1_2.height() + window.rounded1_3.height()//2
-            )
+            # window.rounded1_3.move(
+            #     window.rounded1_1.x(),
+            #     window.rounded1_2.y() + window.rounded1_2.height() + window.rounded1_3.height()//2
+            # )
 
             #Lines from 7 to 8
 
@@ -694,53 +694,53 @@ def handleEventFilter(window, source, event):
 
             # Lines from 1 to 2
 
-            verlineWidgetVoicetoHeadset_length = abs((window.rounded1_1.y() + window.rounded1_1.height()//2) - (window.circle2_1.y() + window.circle2_1.height()//2))
-            window.verlineWidgetVoicetoHeadset.setFixedSize(3, verlineWidgetVoicetoHeadset_length)
-            window.verlineWidgetVoicetoHeadset.move(
-                window.circle2_1.x() - window.column_width//8,
-                window.circle2_1.y() + window.circle2_1.height()//2
-            )
+            # verlineWidgetVoicetoHeadset_length = abs((window.rounded1_1.y() + window.rounded1_1.height()//2) - (window.circle2_1.y() + window.circle2_1.height()//2))
+            # window.verlineWidgetVoicetoHeadset.setFixedSize(3, verlineWidgetVoicetoHeadset_length)
+            # window.verlineWidgetVoicetoHeadset.move(
+            #     window.circle2_1.x() - window.column_width//8,
+            #     window.circle2_1.y() + window.circle2_1.height()//2
+            # )
 
-            hlineWidgetVoicetoVer_length = abs(window.verlineWidgetVoicetoHeadset.x() - (window.rounded1_1.x() + window.rounded1_1.width()))
-            window.hlineWidgetVoicetoVer.setFixedSize(hlineWidgetVoicetoVer_length + 3, 3)
-            window.hlineWidgetVoicetoVer.move(
-                window.rounded1_1.x() + window.rounded1_1.width(),
-                window.verlineWidgetVoicetoHeadset.y() + window.verlineWidgetVoicetoHeadset.height()
-            )
+            # hlineWidgetVoicetoVer_length = abs(window.verlineWidgetVoicetoHeadset.x() - (window.rounded1_1.x() + window.rounded1_1.width()))
+            # window.hlineWidgetVoicetoVer.setFixedSize(hlineWidgetVoicetoVer_length + 3, 3)
+            # window.hlineWidgetVoicetoVer.move(
+            #     window.rounded1_1.x() + window.rounded1_1.width(),
+            #     window.verlineWidgetVoicetoHeadset.y() + window.verlineWidgetVoicetoHeadset.height()
+            # )
 
-            hlineWidgetVertoHeadset_length = abs(window.circle2_1.x() - window.verlineWidgetVoicetoHeadset.x())
-            window.hlineWidgetVertoHeadset.setFixedSize(hlineWidgetVertoHeadset_length, 3)
-            window.hlineWidgetVertoHeadset.move(
-                window.verlineWidgetVoicetoHeadset.x(),
-                window.verlineWidgetVoicetoHeadset.y()
-            )
+            # hlineWidgetVertoHeadset_length = abs(window.circle2_1.x() - window.verlineWidgetVoicetoHeadset.x())
+            # window.hlineWidgetVertoHeadset.setFixedSize(hlineWidgetVertoHeadset_length, 3)
+            # window.hlineWidgetVertoHeadset.move(
+            #     window.verlineWidgetVoicetoHeadset.x(),
+            #     window.verlineWidgetVoicetoHeadset.y()
+            # )
 
-            collineWidgetBodyandFace_length = abs((window.rounded1_3.y() + window.rounded1_3.height()//2) - (window.rounded1_2.y() + window.rounded1_2.height()//2) )
-            window.collineWidgetBodyandFace.setFixedSize(3, collineWidgetBodyandFace_length)
-            window.collineWidgetBodyandFace.move(
-                window.circle2_2.x() - window.column_width//8,
-                window.rounded1_2.y() + window.rounded1_2.height()//2
-            )
+            # collineWidgetBodyandFace_length = abs((window.rounded1_3.y() + window.rounded1_3.height()//2) - (window.rounded1_2.y() + window.rounded1_2.height()//2) )
+            # window.collineWidgetBodyandFace.setFixedSize(3, collineWidgetBodyandFace_length)
+            # window.collineWidgetBodyandFace.move(
+            #     window.circle2_2.x() - window.column_width//8,
+            #     window.rounded1_2.y() + window.rounded1_2.height()//2
+            # )
 
-            hlineWidgetFacetoCol_length = abs(window.collineWidgetBodyandFace.x() - (window.rounded1_2.x() + window.rounded1_2.width()))
-            window.hlineWidgetFacetoCol.setFixedSize(hlineWidgetFacetoCol_length + 3, 3)
-            window.hlineWidgetFacetoCol.move(
-                window.rounded1_2.x() + window.rounded1_2.width(),
-                window.collineWidgetBodyandFace.y() 
-            )
+            # hlineWidgetFacetoCol_length = abs(window.collineWidgetBodyandFace.x() - (window.rounded1_2.x() + window.rounded1_2.width()))
+            # window.hlineWidgetFacetoCol.setFixedSize(hlineWidgetFacetoCol_length + 3, 3)
+            # window.hlineWidgetFacetoCol.move(
+            #     window.rounded1_2.x() + window.rounded1_2.width(),
+            #     window.collineWidgetBodyandFace.y() 
+            # )
 
-            window.hlineWidgetBodytoCol.setFixedSize(hlineWidgetFacetoCol_length + 3, 3)
-            window.hlineWidgetBodytoCol.move(
-                window.rounded1_3.x() + window.rounded1_3.width(),
-                window.collineWidgetBodyandFace.y() + window.collineWidgetBodyandFace.height()
-            )
+            # window.hlineWidgetBodytoCol.setFixedSize(hlineWidgetFacetoCol_length + 3, 3)
+            # window.hlineWidgetBodytoCol.move(
+            #     window.rounded1_3.x() + window.rounded1_3.width(),
+            #     window.collineWidgetBodyandFace.y() + window.collineWidgetBodyandFace.height()
+            # )
 
-            hlineWidgetColtoCam_length = abs(window.circle2_2.x() - window.collineWidgetBodyandFace.x())
-            window.hlineWidgetColtoCam.setFixedSize(hlineWidgetColtoCam_length, 3)
-            window.hlineWidgetColtoCam.move(
-                window.collineWidgetBodyandFace.x(),
-                window.circle2_2.y() + window.circle2_2.height()//2
-            )
+            # hlineWidgetColtoCam_length = abs(window.circle2_2.x() - window.collineWidgetBodyandFace.x())
+            # window.hlineWidgetColtoCam.setFixedSize(hlineWidgetColtoCam_length, 3)
+            # window.hlineWidgetColtoCam.move(
+            #     window.collineWidgetBodyandFace.x(),
+            #     window.circle2_2.y() + window.circle2_2.height()//2
+            # )
 
             window.play_button.move(
                   window.column_width//2 - window.play_button.width()//2,

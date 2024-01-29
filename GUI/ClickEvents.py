@@ -3,23 +3,17 @@ from GUI.Image_window import ImageWindow
 from GUI.rounded_frame import RoundedFrame
 from GUI.AudioWidget import PlotWidget
 from time import sleep
+from PyQt6.QtGui import QColor
+from GUI.TranscriptWidget import TranscriptWidget
 
 #Top Half
 def headphonesClick(window):
     def turnOn():
-        window.rounded1_1.toggleColor()
-        window.hlineWidgetVoicetoVer.toggleColor()
-        window.verlineWidgetVoicetoHeadset.toggleColor()
-        window.hlineWidgetVertoHeadset.toggleColor()
         window.circle2_1.toggleColor()
 
     def turnOff():
         if window.MIC_LOOP:
             AudioClick(window)
-        window.rounded1_1.toggleColor()
-        window.hlineWidgetVoicetoVer.toggleColor()
-        window.verlineWidgetVoicetoHeadset.toggleColor()
-        window.hlineWidgetVertoHeadset.toggleColor()
         window.circle2_1.toggleColor()
 
     if window.HEADSET:
@@ -471,12 +465,6 @@ def WebcamClick(window):
             VideoClick(window)
     else:
         window.CAMERA = True
-    window.rounded1_2.toggleColor()
-    window.rounded1_3.toggleColor()
-    window.hlineWidgetFacetoCol.toggleColor()
-    window.hlineWidgetBodytoCol.toggleColor()
-    window.collineWidgetBodyandFace.toggleColor()
-    window.hlineWidgetColtoCam.toggleColor()
     window.circle2_2.toggleColor()
 
 def VideoClick(window):
@@ -1133,7 +1121,7 @@ def PlayButtonClick(window):
     window.pipe = AffectPipeline(enable_log_to_console=False,
                       enable_vad_loop=window.MIC_LOOP,
                       enable_ser_loop=False,
-                      enable_stt_loop=False,
+                      enable_stt_loop=window.TRANSCRIPT_LOOP,
                       enable_camera_loop=window.CAMERA_LOOP,
                       enable_print_loop=False, #
                       enable_send_udp_loop=window.UDP,
@@ -1192,6 +1180,14 @@ def PlayButtonClick(window):
         window.audio.setParent(window.bodyContainer)
         window.audio.show()
         window.audio.playButtonClicked()
+    if window.TRANSCRIPT_LOOP:
+        layout = window.bodyContainer.layout()
+        layout.removeWidget(window.rounded3_2)
+        window.rounded3_2.setParent(None)
+        window.transcript = TranscriptWidget(window=window)
+        window.transcript.setParent(window.bodyContainer)
+        window.transcript.show()
+        
     window.pipe.start(window)
 
 def kafkaClick(window):
@@ -1224,8 +1220,6 @@ def udpClick(window):
             window.UDP = True
             turnOn()
     
-    
-
 def connect(window):
     #Upper
     window.circle2_1.clicked.connect(lambda: headphonesClick(window)) 
@@ -1261,3 +1255,4 @@ def connect(window):
 
     window.kafka_button.leftClicked.connect(lambda: kafkaClick(window))
     window.udp_button.leftClicked.connect(lambda: udpClick(window))
+

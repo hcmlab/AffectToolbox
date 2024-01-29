@@ -6,6 +6,7 @@ import modules.QueueSystem as qs
 import threading
 import sounddevice as sd
 from PyQt6.QtWidgets import QVBoxLayout
+from pyqtgraph import mkPen
 
 class PlotWidget(QWidget):
     def __init__(self, parent=None, window=None):
@@ -22,29 +23,42 @@ class PlotWidget(QWidget):
         layout.addWidget(self.plot_widget)
         self.setLayout(layout)
 
-        self.resize(window.column_width, 180)
+        self.resize(window.column_width, 155)
         #self.resize(100, 100)
-        self.move(2*window.column_width + 15, window.column_height_2//20 )
+        self.move(2*window.column_width + 15, 3)
 
         # Erstellen Sie einen Timer, um das Diagramm regelmäßig zu aktualisieren
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_plot)
         self.timer.start(1000)  # Aktualisieren Sie das Diagramm jede Sekunde
 
+        self.audio_data = np.array([])
+
         # Definieren Sie eine Warteschlange, um die Lautstärkewerte zu speichern
         #qs.RMS_VALUES = deque(maxlen=500)
 
     def update_plot(self):
+        # # Erstellen Sie einen Zeitvektor
+        # time = np.arange(len(qs.RMS_VALUES)) / 2.0 #Ser_LOOP_RATE
+        # rms_values_array = np.array(qs.RMS_VALUES)
+
+        # # Plotten Sie die Daten
+        # self.plot_widget.plot(time, rms_values_array, clear=True)
+        # Begrenzen Sie die Audiodaten auf die letzten 5 Sekunden
+        last_5_seconds_audio_data = self.audio_data[-220500:]
+
         # Erstellen Sie einen Zeitvektor
-        time = np.arange(len(qs.RMS_VALUES)) / 2.0 #Ser_LOOP_RATE
-        rms_values_array = np.array(qs.RMS_VALUES)
+        time = np.arange(len(last_5_seconds_audio_data)) / 2.0
+
+        pen = mkPen(color="green")
 
         # Plotten Sie die Daten
-        self.plot_widget.plot(time, rms_values_array, clear=True)
+        self.plot_widget.plot(time, last_5_seconds_audio_data, pen=pen, clear=True)
 
     def audio_callback(self, indata, frames, time, status):
-        volume_norm = np.linalg.norm(indata) * 10
-        qs.RMS_VALUES.append(volume_norm)
+        # volume_norm = np.linalg.norm(indata) * 10
+        # qs.RMS_VALUES.append(volume_norm)
+        self.audio_data = np.append(self.audio_data, indata)
 
     def start_audio_stream(self):
         with sd.InputStream(callback=self.audio_callback):

@@ -96,35 +96,35 @@ def initialize_ui(window):
         window.circle6_8.radius = min(window.circle6_8.width(), window.circle6_8.height()) // 2
         window.circle6_8.setParent(window.bodyContainer)
 
-        window.rounded6_1 = RoundedFrame("pleasure", "#d9d9d9", "black", "20", True)
+        window.rounded6_1 = RoundedFrame("Pleasure", "#d9d9d9", "black", "20", True)
         window.rounded6_1.setFixedSize(100 ,45)
         window.rounded6_1.setParent(window.bodyContainer)
 
-        window.rounded6_2 = RoundedFrame("arousal", "#d9d9d9", "black", "20", True)
+        window.rounded6_2 = RoundedFrame("Arousal", "#d9d9d9", "black", "20", True)
         window.rounded6_2.setFixedSize(100 ,45)
         window.rounded6_2.setParent(window.bodyContainer)
 
-        window.rounded6_3 = RoundedFrame("dominance", "#d9d9d9", "black", "20", True)
+        window.rounded6_3 = RoundedFrame("Dominance", "#d9d9d9", "black", "20", True)
         window.rounded6_3.setFixedSize(100 ,45)
         window.rounded6_3.setParent(window.bodyContainer)
         
-        window.rounded6_4 = RoundedFrame("pleasure", "#d9d9d9", "black", "20", True)
+        window.rounded6_4 = RoundedFrame("Pleasure", "#d9d9d9", "black", "20", True)
         window.rounded6_4.setFixedSize(100 ,45)
         window.rounded6_4.setParent(window.bodyContainer)
 
-        window.rounded6_5 = RoundedFrame("pleasure", "#d9d9d9", "black", "20", True)
+        window.rounded6_5 = RoundedFrame("Pleasure", "#d9d9d9", "black", "20", True)
         window.rounded6_5.setFixedSize(100 ,45)#
         window.rounded6_5.setParent(window.bodyContainer)
 
-        window.rounded6_6 = RoundedFrame("arousal", "#d9d9d9", "black", "20", True)
+        window.rounded6_6 = RoundedFrame("Arousal", "#d9d9d9", "black", "20", True)
         window.rounded6_6.setFixedSize(100 ,45)
         window.rounded6_6.setParent(window.bodyContainer)
 
-        window.rounded6_7 = RoundedFrame("dominance", "#d9d9d9", "black", "20", True)
+        window.rounded6_7 = RoundedFrame("Dominance", "#d9d9d9", "black", "20", True)
         window.rounded6_7.setFixedSize(100 ,45)
         window.rounded6_7.setParent(window.bodyContainer)
 
-        window.rounded6_8 = RoundedFrame("dominance", "#d9d9d9", "black", "20", True)
+        window.rounded6_8 = RoundedFrame("Dominance", "#d9d9d9", "black", "20", True)
         window.rounded6_8.setFixedSize(100 ,45)
         window.rounded6_8.setParent(window.bodyContainer)
 
@@ -182,32 +182,32 @@ def initialize_ui(window):
         window.circle4_3.radius = min(window.circle4_3.width(), window.circle4_3.height()) // 2
         window.circle4_3.setParent(window.bodyContainer)
 
-        window.rounded4_1 = RoundedFrame("voice activity", "#d9d9d9", "black", "20", True)
+        window.rounded4_1 = RoundedFrame("Voice Activity", "#d9d9d9", "black", "20", True)
         window.rounded4_1.setFixedSize(150 ,45)
         window.rounded4_1.setParent(window.bodyContainer)
 
-        window.rounded4_2 = RoundedFrame("face tracking", "#d9d9d9", "black", "20", True)
+        window.rounded4_2 = RoundedFrame("Face Tracking", "#d9d9d9", "black", "20", True)
         window.rounded4_2.setFixedSize(150 ,45)
         window.rounded4_2.setParent(window.bodyContainer)
 
-        window.rounded4_3 = RoundedFrame("body tracking", "#d9d9d9", "black", "20", True)
+        window.rounded4_3 = RoundedFrame("Body Tracking", "#d9d9d9", "black", "20", True)
         window.rounded4_3.setFixedSize(150 ,45)
         window.rounded4_3.setParent(window.bodyContainer)
 
         #Column 3
-        window.rounded3_1 = RoundedFrame("audio", "#d9d9d9", "black", "20", True)
+        window.rounded3_1 = RoundedFrame("Audio", "#d9d9d9", "black", "20", True)
         window.rounded3_1.setFixedSize(150 ,45)
         window.rounded3_1.setParent(window.bodyContainer)
 
-        window.rounded3_2 = RoundedFrame("transcript", "#d9d9d9", "black", "20", True)
+        window.rounded3_2 = RoundedFrame("Transcript", "#d9d9d9", "black", "20", True)
         window.rounded3_2.setFixedSize(150 ,45)
         window.rounded3_2.setParent(window.bodyContainer)
 
-        window.rounded3_3 = RoundedFrame("video", "#d9d9d9", "black", "20", True)
+        window.rounded3_3 = RoundedFrame("Video", "#d9d9d9", "black", "20", True)
         window.rounded3_3.setFixedSize(150 ,45)
         window.rounded3_3.setParent(window.bodyContainer)
 
-        window.rounded3_4 = RoundedFrame("skeleton", "#d9d9d9", "black", "20", True)
+        window.rounded3_4 = RoundedFrame("Skeleton", "#d9d9d9", "black", "20", True)
         window.rounded3_4.setFixedSize(150 ,45)
         window.rounded3_4.setParent(window.bodyContainer)
 
@@ -224,17 +224,17 @@ def initialize_ui(window):
         window.circle2_2.setParent(window.bodyContainer)
 
         #Column 1
-        window.rounded1_1 = RoundedFrame("VOICE", "#f2f2f2", "black", "20", True)
-        window.rounded1_1.setFixedSize(70 ,35)
-        window.rounded1_1.setParent(window.bodyContainer)
+        # window.rounded1_1 = RoundedFrame("VOICE", "#f2f2f2", "black", "20", True)
+        # window.rounded1_1.setFixedSize(70 ,35)
+        # window.rounded1_1.setParent(window.bodyContainer)
 
-        window.rounded1_2 = RoundedFrame("FACE", "#f2f2f2", "black", "20", True)
-        window.rounded1_2.setFixedSize(70 ,35)
-        window.rounded1_2.setParent(window.bodyContainer)
+        # window.rounded1_2 = RoundedFrame("FACE", "#f2f2f2", "black", "20", True)
+        # window.rounded1_2.setFixedSize(70 ,35)
+        # window.rounded1_2.setParent(window.bodyContainer)
 
-        window.rounded1_3 = RoundedFrame("BODY", "#f2f2f2", "black", "20", True)
-        window.rounded1_3.setFixedSize(70 ,35)
-        window.rounded1_3.setParent(window.bodyContainer)
+        # window.rounded1_3 = RoundedFrame("BODY", "#f2f2f2", "black", "20", True)
+        # window.rounded1_3.setFixedSize(70 ,35)
+        # window.rounded1_3.setParent(window.bodyContainer)
 
 
         # Lines from Column 7 to 8
@@ -517,33 +517,33 @@ def initialize_ui(window):
         
         # Lines from 1 to 2
 
-        window.hlineWidgetVoicetoVer = HorLineWidget()
-        window.hlineWidgetVoicetoVer.setFixedSize(3, 3)
-        window.hlineWidgetVoicetoVer.setParent(window.bodyContainer)
+        # window.hlineWidgetVoicetoVer = HorLineWidget()
+        # window.hlineWidgetVoicetoVer.setFixedSize(3, 3)
+        # window.hlineWidgetVoicetoVer.setParent(window.bodyContainer)
 
-        window.verlineWidgetVoicetoHeadset = VerLineWidget()
-        window.verlineWidgetVoicetoHeadset.setFixedSize(3, 3)
-        window.verlineWidgetVoicetoHeadset.setParent(window.bodyContainer)
+        # window.verlineWidgetVoicetoHeadset = VerLineWidget()
+        # window.verlineWidgetVoicetoHeadset.setFixedSize(3, 3)
+        # window.verlineWidgetVoicetoHeadset.setParent(window.bodyContainer)
 
-        window.hlineWidgetVertoHeadset = HorLineWidget()
-        window.hlineWidgetVertoHeadset.setFixedSize(3, 3)
-        window.hlineWidgetVertoHeadset.setParent(window.bodyContainer)
+        # window.hlineWidgetVertoHeadset = HorLineWidget()
+        # window.hlineWidgetVertoHeadset.setFixedSize(3, 3)
+        # window.hlineWidgetVertoHeadset.setParent(window.bodyContainer)
 
-        window.hlineWidgetFacetoCol = HorLineWidget()
-        window.hlineWidgetFacetoCol.setFixedSize(3, 3)
-        window.hlineWidgetFacetoCol.setParent(window.bodyContainer)
+        # window.hlineWidgetFacetoCol = HorLineWidget()
+        # window.hlineWidgetFacetoCol.setFixedSize(3, 3)
+        # window.hlineWidgetFacetoCol.setParent(window.bodyContainer)
 
-        window.hlineWidgetBodytoCol = HorLineWidget()
-        window.hlineWidgetBodytoCol.setFixedSize(3, 3)
-        window.hlineWidgetBodytoCol.setParent(window.bodyContainer)
+        # window.hlineWidgetBodytoCol = HorLineWidget()
+        # window.hlineWidgetBodytoCol.setFixedSize(3, 3)
+        # window.hlineWidgetBodytoCol.setParent(window.bodyContainer)
 
-        window.collineWidgetBodyandFace = VerLineWidget()
-        window.collineWidgetBodyandFace.setFixedSize(3, 3)
-        window.collineWidgetBodyandFace.setParent(window.bodyContainer)
+        # window.collineWidgetBodyandFace = VerLineWidget()
+        # window.collineWidgetBodyandFace.setFixedSize(3, 3)
+        # window.collineWidgetBodyandFace.setParent(window.bodyContainer)
 
-        window.hlineWidgetColtoCam = HorLineWidget()
-        window.hlineWidgetColtoCam.setFixedSize(3, 3)
-        window.hlineWidgetColtoCam.setParent(window.bodyContainer)
+        # window.hlineWidgetColtoCam = HorLineWidget()
+        # window.hlineWidgetColtoCam.setFixedSize(3, 3)
+        # window.hlineWidgetColtoCam.setParent(window.bodyContainer)
 
         #PlayButton
 

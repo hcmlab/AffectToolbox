@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QColor
 from GUI.rounded_frame import RoundedFrame
 from GUI.image_rounded_frame import ImageRoundedFrame
 from GUI.rounded_frame_noclick import RoundedFrameNoClick
@@ -34,7 +35,8 @@ class MainWindow(QMainWindow):
         self.column_height_2 = int(self.screen_height * 0.5)
 
     def createTitleContainer(self):
-        titles = ["MODALITIES", "SENSORS", "DATA STREAMS", "ACTIVITY CHECK", "ANALYSIS", "UNIMODAL RESULTS", "FUSION", "MULTIMODAL RESULTS"]
+        #titles = ["MODALITIES", "SENSORS", "DATA STREAMS", "ACTIVITY CHECK", "ANALYSIS", "UNIMODAL RESULTS", "FUSION", "MULTIMODAL RESULTS"]
+        titles = ["", "SENSORS", "DATA STREAMS", "ACTIVITY CHECK", "ANALYSIS", "UNIMODAL RESULTS", "FUSION", "MULTIMODAL RESULTS"]
         self.frames = [RoundedFrameNoClick(title) for title in titles]
         for frame in self.frames:
             frame.setFixedHeight(int(self.screen_height * 0.05))
@@ -45,9 +47,17 @@ class MainWindow(QMainWindow):
         self.titleLayout.setContentsMargins(5, 0, 5, 0)  # Set the margins 
         self.titleLayout.setSpacing(5)  # Set the spacing between widgets to 5
 
+        # Ersetzen Sie das linke Element durch ein leeres Widget
+        empty_widget = QWidget()
+        empty_widget.setFixedWidth(int(self.screen_width // 8) - 5)
+        self.titleLayout.addWidget(empty_widget)
+
         # Add the titles to the layout
-        for frame in self.frames:
+        for frame in self.frames[1:]:
             self.titleLayout.addWidget(frame)
+        # # Add the titles to the layout
+        # for frame in self.frames:
+        #     self.titleLayout.addWidget(frame)
 
         self.titleContainer.setLayout(self.titleLayout)
 
@@ -61,7 +71,11 @@ class MainWindow(QMainWindow):
         # Add the RoundedFrame widgets to the second layout
         for i in range(8):
             if(i == 0):
-                frame = ImageRoundedFrame(color="#bdd7ee", image_path="./GUI/Icons/personIcon.svg")
+                self.frame = ImageRoundedFrame(color="#f0f0f0", image_path="./GUI/Icons/logo2.png")
+                #frame = ImageRoundedFrame(color="#bdd7ee", image_path="./GUI/Icons/personIcon.svg")
+                self.secondLayout.addWidget(self.frame)
+                self.secondLayout.setAlignment(self.frame, Qt.AlignmentFlag.AlignTop)
+                continue
             else: 
                 frame = RoundedFrameNoClick(color="#bdd7ee")
             if (i <= 4):
