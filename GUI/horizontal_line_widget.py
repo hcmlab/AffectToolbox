@@ -6,7 +6,7 @@ class HorLineWidget(QWidget):
     def __init__(self, parent=None):
         super(HorLineWidget, self).__init__(parent)
         self.setMinimumHeight(3)  # Set a minimum height for the widget
-        self.color = QColor("black")
+        self.color = QColor("grey")
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -20,8 +20,8 @@ class HorLineWidget(QWidget):
     #     self.update()
 
     def toggleColor(self):
-        if self.color == QColor("black"):
+        if self.color == QColor("grey"):
             self.color = QColor("green")
         elif self.color == QColor("green"):
-            self.color = QColor("black")
+            self.color = QColor("grey")
         self.update()

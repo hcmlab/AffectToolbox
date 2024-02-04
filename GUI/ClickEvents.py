@@ -1128,7 +1128,7 @@ def PlayButtonClick(window):
                       enable_send_kafka_loop=window.KAFKA,
                       enable_face_er_loop= False, #
                       enable_face_mesh_loop=False,
-                      enable_pose_loop=False,
+                      enable_pose_loop=window.SKELETON_LOOP,
                       enable_fusion_loop=False,
                       enable_sentiment_loop=False,
                       show_face_mesh=False,
@@ -1169,6 +1169,8 @@ def PlayButtonClick(window):
         window.image = ImageWindow(window=window)
         window.image.setParent(window.bodyContainer)
         window.image.show()
+        # window.image.resize(window.column_width, 180)
+        # window.image.move(2*window.column_width + 15, window.column_height_2//2 + 90)
     if window.MIC_LOOP:
         # window.test = PlotWindow()
         # window.test.playButtonClicked()
@@ -1187,6 +1189,15 @@ def PlayButtonClick(window):
         window.transcript = TranscriptWidget(window=window)
         window.transcript.setParent(window.bodyContainer)
         window.transcript.show()
+    if window.SKELETON_LOOP:
+        layout = window.bodyContainer.layout()
+        layout.removeWidget(window.rounded3_4)
+        window.rounded3_4.setParent(None)
+        window.skeleton = ImageWindow(window=window, name="Skeleton")
+        window.skeleton.setParent(window.bodyContainer)
+        window.skeleton.show()
+        # window.image.resize(window.column_width, 180)
+        # window.image.move(2*window.column_width + 15, window.column_height_2//4 * 3)
         
     window.pipe.start(window)
 

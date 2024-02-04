@@ -6,7 +6,7 @@ class VerLineWidget(QWidget):
     def __init__(self, parent=None):
         super(VerLineWidget, self).__init__(parent)
         self.setMinimumSize(1, 1)  # Set a minimum size for the widget
-        self.color = QColor("black")
+        self.color = QColor("grey")
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -19,8 +19,8 @@ class VerLineWidget(QWidget):
     #     self.update()
         
     def toggleColor(self):
-        if self.color == QColor("black"):
+        if self.color == QColor("grey"):
             self.color = QColor("green")
         elif self.color == QColor("green"):
-            self.color = QColor("black")
+            self.color = QColor("grey")
         self.update()

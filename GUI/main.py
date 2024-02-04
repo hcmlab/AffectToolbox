@@ -19,6 +19,7 @@ class MainWindow(QMainWindow):
         initVariables(self)
         connect(self)
         Rightconnect(self)
+        self.setStyleSheet("background-color: black;")
         
     def eventFilter(self, source, event):
         return handleEventFilter(self, source, event)
@@ -64,6 +65,7 @@ class MainWindow(QMainWindow):
     def createBodyContainer(self):
         # Create a second container for the RoundedFrame widgets
         self.bodyContainer = QWidget()
+        # self.bodyContainer.setStyleSheet("background-color: black;")
         self.secondLayout = QHBoxLayout()
         self.secondLayout.setContentsMargins(5, 0, 5, 5)  # Set the margins 
         self.secondLayout.setSpacing(5)  # Set the spacing between widgets to 5
@@ -71,8 +73,9 @@ class MainWindow(QMainWindow):
         # Add the RoundedFrame widgets to the second layout
         for i in range(8):
             if(i == 0):
-                self.frame = ImageRoundedFrame(color="#f0f0f0", image_path="./GUI/Icons/logo2.png")
-                #frame = ImageRoundedFrame(color="#bdd7ee", image_path="./GUI/Icons/personIcon.svg")
+                self.frame = ImageRoundedFrame(color="black", image_path="./GUI/Icons/logo2.png")
+                #self.frame = ImageRoundedFrame(color="#f0f0f0", image_path="./GUI/Icons/logo2.png")
+                # frame = ImageRoundedFrame(color="#bdd7ee", image_path="./GUI/Icons/personIcon.svg")
                 self.secondLayout.addWidget(self.frame)
                 self.secondLayout.setAlignment(self.frame, Qt.AlignmentFlag.AlignTop)
                 continue

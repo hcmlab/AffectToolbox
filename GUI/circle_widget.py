@@ -13,7 +13,7 @@ class CircleWidget(QWidget):
         self.color = QColor(color)
         self.baseColor = self.color
         self.setMinimumSize(100, 100)  # Set a minimum size for the widget
-
+        self.setStyleSheet("background-color: transparent;")  # Set the background color to transparent
         self.layout = QVBoxLayout(self)
         self.label = QLabel(label, self)
         self.label.setFont(QFont('Arial', font_size))

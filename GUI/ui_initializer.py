@@ -550,22 +550,27 @@ def initialize_ui(window):
         window.play_button = QPushButton("Start")
         window.play_button.setFixedSize(100, 50)
         window.play_button.setParent(window.bodyContainer)
+        window.play_button.setStyleSheet("background-color: #f0f0f0;")
 
         window.stop_button = QPushButton("Stop")
         window.stop_button.setFixedSize(100, 50)
         window.stop_button.setParent(window.bodyContainer)
+        window.stop_button.setStyleSheet("background-color: #f0f0f0;")
 
         window.kafka_button = MyButton("Kafka")
         window.kafka_button.setFixedSize(100, 50)
         window.kafka_button.setParent(window.bodyContainer)
+        window.kafka_button.setStyleSheet("background-color: #f0f0f0;")
 
         window.udp_button = MyButton("UDP")
         window.udp_button.setFixedSize(100, 50)
         window.udp_button.setParent(window.bodyContainer)
+        window.udp_button.setStyleSheet("background-color: #f0f0f0;")
 
         window.console = ConsoleOutput()
         window.console.setFixedSize(300, 200)
         window.console.setParent(window.bodyContainer)
+        
 
         # Create the layout
         window.createLayout()

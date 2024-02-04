@@ -29,10 +29,6 @@ def test2(window, event):
 
 def InitSettingVideo(window, name=""):
     window.rightClickWindow = RightClickWindow(window=window, name=name)
-    # global_position = event.globalPosition().toPoint()
-    # global_position.setX(int(event.globalPosition().x()))  # X-Position from the event
-    # global_position.setY(int(window.rounded3_3.y() + 0.5*window.rounded3_2.height()))
-    # window.rightClickWindow.move(global_position)
     window.rightClickWindow.setWindowTitle(f"{name} Settings")
     window.rightClickWindow.show()
 

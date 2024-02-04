@@ -5,8 +5,7 @@ class ConsoleOutput(QTextEdit):
     def __init__(self, parent=None):
         super().__init__(parent)
         sys.stdout = self
-        #sys.stderr = self
-
+        self.setStyleSheet("background-color: #f0f0f0;")
     def write(self, text):
         self.insertPlainText(text)
 
