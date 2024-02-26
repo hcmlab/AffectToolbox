@@ -1,0 +1,16 @@
+{
+	"kafka": { "IP": "127.0.0.2", "PORT": 9092, "TOPIC": "mithos" },
+	"udp": { "IP": "127.0.0.1", "PORT": 5006 },
+	"loop_rates": {
+		"SER_LOOP_RATE": 1.0,
+		"STT_LOOP_RATE": 0.2,
+		"SENTIMENT_LOOP_RATE": 1.0,
+		"VAD_LOOP_RATE": 4.0,
+		"ER_LOOP_RATE": 2.0,
+		"POSE_LOOP_RATE": 4.0,
+		"SEND_LOOP_RATE": 2.0,
+		"CAMERA_LOOP_RATE": 4.0,
+		"FACE_MESH_RATE": 4.0,
+		"SAMPLE_RATE": 16000
+	}
+}

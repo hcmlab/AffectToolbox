@@ -1,7 +1,5 @@
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QColor
-from GUI.rounded_frame import RoundedFrame
 from GUI.image_rounded_frame import ImageRoundedFrame
 from GUI.rounded_frame_noclick import RoundedFrameNoClick
 from GUI.Eventfilter import handleEventFilter
@@ -19,6 +17,7 @@ class MainWindow(QMainWindow):
         initVariables(self)
         connect(self)
         Rightconnect(self)
+        # self.setStyleSheet("background-color: #606060;")
         self.setStyleSheet("background-color: black;")
         
     def eventFilter(self, source, event):
@@ -36,7 +35,6 @@ class MainWindow(QMainWindow):
         self.column_height_2 = int(self.screen_height * 0.5)
 
     def createTitleContainer(self):
-        #titles = ["MODALITIES", "SENSORS", "DATA STREAMS", "ACTIVITY CHECK", "ANALYSIS", "UNIMODAL RESULTS", "FUSION", "MULTIMODAL RESULTS"]
         titles = ["", "SENSORS", "DATA STREAMS", "ACTIVITY CHECK", "ANALYSIS", "UNIMODAL RESULTS", "FUSION", "MULTIMODAL RESULTS"]
         self.frames = [RoundedFrameNoClick(title) for title in titles]
         for frame in self.frames:
@@ -56,16 +54,12 @@ class MainWindow(QMainWindow):
         # Add the titles to the layout
         for frame in self.frames[1:]:
             self.titleLayout.addWidget(frame)
-        # # Add the titles to the layout
-        # for frame in self.frames:
-        #     self.titleLayout.addWidget(frame)
 
         self.titleContainer.setLayout(self.titleLayout)
 
     def createBodyContainer(self):
         # Create a second container for the RoundedFrame widgets
         self.bodyContainer = QWidget()
-        # self.bodyContainer.setStyleSheet("background-color: black;")
         self.secondLayout = QHBoxLayout()
         self.secondLayout.setContentsMargins(5, 0, 5, 5)  # Set the margins 
         self.secondLayout.setSpacing(5)  # Set the spacing between widgets to 5
@@ -74,8 +68,8 @@ class MainWindow(QMainWindow):
         for i in range(8):
             if(i == 0):
                 self.frame = ImageRoundedFrame(color="black", image_path="./GUI/Icons/logo2.png")
+                # self.frame = ImageRoundedFrame(color="#606060", image_path="./GUI/Icons/logo2.png")
                 #self.frame = ImageRoundedFrame(color="#f0f0f0", image_path="./GUI/Icons/logo2.png")
-                # frame = ImageRoundedFrame(color="#bdd7ee", image_path="./GUI/Icons/personIcon.svg")
                 self.secondLayout.addWidget(self.frame)
                 self.secondLayout.setAlignment(self.frame, Qt.AlignmentFlag.AlignTop)
                 continue

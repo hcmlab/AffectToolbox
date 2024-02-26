@@ -2,6 +2,8 @@ from PyQt6.QtWidgets import QMainWindow, QWidget
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QVBoxLayout
 from PyQt6.QtWidgets import QDoubleSpinBox, QLabel, QSpacerItem, QSizePolicy, QLineEdit, QSpinBox
+from numpy import double
+from GUI.variables import changeValues
 
 class RightClickWindow(QMainWindow):
     def __init__(self, parent=None, window=None, name=""):
@@ -18,29 +20,52 @@ class RightClickWindow(QMainWindow):
 
         # Create a QSpinBox
         if name == "Camera":
-            self.AddDoubleSpinBox(baseValue=window.CAMERA_LOOP_RATE, name="Camera")
+            self.CameraLoopRate = None
+            self.CameraLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.CameraLoopRate, Labelinstance=self.CameraLoopRateLabel ,baseValue=window.CAMERA_LOOP_RATE, name="Camera", variableName="CAMERA_LOOP_RATE")
         elif name == "Kafka":
             self.AddIp(baseValue=window.KAFKA_IP, name="KAFKA")
             self.AddPort(baseValue=window.KAFKA_PORT, name="KAFKA")
             self.AddTopic(baseValue=window.KAFKA_TOPIC, name="KAFKA")
-            self.AddDoubleSpinBox(baseValue=window.SEND_LOOP_RATE, name="KAFKA")
+            self.kafkaSendLoopRate = None
+            self.kafkaSendLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.kafkaSendLoopRate, Labelinstance=self.kafkaSendLoopRateLabel,baseValue=window.SEND_LOOP_RATE, name="KAFKA", variableName="SEND_LOOP_RATE")
         elif name == "UDP":
             self.AddIp(baseValue=window.UDP_IP, name="UDP")
             self.AddPort(baseValue=window.UDP_PORT, name="UDP")
-            self.AddDoubleSpinBox(baseValue=window.SEND_LOOP_RATE, name="UDP")
+            self.udpSendLoopRate = None
+            self.udpSendLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.udpSendLoopRate, Labelinstance=self.udpSendLoopRateLabel ,baseValue=window.SEND_LOOP_RATE, name="UDP", variableName="SEND_LOOP_RATE")
         elif name == "Sentiment":
-            self.AddDoubleSpinBox(baseValue=window.SENTIMENT_LOOP_RATE, name="Sentiment")
+            self.SentimentLoopRate = None
+            self.SentimentLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.SentimentLoopRate, Labelinstance=self.SentimentLoopRateLabel ,baseValue=window.SENTIMENT_LOOP_RATE, name="Sentiment", variableName="SENTIMENT_LOOP_RATE")
         elif name == "Audio":
-            self.AddDoubleSpinBox(baseValue=window.VAD_LOOP_RATE, name="Audio")
+            self.VADLoopRate = None
+            self.VADLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.VADLoopRate, Labelinstance=self.VADLoopRateLabel ,baseValue=window.VAD_LOOP_RATE, name="Audio", variableName="VAD_LOOP_RATE")
+            self.SERLoopRate = None
+            self.SERLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.SERLoopRate, Labelinstance=self.SERLoopRateLabel ,baseValue=window.SER_LOOP_RATE, name="Audio", variableName="SER_LOOP_RATE")
             self.AddSpinBox(baseValue=window.SAMPLE_RATE, name="Audio")
         elif name == "Pose":
-            self.AddDoubleSpinBox(baseValue=window.POSE_LOOP_RATE, name="Pose")
+            self.PoseLoopRate = None
+            self.PoseLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.PoseLoopRate, Labelinstance=self.PoseLoopRateLabel ,baseValue=window.POSE_LOOP_RATE, name="Pose", variableName="POSE_LOOP_RATE")
         elif name == "FaceTracking":
-            self.AddDoubleSpinBox(baseValue=window.FACE_MESH_RATE, name="FaceTracking")
+            self.FaceMeshLoopRate = None
+            self.FaceMeshLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FaceMeshLoopRate, Labelinstance=self.FaceMeshLoopRateLabel,baseValue=window.FACE_MESH_RATE, name="FaceTracking", variableName="FACE_MESH_RATE")
         elif name == "FacialExpression":
-            self.AddDoubleSpinBox(baseValue=window.ER_LOOP_RATE, name="FacialExpression")
+            self.ERLoopRate = None
+            self.ERLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.ERLoopRate, Labelinstance=self.ERLoopRateLabel ,baseValue=window.ER_LOOP_RATE, name="FacialExpression", variableName="ER_LOOP_RATE")
         elif name == "Transcript":
-            self.AddDoubleSpinBox(baseValue=window.STT_LOOP_RATE, name="Transcript")
+            self.STTLoopRate = None
+            self.STTLoopRateLabel = None
+            self.AddDoubleSpinBox( SpinBoxinstance=self.STTLoopRate, Labelinstance=self.STTLoopRateLabel ,baseValue=window.STT_LOOP_RATE, name="Transcript", variableName="STT_LOOP_RATE")
+
+# Instanz erstellen und dann als variable übergeben und in dem aufruf dann variable mit richtiger instanz füllen
 
 
         # Erstellen Sie ein QSpacerItem
@@ -55,47 +80,69 @@ class RightClickWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
         # Connect the valueChanged signal to a slot
-        #self.spinBox.valueChanged.connect(self.on_value_changed)
         self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
     
     def on_double_value_changed(self, value, name=""):
         # This method will be called whenever the value of the spinBox is changed
         value = round(value, 1)
-        if name == "Camera":
+        if name == "CAMERA_LOOP_RATE":
             self.window.CAMERA_LOOP_RATE = value
-        elif name == "Sentiment":
+            changeValues(camera_loop_rate=value)
+        elif name == "SENTIMENT_LOOP_RATE":
             self.window.SENTIMENT_LOOP_RATE = value
-        elif name == "Audio":
+            changeValues(sentiment_loop_rate=value)
+        elif name == "VAD_LOOP_RATE":
             self.window.VAD_LOOP_RATE = value
-        elif name == "Pose":
+            changeValues(vad_loop_rate=value)
+        elif name == "SER_LOOP_RATE":
+            self.window.SER_LOOP_RATE = value
+            changeValues(ser_loop_rate=value)
+        elif name == "POSE_LOOP_RAT":
             self.window.POSE_LOOP_RATE = value
-        elif name == "FaceTracking":
+            changeValues(pose_loop_rate=value)
+        elif name == "FACE_MESH_RATE":
             self.window.FACE_MESH_RATE = value
-        elif name == "FacialExpression":
+            changeValues(face_mesh_rate=value)
+        elif name == "ER_LOOP_RATE":
             self.window.ER_LOOP_RATE = value
-        elif name == "Transcript":
+            changeValues(er_loop_rate=value)
+        elif name == "STT_LOOP_RATE":
             self.window.STT_LOOP_RATE = value
-        elif name == "KAFKA":
+            changeValues(stt_loop_rate=value)
+        elif name == "SEND_LOOP_RATE":
             self.window.SEND_LOOP_RATE = value
-        elif name == "UDP":
-            self.window.SEND_LOOP_RATE = value
-        #print(f"The {name}-Loop-Rate has been changed to {value}")
+            changeValues(send_loop_rate=value)
+        
+        print(f"The {name}-Loop-Rate has been changed to {value}")
 
-    def AddDoubleSpinBox(self, baseValue=0.0, name=""):
-        self.doublespinBoxLabel = QLabel(f"{name} Loop Rate:")
-        self.doublespinBoxLabel.setFixedSize(300, 20)
-        self.doublespinBox = QDoubleSpinBox()
-        self.doublespinBox.setFixedSize(300, 20)
-        self.layout.addWidget(self.doublespinBoxLabel)
-        self.layout.addWidget(self.doublespinBox)
-        self.doublespinBox.setValue(baseValue)
-        self.doublespinBox.setSingleStep(0.1)
-        self.doublespinBox.valueChanged.connect(lambda value: self.on_value_changed(value=value, name=name))
+    def AddDoubleSpinBox(self, SpinBoxinstance, Labelinstance, baseValue=0.0, name="", variableName=""):
+        Labelinstance = QLabel(f"{variableName}:")
+        Labelinstance.setFixedSize(300, 20)
+        SpinBoxinstance = QDoubleSpinBox()
+        SpinBoxinstance.setFixedSize(300, 20)
+        self.layout.addWidget(Labelinstance)
+        self.layout.addWidget(SpinBoxinstance)
+        SpinBoxinstance.setValue(baseValue)
+        SpinBoxinstance.setSingleStep(0.1)
+        SpinBoxinstance.valueChanged.connect(lambda value: self.on_double_value_changed(value=value, name=variableName))
+        
+
+    #def AddDoubleSpinBox(self, baseValue=0.0, name=""):
+        # self.doublespinBoxLabel = QLabel(f"{name} Loop Rate:")
+        # self.doublespinBoxLabel.setFixedSize(300, 20)
+        # self.doublespinBox = QDoubleSpinBox()
+        # self.doublespinBox.setFixedSize(300, 20)
+        # self.layout.addWidget(self.doublespinBoxLabel)
+        # self.layout.addWidget(self.doublespinBox)
+        # self.doublespinBox.setValue(baseValue)
+        # self.doublespinBox.setSingleStep(0.1)
+        # self.doublespinBox.valueChanged.connect(lambda value: self.on_double_value_changed(value=value, name=name))
 
     def on_value_changed(self, value, name=""):
         if name == "Audio":
             self.window.SAMPLE_RATE = value
-        #print(f"The {name}-Loop-Rate has been changed to {value}")
+            changeValues(sample_rate=value)
+        print(f"The {name}-Loop-Rate has been changed to {value}")
 
     def AddSpinBox(self, baseValue=0, name=""):
         self.spinBoxLabel = QLabel(f"{name} Sample Rate:")
@@ -107,7 +154,7 @@ class RightClickWindow(QMainWindow):
         self.spinBox.setMaximum(48000)
         self.spinBox.setValue(baseValue)
         self.spinBox.setSingleStep(1000)
-        self.spinBox.valueChanged.connect(lambda value: self.on_double_value_changed(value=value, name=name))
+        self.spinBox.valueChanged.connect(lambda value: self.on_value_changed(value=value, name=name))
 
     def AddIp(self, baseValue='0.0.0.0', name=""):
         self.ipLabel = QLabel(f"{name}-IP Address:")
@@ -123,8 +170,10 @@ class RightClickWindow(QMainWindow):
         # Diese Methode wird aufgerufen, wenn der Text im QLineEdit geändert wird
         if name == "UDP":
             self.window.UDP_IP = text
+            changeValues(udpIP=text)
         if name == "KAFKA":
             self.window.KAFKA_IP = text
+            changeValues(kafkaIP=text)
         #print(f"The IP address has been changed to {text}")
 
     def AddPort(self, baseValue=3000, name=""):
@@ -141,8 +190,10 @@ class RightClickWindow(QMainWindow):
         # Diese Methode wird aufgerufen, wenn der Text im QLineEdit geändert wird
         if name == "UDP":
             self.window.UDP_PORT = int(value)
+            changeValues(udpPort=int(value))
         if name == "KAFKA":
             self.window.KAFKA_PORT = int(value)
+            changeValues(kafkaPort=int(value))
         #print(f"The {name}-Port has been changed to {value}")
 
     def AddTopic(self, baseValue='mithos', name=""):
@@ -159,6 +210,7 @@ class RightClickWindow(QMainWindow):
         # Diese Methode wird aufgerufen, wenn der Text im QLineEdit geändert wird
         if name == "KAFKA":
             self.window.KAFKA_TOPIC = value
+            changeValues(kafkaTopic=value)
         #print(f"The {name}-Topic has been changed to {value}")
             
         

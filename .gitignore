@@ -6,3 +6,4 @@ pyvenv.cfg
 Scripts
 share
 Testing
+.vscode

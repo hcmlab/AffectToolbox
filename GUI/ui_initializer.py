@@ -2,8 +2,6 @@ from GUI.circle_widget import CircleWidget
 from GUI.rounded_frame import RoundedFrame
 from GUI.horizontal_line_widget import HorLineWidget
 from GUI.vertical_line_widget import VerLineWidget
-from GUI.Image_window import ImageWindow
-from GUI.RightClickWidget import RightClickWidget
 from PyQt6.QtWidgets import QPushButton
 from GUI.Consoleoutput import ConsoleOutput
 from GUI.MyButton import MyButton
@@ -223,24 +221,8 @@ def initialize_ui(window):
         window.circle2_2.radius = min(window.circle2_2.width(), window.circle2_2.height()) // 2
         window.circle2_2.setParent(window.bodyContainer)
 
-        #Column 1
-        # window.rounded1_1 = RoundedFrame("VOICE", "#f2f2f2", "black", "20", True)
-        # window.rounded1_1.setFixedSize(70 ,35)
-        # window.rounded1_1.setParent(window.bodyContainer)
-
-        # window.rounded1_2 = RoundedFrame("FACE", "#f2f2f2", "black", "20", True)
-        # window.rounded1_2.setFixedSize(70 ,35)
-        # window.rounded1_2.setParent(window.bodyContainer)
-
-        # window.rounded1_3 = RoundedFrame("BODY", "#f2f2f2", "black", "20", True)
-        # window.rounded1_3.setFixedSize(70 ,35)
-        # window.rounded1_3.setParent(window.bodyContainer)
-
-
         # Lines from Column 7 to 8
         window.hlineWidgetFtoA1 = HorLineWidget()
-        # hlineFtoA_length = int(((window.column_width + 5) - window.circle7outer.radius - window.circle8_2.radius)- (0.5 * window.rounded7.width() - window.circle7outer.radius))
-        # window.hlineWidgetFtoA.setFixedSize(hlineFtoA_length + 1, 1000)
         window.hlineWidgetFtoA1.setFixedSize(3, 3)
         window.hlineWidgetFtoA1.setParent(window.bodyContainer)
 
@@ -249,34 +231,22 @@ def initialize_ui(window):
         window.hlineWidgetFtoA2.setParent(window.bodyContainer)
 
         window.vlineWidgetFtoP = VerLineWidget()
-        # vlineFtoP_length = (window.column_height_light // 2) - ((window.column_height_light - window.circle8_1.height()) // 2 - int(window.circle8_1.height() *1.5) + window.circle8_1.height()//2)
-        # window.vlineWidgetFtoP.setFixedSize(3, vlineFtoP_length)
         window.vlineWidgetFtoP.setFixedSize(3, 3)
         window.vlineWidgetFtoP.setParent(window.bodyContainer)
 
         window.hlineWidgetFtoP = HorLineWidget()
-        # hlineFtoP_length = int(((window.column_width + 5) // 2) - window.circle8_1.radius)
-        # window.hlineWidgetFtoP.setFixedSize(hlineFtoP_length + 1 , 3)
         window.hlineWidgetFtoP.setFixedSize(3, 3)
         window.hlineWidgetFtoP.setParent(window.bodyContainer)
 
         window.vlineWidgetFtoD = VerLineWidget()
-        # vlineFtoD_length = abs(window.column_height_light//2 - ((window.column_height_light - window.circle8_3.height()) // 2  + int(window.circle8_3.height() *1.5) + window.circle8_3.height()//2 ))
-        # window.vlineWidgetFtoD.setFixedSize(3, vlineFtoD_length + 4)
         window.vlineWidgetFtoD.setFixedSize(3, 3)
         window.vlineWidgetFtoD.setParent(window.bodyContainer)
 
         window.hlineWidgetFtoD = HorLineWidget()
-        # hlineFtoD_length = int(((window.column_width + 5) // 2) - window.circle8_3.radius)
-        # window.hlineWidgetFtoD.setFixedSize(hlineFtoD_length + 1 , 3)
         window.hlineWidgetFtoD.setFixedSize(3, 3)
         window.hlineWidgetFtoD.setParent(window.bodyContainer)
 
         # Lines from column 6 to 7
-
-        # window.collectorLine6to7 = VerLineWidget()
-        # window.collectorLine6to7.setFixedSize(3, 3)
-        # window.collectorLine6to7.setParent(window.bodyContainer)
 
         window.collectorLine6to7_1 = VerLineWidget()
         window.collectorLine6to7_1.setFixedSize(3, 3)
@@ -429,6 +399,7 @@ def initialize_ui(window):
         window.hlineWidgetVertoD.setParent(window.bodyContainer)
 
         #Lines from 3 to 4 and 5
+        
         window.hlineWidgetAudiotoPara1 = HorLineWidget()
         window.hlineWidgetAudiotoPara1.setFixedSize(3, 3)
         window.hlineWidgetAudiotoPara1.setParent(window.bodyContainer)
@@ -515,36 +486,6 @@ def initialize_ui(window):
         window.hlineWidgetVertoVideo.setFixedSize(3, 3)
         window.hlineWidgetVertoVideo.setParent(window.bodyContainer)
         
-        # Lines from 1 to 2
-
-        # window.hlineWidgetVoicetoVer = HorLineWidget()
-        # window.hlineWidgetVoicetoVer.setFixedSize(3, 3)
-        # window.hlineWidgetVoicetoVer.setParent(window.bodyContainer)
-
-        # window.verlineWidgetVoicetoHeadset = VerLineWidget()
-        # window.verlineWidgetVoicetoHeadset.setFixedSize(3, 3)
-        # window.verlineWidgetVoicetoHeadset.setParent(window.bodyContainer)
-
-        # window.hlineWidgetVertoHeadset = HorLineWidget()
-        # window.hlineWidgetVertoHeadset.setFixedSize(3, 3)
-        # window.hlineWidgetVertoHeadset.setParent(window.bodyContainer)
-
-        # window.hlineWidgetFacetoCol = HorLineWidget()
-        # window.hlineWidgetFacetoCol.setFixedSize(3, 3)
-        # window.hlineWidgetFacetoCol.setParent(window.bodyContainer)
-
-        # window.hlineWidgetBodytoCol = HorLineWidget()
-        # window.hlineWidgetBodytoCol.setFixedSize(3, 3)
-        # window.hlineWidgetBodytoCol.setParent(window.bodyContainer)
-
-        # window.collineWidgetBodyandFace = VerLineWidget()
-        # window.collineWidgetBodyandFace.setFixedSize(3, 3)
-        # window.collineWidgetBodyandFace.setParent(window.bodyContainer)
-
-        # window.hlineWidgetColtoCam = HorLineWidget()
-        # window.hlineWidgetColtoCam.setFixedSize(3, 3)
-        # window.hlineWidgetColtoCam.setParent(window.bodyContainer)
-
         #PlayButton
 
         window.play_button = QPushButton("Start")
@@ -571,7 +512,6 @@ def initialize_ui(window):
         window.console.setFixedSize(300, 200)
         window.console.setParent(window.bodyContainer)
         
-
         # Create the layout
         window.createLayout()
 

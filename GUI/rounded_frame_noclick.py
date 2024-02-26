@@ -1,4 +1,3 @@
-from PyQt6 import QtGui
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QFrame, QLabel
 from PyQt6.QtCore import Qt

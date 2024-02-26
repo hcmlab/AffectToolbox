@@ -6,7 +6,8 @@ class VerLineWidget(QWidget):
     def __init__(self, parent=None):
         super(VerLineWidget, self).__init__(parent)
         self.setMinimumSize(1, 1)  # Set a minimum size for the widget
-        self.color = QColor("grey")
+        # self.color = QColor("grey")
+        self.color = QColor("#EFEEEE")
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -14,13 +15,10 @@ class VerLineWidget(QWidget):
         painter.setPen(pen)  # Set the pen
         painter.drawLine(self.width() // 2, 0, self.width() // 2, self.height())
 
-    # def mousePressEvent(self, event) -> None:
-    #     self.toggleColor()
-    #     self.update()
-        
+  
     def toggleColor(self):
-        if self.color == QColor("grey"):
+        if self.color == QColor("#EFEEEE"):
             self.color = QColor("green")
         elif self.color == QColor("green"):
-            self.color = QColor("grey")
+            self.color = QColor("#EFEEEE")
         self.update()

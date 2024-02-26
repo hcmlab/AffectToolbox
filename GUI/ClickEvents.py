@@ -1,9 +1,6 @@
-from modules.AffectPipeline import AffectPipeline, DeviceManager
+from modules.AffectPipeline import AffectPipeline
 from GUI.Image_window import ImageWindow
-from GUI.rounded_frame import RoundedFrame
 from GUI.AudioWidget import PlotWidget
-from time import sleep
-from PyQt6.QtGui import QColor
 from GUI.TranscriptWidget import TranscriptWidget
 
 #Top Half
@@ -33,7 +30,6 @@ def AudioClick(window):
             TranscriptClick(window)
         window.rounded3_1.toggleColor()
         window.hlineWidgetHeadsettoAudio.toggleColor()
-        #Check nachfolger
 
     def turnOn():
         window.rounded3_1.toggleColor()
@@ -47,8 +43,6 @@ def AudioClick(window):
     else:
         window.MIC_LOOP = True
         turnOn()
-
-    
 
 def VoiceActivityClick(window):
     def turnOff():
@@ -83,7 +77,6 @@ def VoiceActivityClick(window):
     else:
         window.VOICE_ACTIVITY_LOOP = True
         turnOn()
-    #Rest
 
 def ParaClick(window):
     def turnOff():
@@ -122,7 +115,6 @@ def ParaClick(window):
     else:
         window.PARA_LOOP = True
         turnOn()
-    #Rest
 
 def ParaPleasureClick(window):
     def turnOff():
@@ -354,12 +346,6 @@ def TranscriptClick(window):
             AudioClick(window)
         window.rounded3_2.toggleColor()
         window.verlineWidgetAudioToTra.toggleColor()
-        # window.test2 = RoundedFrame("Test2", "#d9d9d9", "green", "20", True)
-        # window.test2.setFixedSize(100, 100)
-        # window.test2.setParent(window.bodyContainer)
-        # window.test2.move(100, 100)
-        # window.test2.show()
-        # print("Added")
 
     def turnOff():
         if window.SENTIMENT_LOOP:
@@ -381,8 +367,6 @@ def SentimentClick(window):
             SentimentPleasureClick(window)
 
         window.circle5_2_inner.toggleColor()
-        # if not window.TRANSCRIPT_LOOP:
-        #     TranscriptClick(window)
         window.hlinewidgetTratoSen.toggleColor()
     
     def turnOn():
@@ -1266,4 +1250,3 @@ def connect(window):
 
     window.kafka_button.leftClicked.connect(lambda: kafkaClick(window))
     window.udp_button.leftClicked.connect(lambda: udpClick(window))
-

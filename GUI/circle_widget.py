@@ -49,6 +49,4 @@ class CircleWidget(QWidget):
             self.color = self.baseColor
         self.update()
 
-    # def resizeEvent(self, event):
-    #     self.radius = min(self.width(), self.height()) // 2  # Update the radius
         
