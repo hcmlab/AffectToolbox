@@ -62,8 +62,11 @@ def initVariables(window=None):
         window.CAMERA_LOOP_RATE = data["loop_rates"]["CAMERA_LOOP_RATE"] #4.0  #Camera
         window.FACE_MESH_RATE = data["loop_rates"]["FACE_MESH_RATE"] #4.0 #Face Tracking
         window.SAMPLE_RATE = data["loop_rates"]["SAMPLE_RATE"] #16000  #Audio Sample Rate
+        
+        window.CAM_ID = data["cam_id"] 
+        window.MIC_ID = data["mic_id"]
 
-def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpPort=None, ser_loop_rate=None, stt_loop_rate=None, sentiment_loop_rate=None, vad_loop_rate=None, er_loop_rate=None, pose_loop_rate=None, send_loop_rate=None, camera_loop_rate=None, face_mesh_rate=None, sample_rate=None):
+def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpPort=None, ser_loop_rate=None, stt_loop_rate=None, sentiment_loop_rate=None, vad_loop_rate=None, er_loop_rate=None, pose_loop_rate=None, send_loop_rate=None, camera_loop_rate=None, face_mesh_rate=None, sample_rate=None, cam_id=None, mic_id=None):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(current_dir, '../config.json')
     with open(config_path, 'r+') as file:
@@ -98,6 +101,10 @@ def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpP
             data["loop_rates"]["FACE_MESH_RATE"] = face_mesh_rate
         if sample_rate is not None:
             data["loop_rates"]["SAMPLE_RATE"] = sample_rate
+        if cam_id is not None:
+            data["cam_id"] = cam_id
+        if mic_id is not None:
+            data["mic_id"] = mic_id
         file.seek(0)
         json.dump(data, file)
         file.truncate()

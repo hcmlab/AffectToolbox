@@ -1,7 +1,9 @@
+from GUI.floatWidget import floatWidget
 from modules.AffectPipeline import AffectPipeline
 from GUI.Image_window import ImageWindow
 from GUI.AudioWidget import PlotWidget
 from GUI.TranscriptWidget import TranscriptWidget
+
 
 #Top Half
 def headphonesClick(window):
@@ -1104,42 +1106,42 @@ def PlayButtonClick(window):
     
     window.pipe = AffectPipeline(enable_log_to_console=False,
                       enable_vad_loop=window.MIC_LOOP,
-                      enable_ser_loop=False,
+                      enable_ser_loop=window.MIC_LOOP,
                       enable_stt_loop=window.TRANSCRIPT_LOOP,
                       enable_camera_loop=window.CAMERA_LOOP,
                       enable_print_loop=False, #
                       enable_send_udp_loop=window.UDP,
                       enable_send_kafka_loop=window.KAFKA,
-                      enable_face_er_loop= False, #
+                      enable_face_er_loop= window.CAMERA_LOOP, #
                       enable_face_mesh_loop=False,
                       enable_pose_loop=window.SKELETON_LOOP,
-                      enable_fusion_loop=False,
-                      enable_sentiment_loop=False,
+                      enable_fusion_loop=window.FUSION_LOOP,
+                      enable_sentiment_loop=window.SENTIMENT_LOOP,
                       show_face_mesh=False,
                       face_mesh_show_face_edges=False,
                       face_mesh_show_face_pupils=False,
                       face_mesh_show_face_contour=False,
-                      camera_id=window.cam_id,
-                      ser_loop_rate=1.0,
-                      stt_loop_rate=0.2,
-                      sentiment_loop_rate=1.0,
-                      vad_loop_rate=4.0,
-                      er_loop_rate=2.0,
-                      pose_loop_rate=4.0,
-                      send_loop_rate=2.0,
-                      camera_loop_rate=4.0,
-                      face_mesh_rate=4.0,
+                      camera_id=window.CAM_ID,
+                      ser_loop_rate=window.SER_LOOP_RATE,
+                      stt_loop_rate=window.STT_LOOP_RATE,
+                      sentiment_loop_rate=window.SENTIMENT_LOOP_RATE,
+                      vad_loop_rate=window.VAD_LOOP_RATE,
+                      er_loop_rate=window.ER_LOOP_RATE,
+                      pose_loop_rate=window.POSE_LOOP_RATE,
+                      send_loop_rate=window.SEND_LOOP_RATE,
+                      camera_loop_rate=window.CAMERA_LOOP_RATE,
+                      face_mesh_rate=window.FACE_MESH_RATE,
                       udp_ip=window.UDP_IP,
                       udp_port=window.UDP_PORT,
                       kafka_ip=window.KAFKA_IP,
                       kafka_port=window.KAFKA_PORT,
                       web_app_port=5000,
                       kafka_topic_name=window.KAFKA_TOPIC,
-                      sample_rate=16000,
+                      sample_rate=window.SAMPLE_RATE,
                       vad_threshold=0.25,
                       face_padding=0.2,
                       microphone_chunks=16000,
-                      microphone_id=window.mic_id,
+                      microphone_id=window.MIC_ID,
                       stt_window_length=5,
                       stt_model_size="base",
                       sentiment_model="germansentiment")
@@ -1182,7 +1184,138 @@ def PlayButtonClick(window):
         window.skeleton.show()
         # window.image.resize(window.column_width, 180)
         # window.image.move(2*window.column_width + 15, window.column_height_2//4 * 3)
-        
+    if window.PARA_PLEASURE:
+        layout = window.bodyContainer.layout()
+        layout.removeWidget(window.rounded6_1)
+        window.rounded6_1.setParent(None)
+        window.para_pleasure = floatWidget(name="Para_Pleasure")
+        window.para_pleasure.setParent(window.bodyContainer)
+        window.para_pleasure.setFixedSize(100, 45)
+        window.para_pleasure.move(
+            window.circle6_4.x() + int(window.rounded6_1.width() // 8),
+                5 + window.circle5_1_outer.height()//2 - window.rounded6_1.height()//2
+        )
+        window.para_pleasure.show()
+    if window.PARA_AROUSAL:
+        layout = window.bodyContainer.layout()
+        layout.removeWidget(window.rounded6_2)
+        window.rounded6_2.setParent(None)
+        window.para_arousal = floatWidget(name="Para_Arousal")
+        window.para_arousal.setParent(window.bodyContainer)
+        window.para_arousal.setFixedSize(100, 45)
+        window.para_arousal.move(
+            window.rounded6_1.x(),
+                window.circle6_2.y() + window.circle6_2.radius - window.rounded6_2.height()//2
+        )
+        window.para_arousal.show()    
+    if window.PARA_DOMINANCE:
+        layout = window.bodyContainer.layout()
+        layout.removeWidget(window.rounded6_3)
+        window.rounded6_3.setParent(None)
+        window.para_dominance = floatWidget(name="Para_Dominance")
+        window.para_dominance.setParent(window.bodyContainer)
+        window.para_dominance.setFixedSize(100, 45)
+        window.para_dominance.move(
+            window.rounded6_1.x(),
+                window.circle6_3.y() + window.circle6_3.radius - window.rounded6_3.height()//2
+        )
+        window.para_dominance.show()
+    if window.SENT_PLEASURE:
+        layout = window.bodyContainer.layout()
+        layout.removeWidget(window.rounded6_4)
+        window.rounded6_4.setParent(None)
+        window.sent_pleasure = floatWidget(name="Sent_Pleasure")
+        window.sent_pleasure.setParent(window.bodyContainer)
+        window.sent_pleasure.setFixedSize(100, 45)
+        window.sent_pleasure.move(
+            window.rounded6_1.x(),
+                window.circle6_4.y() + window.circle6_4.radius - window.rounded6_4.height()//2
+        )
+        window.sent_pleasure.show()
+    if window.FACIAL_PLEASURE:
+        layout = window.bodyContainer.layout()
+        layout.removeWidget(window.rounded6_5)
+        window.rounded6_5.setParent(None)
+        window.facial_pleasure = floatWidget(name="Facial_Pleasure")
+        window.facial_pleasure.setParent(window.bodyContainer)
+        window.facial_pleasure.setFixedSize(100, 45)
+        window.facial_pleasure.move(
+            window.rounded6_1.x(),
+                window.circle6_5.y() + window.circle6_5.radius - window.rounded6_5.height()//2
+        )
+        window.facial_pleasure.show()
+    if window.FACIAL_AROUSAL:
+        layout = window.bodyContainer.layout()
+        layout.removeWidget(window.rounded6_6)
+        window.rounded6_6.setParent(None)
+        window.facial_arousal = floatWidget(name="Facial_Arousal")
+        window.facial_arousal.setParent(window.bodyContainer)
+        window.facial_arousal.setFixedSize(100, 45)
+        window.facial_arousal.move(
+            window.rounded6_1.x(),
+                window.circle6_6.y() + window.circle6_6.radius - window.rounded6_6.height()//2
+        )
+        window.facial_arousal.show()
+    if window.FACIAL_DOMINANCE:
+        layout = window.bodyContainer.layout()
+        layout.removeWidget(window.rounded6_7)
+        window.rounded6_7.setParent(None)
+        window.facial_dominance = floatWidget(name="Facial_Dominance")
+        window.facial_dominance.setParent(window.bodyContainer)
+        window.facial_dominance.setFixedSize(100, 45)
+        window.facial_dominance.move(
+            window.rounded6_1.x(),
+                window.circle6_7.y() + window.circle6_7.radius - window.rounded6_7.height()//2
+        )
+        window.facial_dominance.show()
+    if window.POSE_DOMINANCE:
+        layout = window.bodyContainer.layout()
+        layout.removeWidget(window.rounded6_8)
+        window.rounded6_8.setParent(None)
+        window.pose_dominance = floatWidget(name="Pose_Dominance")
+        window.pose_dominance.setParent(window.bodyContainer)
+        window.pose_dominance.setFixedSize(100, 45)
+        window.pose_dominance.move(
+            window.rounded6_1.x(),
+                window.circle6_8.y() + window.circle6_8.radius - window.rounded6_8.height()//2
+        )
+        window.pose_dominance.show()
+    if window.PLEASURE:
+        layout = window.bodyContainer.layout()
+        layout.removeWidget(window.rounded8_1)
+        window.rounded8_1.setParent(None)
+        window.pleasure = floatWidget(name="Pleasure")
+        window.pleasure.setParent(window.bodyContainer)
+        window.pleasure.setFixedSize(int(window.screen_width *0.08) ,int(window.screen_height * 0.05))
+        window.pleasure.move(
+            (window.bodyContainer.width() - int(window.bodyContainer.width() / 8) + int(window.bodyContainer.width() / 16)) - window.rounded8_1.width() // 3 ,
+            (window.column_height_light - window.rounded8_1.height()) // 2 - int(window.circle8_1.height() * 1.5)
+        )
+        window.pleasure.show()
+    if window.AROUSAL:
+        layout = window.bodyContainer.layout()
+        layout.removeWidget(window.rounded8_2)
+        window.rounded8_2.setParent(None)
+        window.arousal = floatWidget(name="Arousal")
+        window.arousal.setParent(window.bodyContainer)
+        window.arousal.setFixedSize(int(window.screen_width *0.08) ,int(window.screen_height * 0.05))
+        window.arousal.move(
+            (window.bodyContainer.width() - int(window.bodyContainer.width() / 8) + int(window.bodyContainer.width() / 16)) - window.rounded8_2.width() // 3,
+            (window.column_height_light - window.rounded8_2.height()) // 2
+        )
+        window.arousal.show()
+    if window.DOMINANCE:
+        layout = window.bodyContainer.layout()
+        layout.removeWidget(window.rounded8_3)
+        window.rounded8_3.setParent(None)
+        window.dominance = floatWidget(name="Dominance")
+        window.dominance.setParent(window.bodyContainer)
+        window.dominance.setFixedSize(int(window.screen_width *0.08) ,int(window.screen_height * 0.05))
+        window.dominance.move(
+            (window.bodyContainer.width() - int(window.bodyContainer.width() / 8) + int(window.bodyContainer.width() / 16)) - window.rounded8_3.width() // 3,
+            (window.column_height_light - window.rounded8_3.height()) // 2 + int(window.circle8_3.height() * 1.5)
+        )
+        window.dominance.show()
     window.pipe.start(window)
 
 def kafkaClick(window):
@@ -1191,7 +1324,7 @@ def kafkaClick(window):
         window.kafka_button.setStyleSheet("background-color: green")
     
     def turnOff():
-        window.kafka_button.setStyleSheet("")
+        window.kafka_button.setStyleSheet("background-color: #f0f0f0")
 
     if window.KAFKA:
         window.KAFKA = False
@@ -1206,7 +1339,7 @@ def udpClick(window):
             window.udp_button.setStyleSheet("background-color: green")
         
         def turnOff():
-            window.udp_button.setStyleSheet("")
+            window.udp_button.setStyleSheet("background-color: #f0f0f0")
     
         if window.UDP:
             window.UDP = False

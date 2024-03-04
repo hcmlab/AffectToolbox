@@ -21,3 +21,4 @@ def Rightconnect(window):
     window.rounded7.rightClicked.connect(lambda: InitSettingVideo(window=window, name="Fusion"))
     window.kafka_button.rightClicked.connect(lambda :InitSettingVideo(window=window, name="Kafka"))
     window.udp_button.rightClicked.connect(lambda :InitSettingVideo(window=window, name="UDP"))
+    window.play_button.rightClicked.connect(lambda :InitSettingVideo(window=window, name="Start"))

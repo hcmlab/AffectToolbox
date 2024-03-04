@@ -3,6 +3,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QVBoxLayout
 from PyQt6.QtWidgets import QDoubleSpinBox, QLabel, QSpacerItem, QSizePolicy, QLineEdit, QSpinBox
 from numpy import double
+from GUI.DeviceSelector import DeviceSelector
 from GUI.variables import changeValues
 
 class RightClickWindow(QMainWindow):
@@ -14,6 +15,8 @@ class RightClickWindow(QMainWindow):
         central_widget = QWidget()
 
         self.window = window
+        
+        self.name = name
 
         self.layout = QVBoxLayout(central_widget)
         self.layout.setSpacing(5)
@@ -64,9 +67,9 @@ class RightClickWindow(QMainWindow):
             self.STTLoopRate = None
             self.STTLoopRateLabel = None
             self.AddDoubleSpinBox( SpinBoxinstance=self.STTLoopRate, Labelinstance=self.STTLoopRateLabel ,baseValue=window.STT_LOOP_RATE, name="Transcript", variableName="STT_LOOP_RATE")
-
-# Instanz erstellen und dann als variable übergeben und in dem aufruf dann variable mit richtiger instanz füllen
-
+        elif name == "Start":
+            self.Device = DeviceSelector(window=window)
+            self.layout.addWidget(self.Device)
 
         # Erstellen Sie ein QSpacerItem
         spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
@@ -81,6 +84,13 @@ class RightClickWindow(QMainWindow):
 
         # Connect the valueChanged signal to a slot
         self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
+    
+    def closeEvent(self, event):
+        if self.name == "Start":
+            self.window.CAM_ID = self.Device.exp_selected_camera()
+            self.window.MIC_ID = self.Device.exp_selected_microphone()
+            changeValues(cam_id=self.window.CAM_ID, mic_id=self.window.MIC_ID)
+            event.accept()
     
     def on_double_value_changed(self, value, name=""):
         # This method will be called whenever the value of the spinBox is changed

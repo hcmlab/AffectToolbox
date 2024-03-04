@@ -616,10 +616,12 @@ class AffectPipeline():
         )
         command = lxml.etree.tostring(the_doc)
         if self.SEND_UDP_LOOP:
+            print("UDP send")
             self._SOCKET.sendto(command, (self._UDP_IP, self._UDP_PORT))
         if self.WEB_APP:
             self._SOCKET.sendto(command, (self._UDP_IP, self.WEB_APP_UDP_PORT))
         if self.SEND_KAFKA_LOOP:
+            print("Kafka send")
             string_from_byte = str({'pleasure': m_f[0],
                                     'arousal': m_f[1],
                                     'dominance': m_f[2]})

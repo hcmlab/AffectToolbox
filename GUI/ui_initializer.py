@@ -5,6 +5,7 @@ from GUI.vertical_line_widget import VerLineWidget
 from PyQt6.QtWidgets import QPushButton
 from GUI.Consoleoutput import ConsoleOutput
 from GUI.MyButton import MyButton
+from GUI.floatWidget import floatWidget
 
 def initialize_ui(window):
     # Create the containers
@@ -488,7 +489,7 @@ def initialize_ui(window):
         
         #PlayButton
 
-        window.play_button = QPushButton("Start")
+        window.play_button = MyButton("Start")
         window.play_button.setFixedSize(100, 50)
         window.play_button.setParent(window.bodyContainer)
         window.play_button.setStyleSheet("background-color: #f0f0f0;")
@@ -511,7 +512,7 @@ def initialize_ui(window):
         window.console = ConsoleOutput()
         window.console.setFixedSize(300, 200)
         window.console.setParent(window.bodyContainer)
-        
+            
         # Create the layout
         window.createLayout()
 

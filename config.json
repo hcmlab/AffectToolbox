@@ -12,5 +12,7 @@
 		"CAMERA_LOOP_RATE": 4.0,
 		"FACE_MESH_RATE": 4.0,
 		"SAMPLE_RATE": 16000
-	}
+	},
+	"cam_id": 0,
+	"mic_id": 0
 }
