@@ -28,7 +28,8 @@ class ImageWindow(QWidget):  # Inherit from QWidget instead of QMainWindow
     def update_image(self):
         if self.window.START == True:
             # Assuming IMAGE_FACE_RAW is a global list that gets updated with numpy arrays representing images
-            image = qs.IMAGE_FACE_RAW[len(qs.IMAGE_FACE_RAW) - 1]  # Get the latest image
+            #image = qs.IMAGE_FACE_RAW[len(qs.IMAGE_FACE_RAW) - 1]  # Get the latest image
+            image = qs.IMAGE_FACE_PREPROCESSED[len(qs.IMAGE_FACE_PREPROCESSED) - 1]
             height, width, channel = image.shape
             bytes_per_line = 3 * width
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)

@@ -3,6 +3,7 @@ from PyQt6.QtGui import QPainter, QColor, QFont, QPixmap
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtCore import QEvent
+from PyQt6.QtCore import QTimer
 
 class CircleWidget(QWidget):
     clicked = pyqtSignal()
@@ -10,6 +11,8 @@ class CircleWidget(QWidget):
 
     def __init__(self, color="#f2f2f2", label=None, font_size=10, image_path=None, parent=None):
         super(CircleWidget, self).__init__(parent)
+        self.window = None
+        self.name = ""
         self.color = QColor(color)
         self.baseColor = self.color
         self.setMinimumSize(100, 100)  # Set a minimum size for the widget
@@ -28,6 +31,11 @@ class CircleWidget(QWidget):
             self.image_label.setPixmap(pixmap)
             self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)  # Center the image
             self.layout.addWidget(self.image_label)
+        
+        self.timer = QTimer()
+        self.timer.timeout.connect(lambda: self.trafficLight()) 
+        self.timer.start(1000)
+
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -48,5 +56,26 @@ class CircleWidget(QWidget):
         elif self.color == QColor("green"):
             self.color = self.baseColor
         self.update()
+        
+    def trafficLight(self):
+        if self.window is not None:
+            self.color = QColor("green")
+            if self.name == "Voice_Activity":
+                if not self.window.pipe.LOGGING_MODULE.TRACKING_VOICE:
+                    self.color = QColor("yellow")
+                if not self.window.pipe.LOGGING_MODULE.VOICE_OK:
+                    self.color = QColor("red")
+            elif self.name == "Face_Tracking":
+                if not self.window.pipe.LOGGING_MODULE.TRACKING_FACE:
+                    self.color = QColor("yellow")
+                if not self.window.pipe.LOGGING_MODULE.CAMERA_OK:
+                    self.color = QColor("red")
+            elif self.name == "Body_Tracking":
+                if not self.window.pipe.LOGGING_MODULE.TRACKING_BODY:
+                    self.color = QColor("yellow")
+                if not self.window.pipe.LOGGING_MODULE.BODY_OK:
+                    self.color = QColor("red")
+            self.update()
+                
 
         

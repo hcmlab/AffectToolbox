@@ -1,3 +1,5 @@
+import gc
+from time import sleep
 from GUI.floatWidget import floatWidget
 from modules.AffectPipeline import AffectPipeline
 from GUI.Image_window import ImageWindow
@@ -1150,8 +1152,8 @@ def PlayButtonClick(window):
         layout = window.bodyContainer.layout()
         x = window.rounded3_3.x()
         y = window.rounded3_3.y()
-        layout.removeWidget(window.rounded3_3)
-        window.rounded3_3.setParent(None)
+        # layout.removeWidget(window.rounded3_3)
+        # window.rounded3_3.setParent(None)
         window.image = ImageWindow(window=window)
         window.image.setParent(window.bodyContainer)
         window.image.show()
@@ -1162,32 +1164,41 @@ def PlayButtonClick(window):
         # window.test.playButtonClicked()
         # window.test.show()
         layout = window.bodyContainer.layout()
-        layout.removeWidget(window.rounded3_1)
-        window.rounded3_1.setParent(None)
+        # layout.removeWidget(window.rounded3_1)
+        # window.rounded3_1.setParent(None)
         window.audio = PlotWidget(window=window)
         window.audio.setParent(window.bodyContainer)
         window.audio.show()
         window.audio.playButtonClicked()
     if window.TRANSCRIPT_LOOP:
         layout = window.bodyContainer.layout()
-        layout.removeWidget(window.rounded3_2)
-        window.rounded3_2.setParent(None)
+        # layout.removeWidget(window.rounded3_2)
+        # window.rounded3_2.setParent(None)
         window.transcript = TranscriptWidget(window=window)
         window.transcript.setParent(window.bodyContainer)
         window.transcript.show()
     if window.SKELETON_LOOP:
         layout = window.bodyContainer.layout()
-        layout.removeWidget(window.rounded3_4)
-        window.rounded3_4.setParent(None)
+        # layout.removeWidget(window.rounded3_4)
+        # window.rounded3_4.setParent(None)
         window.skeleton = ImageWindow(window=window, name="Skeleton")
         window.skeleton.setParent(window.bodyContainer)
         window.skeleton.show()
         # window.image.resize(window.column_width, 180)
         # window.image.move(2*window.column_width + 15, window.column_height_2//4 * 3)
+    if window.VOICE_ACTIVITY_LOOP:
+        window.circle4_1.window = window
+        window.circle4_1.name = "Voice_Activity"
+    if window.FACE_TRACKING_LOOP:
+        window.circle4_2.window = window
+        window.circle4_2.name = "Face_Tracking"
+    if window.BODY_TRACKING_LOOP:
+        window.circle4_3.window = window
+        window.circle4_3.name = "Body_Tracking"
     if window.PARA_PLEASURE:
         layout = window.bodyContainer.layout()
-        layout.removeWidget(window.rounded6_1)
-        window.rounded6_1.setParent(None)
+        # layout.removeWidget(window.rounded6_1)
+        # window.rounded6_1.setParent(None)
         window.para_pleasure = floatWidget(name="Para_Pleasure")
         window.para_pleasure.setParent(window.bodyContainer)
         window.para_pleasure.setFixedSize(100, 45)
@@ -1198,8 +1209,8 @@ def PlayButtonClick(window):
         window.para_pleasure.show()
     if window.PARA_AROUSAL:
         layout = window.bodyContainer.layout()
-        layout.removeWidget(window.rounded6_2)
-        window.rounded6_2.setParent(None)
+        # layout.removeWidget(window.rounded6_2)
+        # window.rounded6_2.setParent(None)
         window.para_arousal = floatWidget(name="Para_Arousal")
         window.para_arousal.setParent(window.bodyContainer)
         window.para_arousal.setFixedSize(100, 45)
@@ -1210,8 +1221,8 @@ def PlayButtonClick(window):
         window.para_arousal.show()    
     if window.PARA_DOMINANCE:
         layout = window.bodyContainer.layout()
-        layout.removeWidget(window.rounded6_3)
-        window.rounded6_3.setParent(None)
+        # layout.removeWidget(window.rounded6_3)
+        # window.rounded6_3.setParent(None)
         window.para_dominance = floatWidget(name="Para_Dominance")
         window.para_dominance.setParent(window.bodyContainer)
         window.para_dominance.setFixedSize(100, 45)
@@ -1222,8 +1233,8 @@ def PlayButtonClick(window):
         window.para_dominance.show()
     if window.SENT_PLEASURE:
         layout = window.bodyContainer.layout()
-        layout.removeWidget(window.rounded6_4)
-        window.rounded6_4.setParent(None)
+        # layout.removeWidget(window.rounded6_4)
+        # window.rounded6_4.setParent(None)
         window.sent_pleasure = floatWidget(name="Sent_Pleasure")
         window.sent_pleasure.setParent(window.bodyContainer)
         window.sent_pleasure.setFixedSize(100, 45)
@@ -1234,8 +1245,8 @@ def PlayButtonClick(window):
         window.sent_pleasure.show()
     if window.FACIAL_PLEASURE:
         layout = window.bodyContainer.layout()
-        layout.removeWidget(window.rounded6_5)
-        window.rounded6_5.setParent(None)
+        # layout.removeWidget(window.rounded6_5)
+        # window.rounded6_5.setParent(None)
         window.facial_pleasure = floatWidget(name="Facial_Pleasure")
         window.facial_pleasure.setParent(window.bodyContainer)
         window.facial_pleasure.setFixedSize(100, 45)
@@ -1246,8 +1257,8 @@ def PlayButtonClick(window):
         window.facial_pleasure.show()
     if window.FACIAL_AROUSAL:
         layout = window.bodyContainer.layout()
-        layout.removeWidget(window.rounded6_6)
-        window.rounded6_6.setParent(None)
+        # layout.removeWidget(window.rounded6_6)
+        # window.rounded6_6.setParent(None)
         window.facial_arousal = floatWidget(name="Facial_Arousal")
         window.facial_arousal.setParent(window.bodyContainer)
         window.facial_arousal.setFixedSize(100, 45)
@@ -1258,8 +1269,8 @@ def PlayButtonClick(window):
         window.facial_arousal.show()
     if window.FACIAL_DOMINANCE:
         layout = window.bodyContainer.layout()
-        layout.removeWidget(window.rounded6_7)
-        window.rounded6_7.setParent(None)
+        # layout.removeWidget(window.rounded6_7)
+        # window.rounded6_7.setParent(None)
         window.facial_dominance = floatWidget(name="Facial_Dominance")
         window.facial_dominance.setParent(window.bodyContainer)
         window.facial_dominance.setFixedSize(100, 45)
@@ -1270,8 +1281,8 @@ def PlayButtonClick(window):
         window.facial_dominance.show()
     if window.POSE_DOMINANCE:
         layout = window.bodyContainer.layout()
-        layout.removeWidget(window.rounded6_8)
-        window.rounded6_8.setParent(None)
+        # layout.removeWidget(window.rounded6_8)
+        # window.rounded6_8.setParent(None)
         window.pose_dominance = floatWidget(name="Pose_Dominance")
         window.pose_dominance.setParent(window.bodyContainer)
         window.pose_dominance.setFixedSize(100, 45)
@@ -1282,8 +1293,8 @@ def PlayButtonClick(window):
         window.pose_dominance.show()
     if window.PLEASURE:
         layout = window.bodyContainer.layout()
-        layout.removeWidget(window.rounded8_1)
-        window.rounded8_1.setParent(None)
+        # layout.removeWidget(window.rounded8_1)
+        # window.rounded8_1.setParent(None)
         window.pleasure = floatWidget(name="Pleasure")
         window.pleasure.setParent(window.bodyContainer)
         window.pleasure.setFixedSize(int(window.screen_width *0.08) ,int(window.screen_height * 0.05))
@@ -1294,8 +1305,8 @@ def PlayButtonClick(window):
         window.pleasure.show()
     if window.AROUSAL:
         layout = window.bodyContainer.layout()
-        layout.removeWidget(window.rounded8_2)
-        window.rounded8_2.setParent(None)
+        # layout.removeWidget(window.rounded8_2)
+        # window.rounded8_2.setParent(None)
         window.arousal = floatWidget(name="Arousal")
         window.arousal.setParent(window.bodyContainer)
         window.arousal.setFixedSize(int(window.screen_width *0.08) ,int(window.screen_height * 0.05))
@@ -1306,8 +1317,8 @@ def PlayButtonClick(window):
         window.arousal.show()
     if window.DOMINANCE:
         layout = window.bodyContainer.layout()
-        layout.removeWidget(window.rounded8_3)
-        window.rounded8_3.setParent(None)
+        # layout.removeWidget(window.rounded8_3)
+        # window.rounded8_3.setParent(None)
         window.dominance = floatWidget(name="Dominance")
         window.dominance.setParent(window.bodyContainer)
         window.dominance.setFixedSize(int(window.screen_width *0.08) ,int(window.screen_height * 0.05))
@@ -1317,6 +1328,106 @@ def PlayButtonClick(window):
         )
         window.dominance.show()
     window.pipe.start(window)
+
+def StopButtonClick(window):
+    print("Stop Button Clicked")
+    window.pipe.stop()
+    layout = window.bodyContainer.layout()
+    if window.image is not None:
+        layout.removeWidget(window.image)
+        window.image.setParent(None)
+        del window.image
+        
+    if window.audio is not None:
+        layout.removeWidget(window.audio)
+        window.audio.setParent(None)
+        del window.audio
+        
+    if window.transcript is not None:
+        layout.removeWidget(window.transcript)
+        window.transcript.setParent(None)
+        del window.transcript
+        
+    if window.skeleton is not None:
+        layout.removeWidget(window.skeleton)
+        window.skeleton.setParent(None)
+        del window.skeleton
+        
+    if window.VOICE_ACTIVITY_LOOP:
+        window.circle4_1.window = None
+        window.circle4_1.name = ""
+        window.circle4_1.color = window.circle4_1.baseColor
+        window.circle4_1.update()
+        
+    if window.FACE_TRACKING_LOOP:
+        window.circle4_2.window = None
+        window.circle4_2.name = ""
+        window.circle4_2.color = window.circle4_2.baseColor
+        window.circle4_2.update()
+        
+    if window.BODY_TRACKING_LOOP:
+        window.circle4_3.window = None
+        window.circle4_3.name = ""
+        window.circle4_3.color = window.circle4_3.baseColor
+        window.circle4_3.update()
+        
+    if window.PARA_PLEASURE:
+        layout.removeWidget(window.para_pleasure)
+        window.para_pleasure.setParent(None)
+        del window.para_pleasure
+        
+    if window.PARA_AROUSAL:
+        layout.removeWidget(window.para_arousal)
+        window.para_arousal.setParent(None)
+        del window.para_arousal
+        
+    if window.PARA_DOMINANCE:
+        layout.removeWidget(window.para_dominance)
+        window.para_dominance.setParent(None)
+        del window.para_dominance
+        
+    if window.SENT_PLEASURE:
+        layout.removeWidget(window.sent_pleasure)
+        window.sent_pleasure.setParent(None)
+        del window.sent_pleasure
+        
+    if window.FACIAL_PLEASURE:
+        layout.removeWidget(window.facial_pleasure)
+        window.facial_pleasure.setParent(None)
+        del window.facial_pleasure
+        
+    if window.FACIAL_AROUSAL:
+        layout.removeWidget(window.facial_arousal)
+        window.facial_arousal.setParent(None)
+        del window.facial_arousal
+        
+    if window.FACIAL_DOMINANCE:
+        layout.removeWidget(window.facial_dominance)
+        window.facial_dominance.setParent(None)
+        del window.facial_dominance
+        
+    if window.POSE_DOMINANCE:
+        layout.removeWidget(window.pose_dominance)
+        window.pose_dominance.setParent(None)
+        del window.pose_dominance
+        
+    if window.PLEASURE:
+        layout.removeWidget(window.pleasure)
+        window.pleasure.setParent(None)
+        del window.pleasure
+        
+    if window.AROUSAL:
+        layout.removeWidget(window.arousal)
+        window.arousal.setParent(None)
+        del window.arousal
+        
+    if window.DOMINANCE:
+        layout.removeWidget(window.dominance)
+        window.dominance.setParent(None)
+        del window.dominance
+        
+    del window.pipe 
+    gc.collect()
 
 def kafkaClick(window):
 
@@ -1353,7 +1464,6 @@ def connect(window):
     window.circle2_1.clicked.connect(lambda: headphonesClick(window)) 
     window.rounded3_1.clicked.connect(lambda: AudioClick(window)) 
     window.rounded3_2.clicked.connect(lambda: TranscriptClick(window))
-    window.play_button.clicked.connect(lambda: PlayButtonClick(window))
     window.rounded4_1.clicked.connect(lambda: VoiceActivityClick(window))
     window.circle5_1_inner.clicked.connect(lambda: ParaClick(window))
     window.circle5_2_inner.clicked.connect(lambda: SentimentClick(window))
@@ -1383,3 +1493,6 @@ def connect(window):
 
     window.kafka_button.leftClicked.connect(lambda: kafkaClick(window))
     window.udp_button.leftClicked.connect(lambda: udpClick(window))
+    
+    window.play_button.clicked.connect(lambda: PlayButtonClick(window))
+    window.stop_button.clicked.connect(lambda: StopButtonClick(window))

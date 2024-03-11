@@ -494,7 +494,7 @@ def initialize_ui(window):
         window.play_button.setParent(window.bodyContainer)
         window.play_button.setStyleSheet("background-color: #f0f0f0;")
 
-        window.stop_button = QPushButton("Stop")
+        window.stop_button = MyButton("Stop")
         window.stop_button.setFixedSize(100, 50)
         window.stop_button.setParent(window.bodyContainer)
         window.stop_button.setStyleSheet("background-color: #f0f0f0;")

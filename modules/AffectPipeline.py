@@ -1,3 +1,4 @@
+import gc
 import time
 import numpy as np
 import pyaudio
@@ -240,17 +241,43 @@ class AffectPipeline():
             except:
                 print(colored("NO KAFKA SERVER RUNNING. DISABLE KAFKA OR START KAFKA SERVER AND RETRY.", "red"))
                 os._exit(1)
+                
+        self.stop_thread = False
+        self.vad_loop_thread = None
+        self.ser_loop_thread = None
+        self.stt_loop_thread = None
+        self.sentiment_loop_thread = None
+        self.face_record_loop_thread = None
+        self.face_crop_loop_thread = None
+        self.face_er_loop_thread = None
+        self.face_mesh_loop_thread = None
+        self.pose_loop_thread = None
+        self.fusion_loop_thread = None
+        self.print_loop_thread = None
+        self.send_loop_thread = None
 
     def microphone_loop(self):
-        data = self.stream.read(self.MICROPHONE_CHUNKS)
-        signal = np.fromstring(data, np.float32)
-        # signal = np.frombuffer(data, dtype=np.int16)
-        signal_list = signal.tolist()
+        # data = self.stream.read(self.MICROPHONE_CHUNKS)
+        # signal = np.fromstring(data, np.float32)
+        # # signal = np.frombuffer(data, dtype=np.int16)
+        # signal_list = signal.tolist()
 
-        for n in range(0, len(signal_list)):
-            qs.AUDIO_QUEUE.append(signal_list[n])
-        threading.Thread(target=self.microphone_loop).start()
+        # for n in range(0, len(signal_list)):
+        #     qs.AUDIO_QUEUE.append(signal_list[n])
+        self.microphone_loop_thread = threading.Thread(target=self.microphone_loop_func)
+        self.microphone_loop_thread.start()
 
+    def microphone_loop_func(self):
+        while not self.stop_thread:
+            data = self.stream.read(self.MICROPHONE_CHUNKS)
+            signal = np.fromstring(data, np.float32)
+            # signal = np.frombuffer(data, dtype=np.int16)
+            signal_list = signal.tolist()
+
+            for n in range(0, len(signal_list)):
+                qs.AUDIO_QUEUE.append(signal_list[n])
+        print("Thread ended")
+    
     def vad_loop(self):
         time_vad_loop_start = time.time()
         signal = []
@@ -273,7 +300,8 @@ class AffectPipeline():
 
         self.LOGGING_MODULE.TRACKING_VOICE = is_speech and self.LOGGING_MODULE.VOICE_OK
         # os._exit(1)
-        threading.Timer(vad_timer, self.vad_loop).start()
+        self.vad_loop_thread = threading.Timer(vad_timer, self.vad_loop)
+        self.vad_loop_thread.start()
 
     def ser_loop(self):
         time_ser_loop_start = time.time()
@@ -297,7 +325,8 @@ class AffectPipeline():
             self.LOGGING_MODULE.SER_OK = False
         else:
             self.LOGGING_MODULE.SER_OK = True
-        threading.Timer(ser_timer, self.ser_loop).start()
+        self.ser_loop_thread = threading.Timer(ser_timer, self.ser_loop)
+        self.ser_loop_thread.start()
 
     def stt_loop(self):
         time_stt_loop_start = time.time()
@@ -319,7 +348,8 @@ class AffectPipeline():
             self.LOGGING_MODULE.STT_OK = False
         else:
             self.LOGGING_MODULE.STT_OK = True
-        threading.Timer(stt_timer, self.stt_loop).start()
+        self.stt_loop_thread = threading.Timer(stt_timer, self.stt_loop)
+        self.stt_loop_thread.start()
 
     def sentiment_loop(self):
         time_sentiment_loop_start = time.time()
@@ -339,7 +369,8 @@ class AffectPipeline():
             self.LOGGING_MODULE.SENTIMENT_OK = False
         else:
             self.LOGGING_MODULE.SENTIMENT_OK = True
-        threading.Timer(sentiment_timer, self.sentiment_loop).start()
+        self.sentiment_loop_thread = threading.Timer(sentiment_timer, self.sentiment_loop)
+        self.sentiment_loop_thread.start()
 
     def face_record_loop(self):
         time_camera_loop_start = time.time()
@@ -354,7 +385,8 @@ class AffectPipeline():
             self.LOGGING_MODULE.CAMERA_OK = False
         else:
             self.LOGGING_MODULE.CAMERA_OK = True
-        threading.Timer(camera_timer, self.face_record_loop).start()
+        self.face_record_loop_thread = threading.Timer(camera_timer, self.face_record_loop)
+        self.face_record_loop_thread.start()
 
     def face_crop_loop(self):
         time_fc_loop_start = time.time()
@@ -406,7 +438,8 @@ class AffectPipeline():
 
         self.LOGGING_MODULE.TRACKING_FACE = found_face and self.LOGGING_MODULE.CAMERA_OK
 
-        threading.Timer(fc_timer, self.face_crop_loop).start()
+        self.face_crop_loop_thread = threading.Timer(fc_timer, self.face_crop_loop)
+        self.face_crop_loop_thread.start()
 
     def face_er_loop(self):
         time_er_loop_start = time.time()
@@ -424,7 +457,8 @@ class AffectPipeline():
             self.LOGGING_MODULE.CAMERA_OK = False
         else:
             self.LOGGING_MODULE.CAMERA_OK = True
-        threading.Timer(er_timer, self.face_er_loop).start()
+        self.face_er_loop_thread = threading.Timer(er_timer, self.face_er_loop)
+        self.face_er_loop_thread.start()
 
     def face_mesh_loop(self):
         time_fm_loop_start = time.time()
@@ -472,7 +506,8 @@ class AffectPipeline():
             self.LOGGING_MODULE.CAMERA_OK = False
         else:
             self.LOGGING_MODULE.CAMERA_OK = True
-        threading.Timer(fm_timer, self.face_mesh_loop).start()
+        self.face_mesh_loop_thread = threading.Timer(fm_timer, self.face_mesh_loop)
+        self.face_mesh_loop_thread.start()
 
     def pose_loop(self):
         time_pose_loop_start = time.time()
@@ -489,7 +524,8 @@ class AffectPipeline():
 
         self.LOGGING_MODULE.TRACKING_BODY = self.LOGGING_MODULE.CAMERA_OK and self.LOGGING_MODULE.BODY_OK and self.POSE_MODULE.tracking
 
-        threading.Timer(pose_timer, self.pose_loop).start()
+        self.pose_loop_thread = threading.Timer(pose_timer, self.pose_loop)
+        self.pose_loop_thread.start()
 
     def fusion_loop(self):
         time_fusion_loop_start = time.time()
@@ -499,7 +535,8 @@ class AffectPipeline():
 
         seconds_fusion_loop = time.time() - time_fusion_loop_start
         fusion_timer = 1.0 / float(self._FUSION_LOOP_RATE) - seconds_fusion_loop
-        threading.Timer(fusion_timer, self.fusion_loop).start()
+        self.fusion_loop_thread = threading.Timer(fusion_timer, self.fusion_loop)
+        self.fusion_loop_thread.start()
 
     def print_loop(self):
         v_s = qs.VALENCE_SPEECH[len(qs.VALENCE_SPEECH) - 1]
@@ -550,7 +587,8 @@ class AffectPipeline():
                            }
 
         self.LOGGING_MODULE.update_analysis(analysis_values, img_raw, img_preprocessed, img_facemesh, img_bodyskel)
-        threading.Timer(0.05, self.print_loop).start()
+        self.print_loop_thread = threading.Timer(0.05, self.print_loop)
+        self.print_loop_thread.start()
 
     def send_loop(self):
         time_send_loop_start = time.time()
@@ -632,7 +670,8 @@ class AffectPipeline():
             # print(colored('\nSEND frequency is too high to be maintained. Please lower it and start again.', 'blue'))
             # os._exit(1)
             pass
-        threading.Timer(send_timer, self.send_loop).start()
+        self.send_loop_thread = threading.Timer(send_timer, self.send_loop)
+        self.send_loop_thread.start()
 
     def start(self, window):
         if self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP:
@@ -672,6 +711,37 @@ class AffectPipeline():
 
         #self.tk_root.mainloop()  # start tkinter main loop
 
+    def stop(self):
+        if self.fusion_loop_thread is not None:
+            self.fusion_loop_thread.cancel()
+        if self.sentiment_loop_thread is not None:
+            self.sentiment_loop_thread.cancel()
+        if self.ser_loop_thread is not None:
+            self.ser_loop_thread.cancel()
+        if self.vad_loop_thread is not None:
+            self.vad_loop_thread.cancel()
+        if self.stt_loop_thread is not None:
+            self.stt_loop_thread.cancel()
+        self.stop_thread = True
+        
+        if self.face_er_loop_thread is not None:
+            self.face_er_loop_thread.cancel()
+        if self.pose_loop_thread is not None:
+            self.pose_loop_thread.cancel()
+        if self.face_mesh_loop_thread is not None:
+            self.face_mesh_loop_thread.cancel()
+        if self.face_crop_loop_thread is not None:
+            self.face_crop_loop_thread.cancel()
+        if self.face_record_loop_thread is not None:
+            self.face_record_loop_thread.cancel()
+            
+        if self.print_loop_thread is not None:
+            self.print_loop_thread.cancel()
+        if self.send_loop_thread is not None:
+            self.send_loop_thread.cancel()
+        gc.collect()
+        
+        
 
 if __name__ == "__main__":
     pipe = AffectPipeline()
