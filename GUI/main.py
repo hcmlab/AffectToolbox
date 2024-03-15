@@ -33,6 +33,7 @@ class MainWindow(QMainWindow):
         self.column_height_light = int(self.screen_height * 0.87)
         self.column_height_5 = int(self.screen_height * 0.8)
         self.column_height_2 = int(self.screen_height * 0.5)
+        self.LINEWIDTH = 3
 
     def createTitleContainer(self):
         titles = ["", "SENSORS", "DATA STREAMS", "ACTIVITY CHECK", "ANALYSIS", "UNIMODAL RESULTS", "FUSION", "MULTIMODAL RESULTS"]

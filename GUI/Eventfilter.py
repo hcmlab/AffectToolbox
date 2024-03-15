@@ -237,7 +237,7 @@ def handleEventFilter(window, source, event):
 
             #Lines from 7 to 8
 
-            hlineFtoA1_Length = abs(window.rounded7.x() + window.rounded7.width() - (window.rounded7.x() + window.rounded7.width()//2 + window.column_width // 2)) + 3
+            hlineFtoA1_Length = abs(window.rounded7.width()//2 - int(0.75*window.column_width // 3))
             window.hlineWidgetFtoA1.setFixedSize(hlineFtoA1_Length, 3)
             window.hlineWidgetFtoA1.move(
                 window.rounded7.x() + window.rounded7.width(),
@@ -284,7 +284,7 @@ def handleEventFilter(window, source, event):
             collectorline_length = abs(window.hlineWidgettoCol2.y() - window.hlineWidgettoCol1.y())
             window.collectorLine6to7_1.setFixedSize(3, collectorline_length)
             window.collectorLine6to7_1.move(
-                window.rounded7.x() + window.rounded7.width()//2 - window.column_width // 2 - 6,
+                window.rounded7.x() + window.rounded7.width()//2 - int(1.25*window.column_width // 2) ,
                 window.hlineWidgettoCol1.y() 
             )
 
@@ -394,11 +394,18 @@ def handleEventFilter(window, source, event):
             )
 
             # Lines from column 5 to 6
-
+           
+            hlinetocol_length =  -window.circle5_1_outer.width()//2 + int(1.75*window.column_width//3) #abs(window.collectorLine5to6_1.x() - (window.circle5_1_outer.x() + window.circle5_1_outer.width() ))
+            window.hlinetoCol5to6_1.setFixedSize(hlinetocol_length + 3, 3)
+            window.hlinetoCol5to6_1.move(
+                window.circle5_1_outer.x() + window.circle5_1_outer.width(),
+                window.circle5_1_outer.y() + window.circle5_1_outer.height()//2
+            )
+            
             collectorLine5to6_1_length = window.circle5_1_outer.y() + window.circle5_1_outer.height()//2 - (window.rounded6_2.y() + window.rounded6_2.height()//2)
-            window.collectorLine5to6_1.setFixedSize(3, abs(collectorLine5to6_1_length) + 3)
+            window.collectorLine5to6_1.setFixedSize(window.LINEWIDTH, abs(collectorLine5to6_1_length) + 3)
             window.collectorLine5to6_1.move(
-                window.circle5_1_outer.x() + window.circle5_1_outer.width()//2 + window.column_width//2 +1,
+                window.hlinetoCol5to6_1.x() + hlinetocol_length,
                 window.circle5_1_outer.y() + window.circle5_1_outer.height()//2
             )
 
@@ -427,18 +434,11 @@ def handleEventFilter(window, source, event):
                 window.collectorLine5to6_1.x(),
                 window.rounded6_3.y() + window.rounded6_3.height()//2
             )
-            
-            hlinetocol_length = abs(window.collectorLine5to6_1.x() - (window.circle5_1_outer.x() + window.circle5_1_outer.width() ))
-            window.hlinetoCol5to6_1.setFixedSize(hlinetocol_length + 3, 3)
-            window.hlinetoCol5to6_1.move(
-                window.circle5_1_outer.x() + window.circle5_1_outer.width(),
-                window.circle5_1_outer.y() + window.circle5_1_outer.height()//2
-            )
 
             verLineWidgetSertoP_length = (window.rounded6_4.y() + window.rounded6_4.height()//2) - (window.circle5_2_outer.y() + window.circle5_1_outer.height()//2 )
             window.verlineWidgetSertoP.setFixedSize(3, verLineWidgetSertoP_length)
             window.verlineWidgetSertoP.move(
-                window.collectorLine5to6_1.x() - 15,
+                window.circle5_2_outer.x() + window.circle5_2_outer.width()//2 + int(1.25*window.column_width//3),
                 window.circle5_2_outer.y() + window.circle5_2_outer.height()//2
             )
 
@@ -456,10 +456,16 @@ def handleEventFilter(window, source, event):
                 window.rounded6_4.y() + window.rounded6_4.height()//2
             )
 
+            window.hlinetoCol5to6_2.setFixedSize(hlinetocol_length, 3)
+            window.hlinetoCol5to6_2.move(
+                window.circle5_3_outer.x() + window.circle5_3_outer.width(),
+                window.circle5_3_outer.y() + window.circle5_3_outer.height()//2
+            )
+
             collectorLine5to6_2_length = window.circle5_3_outer.y() + window.circle5_3_outer.height()//2 - (window.rounded6_5.y() + window.rounded6_5.height()//2)
             window.collectorLine5to6_2.setFixedSize(3, abs(collectorLine5to6_2_length) + 3)
             window.collectorLine5to6_2.move(
-                window.circle5_3_outer.x() + window.circle5_3_outer.width()//2 + window.column_width//2 +1,
+                window.hlinetoCol5to6_2.x() + hlinetocol_length,
                 window.circle5_3_outer.y() + window.circle5_3_outer.height()//2
             )
 
@@ -495,16 +501,10 @@ def handleEventFilter(window, source, event):
                 window.rounded6_7.y() + window.rounded6_7.height()//2
             )
 
-            window.hlinetoCol5to6_2.setFixedSize(hlinetocol_length, 3)
-            window.hlinetoCol5to6_2.move(
-                window.circle5_3_outer.x() + window.circle5_3_outer.width(),
-                window.circle5_3_outer.y() + window.circle5_3_outer.height()//2
-            )
-
             verLineWidgetPosetoD_length = (window.rounded6_8.y() + window.rounded6_8.height()//2) - (window.circle5_4_outer.y() + window.circle5_4_outer.height()//2 )
             window.verlineWidgetPosetoD.setFixedSize(3, verLineWidgetPosetoD_length)
             window.verlineWidgetPosetoD.move(
-                window.collectorLine5to6_2.x() - 15,
+                window.verlineWidgetSertoP.x(),
                 window.circle5_4_outer.y() + window.circle5_4_outer.height()//2
             )
 
@@ -523,47 +523,47 @@ def handleEventFilter(window, source, event):
             )
 
             #Lines from 3 to 4 and 5
-            hlineAudioToPara_length = abs(window.circle5_1_outer.x() - (window.rounded3_1.x() + window.rounded3_1.width()))
-            hlineAudioToPara_length1 = (window.rounded3_1.x() + window.rounded3_1.width()//2 + window.column_width//2 + 2) - (window.rounded3_1.x() + window.rounded3_1.width())
-            window.hlineWidgetAudiotoPara1.setFixedSize(hlineAudioToPara_length1 + 3, 3)
+            hlineLength3to5 = abs(window.circle5_1_outer.x() - (window.rounded3_1.x() + window.rounded3_1.width()))
+            hlineAudioToPara_length1 = int(1.25* window.column_width//3) + 2 - window.rounded3_1.width()//2 #(window.rounded3_1.x() + window.rounded3_1.width()//2 + window.column_width//2 + 2) - (window.rounded3_1.x() + window.rounded3_1.width())
+            window.hlineWidgetAudiotoPara1.setFixedSize(hlineAudioToPara_length1 + window.LINEWIDTH, 3)
             window.hlineWidgetAudiotoPara1.move(
                 window.rounded3_1.x() + window.rounded3_1.width(),
                 window.rounded3_1.y() + window.rounded3_1.height()//2
             )
 
-            window.hlineWidgetAudiotoPara2.setFixedSize(hlineAudioToPara_length - hlineAudioToPara_length1 , 3)
+            window.hlineWidgetAudiotoPara2.setFixedSize(hlineLength3to5 - hlineAudioToPara_length1 - window.LINEWIDTH, 3)
             window.hlineWidgetAudiotoPara2.move(
-                window.rounded3_1.x() + window.rounded3_1.width()//2 + window.column_width//2 + 2 + 3,
+                window.hlineWidgetAudiotoPara1.x() + hlineAudioToPara_length1 + window.LINEWIDTH,
                 window.rounded3_1.y() + window.rounded3_1.height()//2
             )
 
             verLineWidgetAudiotoVoice_length = abs(window.hlineWidgetAudiotoPara1.y() - (window.rounded4_1.y() + window.rounded4_1.height()//2))
-            window.verLineWidgetAudiotoVoice.setFixedSize(3, verLineWidgetAudiotoVoice_length - 3)
+            window.verLineWidgetAudiotoVoice.setFixedSize(3, verLineWidgetAudiotoVoice_length - window.LINEWIDTH)
             window.verLineWidgetAudiotoVoice.move(
-                window.rounded3_1.x() + window.rounded3_1.width()//2 + window.column_width//2 + 2,
-                window.hlineWidgetAudiotoPara1.y() + 3
+                window.hlineWidgetAudiotoPara1.x() + hlineAudioToPara_length1,
+                window.hlineWidgetAudiotoPara1.y() + window.LINEWIDTH
             )
 
             hlineWidget_length = abs(window.rounded4_1.x() - window.verLineWidgetAudiotoVoice.x() )
-            window.hlineWidgetAudiotoVoice.setFixedSize(hlineWidget_length, 3)
+            window.hlineWidgetAudiotoVoice.setFixedSize(hlineWidget_length, window.LINEWIDTH)
             window.hlineWidgetAudiotoVoice.move(
                 window.verLineWidgetAudiotoVoice.x() ,
                 window.verLineWidgetAudiotoVoice.y() + window.verLineWidgetAudiotoVoice.height()
             )
 
-            window.verLineWidgetVoicetoPara.setFixedSize(3, verLineWidgetAudiotoVoice_length - 3)
+            window.hlineWidgetVoicetoPara.setFixedSize(hlineWidget_length + window.LINEWIDTH, 3)
+            window.hlineWidgetVoicetoPara.move(
+                window.rounded4_1.x() + window.rounded4_1.width() ,
+                window.rounded4_1.y() + window.rounded4_1.height()//2
+            )
+
+            window.verLineWidgetVoicetoPara.setFixedSize(window.LINEWIDTH, verLineWidgetAudiotoVoice_length - window.LINEWIDTH)
             window.verLineWidgetVoicetoPara.move(
-                window.rounded4_1.x() + window.rounded4_1.width()//2 + window.column_width//2 + 2,
+                window.hlineWidgetVoicetoPara.x() + hlineWidget_length,
                 window.hlineWidgetAudiotoPara1.y() + 3
             )
 
-            window.hlineWidgetVoicetoPara.setFixedSize(hlineWidget_length +1, 3)
-            window.hlineWidgetVoicetoPara.move(
-                window.rounded4_1.x() + window.rounded4_1.width() ,
-                window.verLineWidgetVoicetoPara.y() + window.verLineWidgetVoicetoPara.height()
-            )
-
-            window.hlinewidgetTratoSen.setFixedSize(hlineAudioToPara_length , 3)
+            window.hlinewidgetTratoSen.setFixedSize(hlineLength3to5 , 3)
             window.hlinewidgetTratoSen.move(
                 window.rounded3_2.x() + window.rounded3_2.width(),
                 window.rounded3_2.y() + window.rounded3_2.height()//2
@@ -576,24 +576,22 @@ def handleEventFilter(window, source, event):
                 window.rounded3_1.y() + window.rounded3_1.height()
             )
 
-            hlineWidgetVideotoFacial_length = abs(window.circle5_3_outer.x() - (window.rounded3_3.x() + window.rounded3_3.width()))
-            window.hlineWidgetVideotoFacial1.setFixedSize(hlineAudioToPara_length1 + 3, 3)
+            window.hlineWidgetVideotoFacial1.setFixedSize(hlineAudioToPara_length1 + window.LINEWIDTH, window.LINEWIDTH)
             window.hlineWidgetVideotoFacial1.move(
                 window.rounded3_3.x() + window.rounded3_3.width(),
                 window.rounded3_3.y() + window.rounded3_3.height()//2
             )
 
-
-            window.hlineWidgetVideotoFacial2.setFixedSize(hlineAudioToPara_length - hlineAudioToPara_length1 - 3, 3)
+            window.hlineWidgetVideotoFacial2.setFixedSize(hlineLength3to5 - hlineAudioToPara_length1 - window.LINEWIDTH, window.LINEWIDTH)
             window.hlineWidgetVideotoFacial2.move(
-                window.rounded3_3.x() + window.rounded3_3.width()//2 + window.column_width//2 + 2 + 3,
+                window.hlineWidgetVideotoFacial1.x() + hlineAudioToPara_length1 + window.LINEWIDTH,
                 window.rounded3_3.y() + window.rounded3_3.height()//2
             )
 
             verlineWidgetVideotoFace_length = abs(window.hlineWidgetVideotoFacial1.y() - (window.rounded4_2.y() + window.rounded4_2.height()//2))
             window.verlineWidgetVideotoFace.setFixedSize(3, verlineWidgetVideotoFace_length)
             window.verlineWidgetVideotoFace.move(
-                window.rounded3_3.x() + window.rounded3_3.width()//2 + window.column_width//2 + 2,
+                window.verLineWidgetAudiotoVoice.x(),
                 window.hlineWidgetVideotoFacial1.y() - window.verlineWidgetVideotoFace.height()
             )
 
@@ -606,7 +604,7 @@ def handleEventFilter(window, source, event):
 
             window.verlineWidgetFacetoFacial.setFixedSize(3, verlineWidgetVideotoFace_length)
             window.verlineWidgetFacetoFacial.move(
-                window.rounded4_2.x() + window.rounded4_2.width()//2 + window.column_width//2 + 2,
+                window.verLineWidgetVoicetoPara.x(),
                 window.hlineWidgetVideotoFacial1.y() - window.verlineWidgetFacetoFacial.height()
             )
 
@@ -649,7 +647,7 @@ def handleEventFilter(window, source, event):
             verlineWidgetCamToVideo_length = abs((window.rounded3_3.y() + window.rounded3_3.height()//2 ) - (window.circle2_2.y() + window.circle2_2.height()//2))
             window.verlineWidgetCamToVideo.setFixedSize(3, verlineWidgetCamToVideo_length)
             window.verlineWidgetCamToVideo.move(
-                window.circle2_2.x() + window.circle2_2.width()//2 + window.column_width//2 + 3,
+                window.circle2_2.x() + window.circle2_2.width()//2 + window.column_width//3 + 3,
                 window.circle2_2.y() + window.circle2_2.height()//2
             )
 
@@ -666,6 +664,8 @@ def handleEventFilter(window, source, event):
                 window.verlineWidgetCamToVideo.x(),
                 window.rounded3_3.y() + window.rounded3_3.height()//2
             )
+
+            #Buttons
 
             window.play_button.move(
                   window.column_width//2 - window.play_button.width()//2,
