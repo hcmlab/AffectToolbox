@@ -4,14 +4,21 @@ from pygrabber.dshow_graph import FilterGraph
 from PyQt6.QtCore import Qt
 
 class DeviceSelector(QWidget):
+    """Class to select the microphone and camera devices to use in the application same functionality as the DeviceManager class in AffectPipeline.py"""
     def __init__(self, parent=None, window=None):
+        """Constructor for the DeviceSelector class.
+        
+        Args:
+            parent: The parent widget
+            window: The main window
+        """
         super().__init__(parent)
 
         self.microphone_selector = QComboBox(self)
         self.camera_selector = QComboBox(self)
         
         self.window = window
-
+        
         layout = QVBoxLayout(self)
         layout.addWidget(self.microphone_selector)
         layout.addWidget(self.camera_selector)
@@ -30,6 +37,7 @@ class DeviceSelector(QWidget):
         self.camera_selector.currentIndexChanged.connect(self.exp_selected_camera)
     
     def update_devices(self):
+        """Function to update the microphone and camera devices in the combo boxes"""
         # Update microphone devices
         p = pyaudio.PyAudio()
         info = p.get_host_api_info_by_index(0)
@@ -48,7 +56,9 @@ class DeviceSelector(QWidget):
             self.camera_selector.addItem(str(device_index) + " - " + device_name)
     
     def exp_selected_camera(self):
+        """Function to get the selected camera device"""
         return int(self.camera_selector.currentText().split()[0])
         
     def exp_selected_microphone(self):
+        """Function to get the selected microphone device"""
         return int(self.microphone_selector.currentText().split()[0])

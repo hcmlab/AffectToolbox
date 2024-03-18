@@ -1,10 +1,15 @@
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget
 from PyQt6.QtCore import QTimer
 import modules.QueueSystem as qs
-from time import sleep
 
 class TranscriptWidget(QWidget):
+    """Widget to display the transcript of the speech recognition system."""
     def __init__(self, window=None):
+        """Constructor of the transcript widget.
+        
+        Args:
+            window (QWidget): The parent window of the widget    
+    """
         super().__init__()
 
         self.transcript_label = QLabel()
@@ -22,10 +27,7 @@ class TranscriptWidget(QWidget):
         self.timer.start(1000)  # Aktualisieren Sie das Label jede Sekunde
 
     def update_transcript(self):
-        # if self.window.START == True:
-            #text = qs.TRANSCRIPT_SPEECH[len(qs.TRANSCRIPT_SPEECH) - 1]
-            last_three_entries = [qs.TRANSCRIPT_SPEECH[i] for i in range(max(0, len(qs.TRANSCRIPT_SPEECH) - 3), len(qs.TRANSCRIPT_SPEECH))]
-            text = "\n".join(last_three_entries)
-            self.transcript_label.setText(text)
-        #else:
-            #sleep(1)
+        """Update the transcript label with the last three entries in the transcript queue."""
+        last_three_entries = [qs.TRANSCRIPT_SPEECH[i] for i in range(max(0, len(qs.TRANSCRIPT_SPEECH) - 3), len(qs.TRANSCRIPT_SPEECH))]
+        text = "\n".join(last_three_entries)
+        self.transcript_label.setText(text)

@@ -1,15 +1,17 @@
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout
 from PyQt6.QtCore import Qt
-from GUI.image_rounded_frame import ImageRoundedFrame
-from GUI.rounded_frame_noclick import RoundedFrameNoClick
+from GUI.Components.ImageRoundedFrame import ImageRoundedFrame
+from GUI.Components.RoundedFrameNoClick import RoundedFrameNoClick
 from GUI.Eventfilter import handleEventFilter
-from GUI.ui_initializer import initialize_ui
+from GUI.UIinitializer import initialize_ui
 from GUI.ClickEvents import connect
-from GUI.variables import initVariables
+from GUI.Variables import initVariables
 from GUI.RightClickEvents import Rightconnect
 
 class MainWindow(QMainWindow):
+    """Main window of the application"""
     def __init__(self):
+        """Constructor of the main window"""
         super(MainWindow, self).__init__()
         self.lines_initialized = False
         self.initSizes()
@@ -17,16 +19,18 @@ class MainWindow(QMainWindow):
         initVariables(self)
         connect(self)
         Rightconnect(self)
-        # self.setStyleSheet("background-color: #606060;")
         self.setStyleSheet("background-color: black;")
         
     def eventFilter(self, source, event):
+        """Event filter for the main window"""
         return handleEventFilter(self, source, event)
 
     def initUI(self):
+        """Initialize the user interface of the main window"""
         initialize_ui(self)
         
     def initSizes(self):
+        """Initialize the sizes of the main window"""
         self.screen_height = QApplication.instance().primaryScreen().geometry().height()
         self.screen_width = QApplication.instance().primaryScreen().geometry().width()
         self.column_width = int((self.screen_width - 45) / 8)
@@ -36,6 +40,7 @@ class MainWindow(QMainWindow):
         self.LINEWIDTH = 3
 
     def createTitleContainer(self):
+        """Create a container for the titles of the RoundedFrame widgets"""
         titles = ["", "SENSORS", "DATA STREAMS", "ACTIVITY CHECK", "ANALYSIS", "UNIMODAL RESULTS", "FUSION", "MULTIMODAL RESULTS"]
         self.frames = [RoundedFrameNoClick(title) for title in titles]
         for frame in self.frames:
@@ -47,7 +52,7 @@ class MainWindow(QMainWindow):
         self.titleLayout.setContentsMargins(5, 0, 5, 0)  # Set the margins 
         self.titleLayout.setSpacing(5)  # Set the spacing between widgets to 5
 
-        # Ersetzen Sie das linke Element durch ein leeres Widget
+        # Replace the first title with an empty widget
         empty_widget = QWidget()
         empty_widget.setFixedWidth(int(self.screen_width // 8) - 5)
         self.titleLayout.addWidget(empty_widget)
@@ -59,7 +64,8 @@ class MainWindow(QMainWindow):
         self.titleContainer.setLayout(self.titleLayout)
 
     def createBodyContainer(self):
-        # Create a second container for the RoundedFrame widgets
+        """Create a container for the RoundedFrame background widgets"""
+        
         self.bodyContainer = QWidget()
         self.secondLayout = QHBoxLayout()
         self.secondLayout.setContentsMargins(5, 0, 5, 5)  # Set the margins 
@@ -69,8 +75,6 @@ class MainWindow(QMainWindow):
         for i in range(8):
             if(i == 0):
                 self.frame = ImageRoundedFrame(color="black", image_path="./GUI/Icons/logo2.png")
-                # self.frame = ImageRoundedFrame(color="#606060", image_path="./GUI/Icons/logo2.png")
-                #self.frame = ImageRoundedFrame(color="#f0f0f0", image_path="./GUI/Icons/logo2.png")
                 self.secondLayout.addWidget(self.frame)
                 self.secondLayout.setAlignment(self.frame, Qt.AlignmentFlag.AlignTop)
                 continue
@@ -86,6 +90,7 @@ class MainWindow(QMainWindow):
         self.bodyContainer.setLayout(self.secondLayout)
 
     def createLayout(self):
+        """Create the main layout of the window"""
         self.widget = QWidget()
         self.layout = QVBoxLayout()  # Change to QVBoxLayout
 

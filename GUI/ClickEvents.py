@@ -1,14 +1,14 @@
+"""This file implements the main logic for click-events on the GUI."""
 import gc
-from time import sleep
-from GUI.floatWidget import floatWidget
+from GUI.Components.FloatWidget import FloatWidget
 from modules.AffectPipeline import AffectPipeline
-from GUI.Image_window import ImageWindow
-from GUI.AudioWidget import PlotWidget
-from GUI.TranscriptWidget import TranscriptWidget
+from GUI.Components.ImageWindow import ImageWindow
+from GUI.Components.AudioWidget import PlotWidget
+from GUI.Components.TranscriptWidget import TranscriptWidget
 
-
-#Top Half
-def headphonesClick(window):
+####################################### Top Half (Microphone Input) #########################################
+def HeadphonesClick(window):
+    """Implelments the click event for the headphones widget"""
     def turnOn():
         window.circle2_1.toggleColor()
 
@@ -25,6 +25,7 @@ def headphonesClick(window):
         turnOn()
 
 def AudioClick(window):
+    """Implements the click event for the audio widget"""
     def turnOff():
         if window.VOICE_ACTIVITY_LOOP:
             VoiceActivityClick(window)
@@ -39,7 +40,7 @@ def AudioClick(window):
         window.rounded3_1.toggleColor()
         window.hlineWidgetHeadsettoAudio.toggleColor()
         if not window.HEADSET:
-            headphonesClick(window)
+            HeadphonesClick(window)
 
     if window.MIC_LOOP:
         window.MIC_LOOP = False
@@ -49,6 +50,7 @@ def AudioClick(window):
         turnOn()
 
 def VoiceActivityClick(window):
+    """Implements the click event for the voice activity widget"""
     def turnOff():
         window.rounded4_1.toggleColor()
         if window.PARA_LOOP:
@@ -83,6 +85,7 @@ def VoiceActivityClick(window):
         turnOn()
 
 def ParaClick(window):
+    """Implements the click event for the Para-Linguistic widget"""
     def turnOff():
         #Backtracking
         if window.PARA_PLEASURE:
@@ -121,6 +124,7 @@ def ParaClick(window):
         turnOn()
 
 def ParaPleasureClick(window):
+    """Implements the click event for the Para-Linguistic-Pleasure widget"""
     def turnOff():
         #Left side
         window.rounded6_1.toggleColor()
@@ -200,6 +204,7 @@ def ParaPleasureClick(window):
     #Rest
 
 def ParaArousalClick(window):
+    """Implements the click event for the Para-Linguistic-Arousal widget"""
     def turnOff():
         #Left side
         window.rounded6_2.toggleColor()
@@ -272,9 +277,9 @@ def ParaArousalClick(window):
     else:
         window.PARA_AROUSAL = True
         turnOn()
-    #Rest
 
 def ParaDominanceClick(window):
+    """Implements the click event for the Para-Linguistic-Dominance widget"""
     def turnOff():
         #Left side
         window.rounded6_3.toggleColor()
@@ -341,10 +346,9 @@ def ParaDominanceClick(window):
     else:
         window.PARA_DOMINANCE = True
         turnOn()
-    #Rest
 
 def TranscriptClick(window):
-
+    """Implements the click event for the transcript widget"""
     def turnOn():
         if not window.MIC_LOOP:
             AudioClick(window)
@@ -365,6 +369,7 @@ def TranscriptClick(window):
         turnOn()
 
 def SentimentClick(window):
+    """Implements the click event for the sentiment widget"""
     def turnOff():
         #Backtracking
         if window.SENT_PLEASURE:
@@ -385,9 +390,9 @@ def SentimentClick(window):
     else:
         window.SENTIMENT_LOOP = True
         turnOn()
-    #Rest
 
 def SentimentPleasureClick(window):
+    """Implements the click event for the sentiment-pleasure widget"""
     def turnOff():
         #Left side
         window.rounded6_4.toggleColor()
@@ -442,11 +447,11 @@ def SentimentPleasureClick(window):
     else:
         window.SENT_PLEASURE = True
         turnOn()
-    #Rest
 
-#Bottom Half
+####################################### Bottom Half (Camera Input) ##########################################
 
 def WebcamClick(window):
+    """Implements the click event for the webcam widget"""
     if window.CAMERA:
         window.CAMERA = False
         if window.CAMERA_LOOP:
@@ -456,6 +461,7 @@ def WebcamClick(window):
     window.circle2_2.toggleColor()
 
 def VideoClick(window):
+    """Implements the click event for the video widget"""
     def turnOff():
         #BackTracking
         if window.FACE_TRACKING_LOOP:
@@ -486,6 +492,7 @@ def VideoClick(window):
         turnOn()
 
 def FaceTrackingClick(window):
+    """Implements the click event for the face tracking widget"""
     def turnOff():
         window.rounded4_2.toggleColor()
         window.verlineWidgetVideotoFace.toggleColor()
@@ -516,6 +523,7 @@ def FaceTrackingClick(window):
         turnOn()
 
 def FacialExpressionClick(window):
+    """Implements the click event for the facial expression widget"""
     def turnOff():
         #BackTracking
         if window.FACIAL_PLEASURE:
@@ -553,6 +561,7 @@ def FacialExpressionClick(window):
     #Rest
 
 def FacialPleasureClick(window):
+    """Implements the click event for the facial expression pleasure widget"""
     def turnOff():
         #Left side
         window.rounded6_5.toggleColor()
@@ -609,9 +618,9 @@ def FacialPleasureClick(window):
     else:
         window.FACIAL_PLEASURE = True
         turnOn()
-    #Rest
 
 def FacialArousalClick(window):
+    """Implements the click event for the facial expression arousal widget"""
     def turnOff():
         #Left Side
         window.rounded6_6.toggleColor()
@@ -678,9 +687,9 @@ def FacialArousalClick(window):
     else:
         window.FACIAL_AROUSAL = True
         turnOn()
-    #Rest
 
 def FacialDominanceClick(window):
+    """Implements the click event for the facial expression dominance widget"""
     def turnOff():
         #Left side
         window.rounded6_7.toggleColor()
@@ -757,9 +766,9 @@ def FacialDominanceClick(window):
     else:
         window.FACIAL_DOMINANCE = True
         turnOn()
-    #Rest
 
 def SkeletonClick(window):
+    """Implements the click event for the skeleton widget"""
     def turnOff():
         if window.BODY_TRACKING_LOOP:
             BodyTrackingClick(window)
@@ -779,9 +788,9 @@ def SkeletonClick(window):
     else:
         window.SKELETON_LOOP = True
         turnOn()
-    #Rest
 
 def BodyTrackingClick(window):
+    """Implements the click event for the body tracking widget"""
     def turnOff():
         #BackTracking
         if window.POSE_LOOP:
@@ -802,9 +811,9 @@ def BodyTrackingClick(window):
     else:
         window.BODY_TRACKING_LOOP = True
         turnOn()
-    #Rest
 
 def PoseClick(window):
+    """Implements the click event for the pose widget"""
     def turnOff():
         #BackTracking
         if window.POSE_DOMINANCE:
@@ -825,9 +834,9 @@ def PoseClick(window):
     else:
         window.POSE_LOOP = True
         turnOn()
-    #Rest
 
 def PoseDominanceClick(window):
+    """Implements the click event for the pose-dominance widget"""
     def turnOff():
         #Left side
         window.rounded6_8.toggleColor()
@@ -912,11 +921,11 @@ def PoseDominanceClick(window):
     else:
         window.POSE_DOMINANCE = True
         turnOn()
-    #Rest
 
-# Back Part
+####################################### Fusion Part #######################################################
     
 def FusionClick(window):
+    """Implements the click event for the fusion widget"""
     def turnOff():
         #BackTrack
         if window.PLEASURE:
@@ -976,7 +985,6 @@ def FusionClick(window):
                 window.hlineWidgettoCol5.toggleColor()
 
     def turnOn():
-        #Collector fehlt noch
         topHalf = True
         bottomHalf = True
         window.rounded7.toggleColor()
@@ -1034,6 +1042,7 @@ def FusionClick(window):
         turnOn()
 
 def PleasureClick(window):
+    """Implements the click event for the pleasure widget"""
     def turnOff():
         window.rounded8_1.toggleColor()
         window.vlineWidgetFtoP.toggleColor()
@@ -1058,6 +1067,7 @@ def PleasureClick(window):
         turnOn()
 
 def ArousalClick(window):
+    """Implements the click event for the arousal widget"""
     def turnOff():
         window.rounded8_2.toggleColor()
         window.hlineWidgetFtoA2.toggleColor()
@@ -1080,6 +1090,7 @@ def ArousalClick(window):
         turnOn()
 
 def DominanceClick(window):
+    """Implements the click event for the dominance widget"""
     def turnOff():
         window.rounded8_3.toggleColor()
         window.hlineWidgetFtoD.toggleColor()
@@ -1103,9 +1114,10 @@ def DominanceClick(window):
         window.DOMINANCE = True
         turnOn()
 
+####################################### Buttons #######################################################
+
 def PlayButtonClick(window):
-    print("Play Button Clicked")
-    
+    """Implements the click event for the play button that starts the AffectPipeline"""
     window.pipe = AffectPipeline(enable_log_to_console=False,
                       enable_vad_loop=window.MIC_LOOP,
                       enable_ser_loop=window.MIC_LOOP,
@@ -1114,7 +1126,7 @@ def PlayButtonClick(window):
                       enable_print_loop=False, #
                       enable_send_udp_loop=window.UDP,
                       enable_send_kafka_loop=window.KAFKA,
-                      enable_face_er_loop= window.CAMERA_LOOP, #
+                      enable_face_er_loop= window.CAMERA_LOOP, 
                       enable_face_mesh_loop=False,
                       enable_pose_loop=window.SKELETON_LOOP,
                       enable_fusion_loop=window.FUSION_LOOP,
@@ -1147,45 +1159,26 @@ def PlayButtonClick(window):
                       stt_window_length=5,
                       stt_model_size="base",
                       sentiment_model="germansentiment")
-    window.START = False
+    window.START = False # This is set to true when the pipeline is actually started
+    
+    #Check whether or not certain widgets are enabled
     if window.CAMERA_LOOP:
-        layout = window.bodyContainer.layout()
-        x = window.rounded3_3.x()
-        y = window.rounded3_3.y()
-        # layout.removeWidget(window.rounded3_3)
-        # window.rounded3_3.setParent(None)
         window.image = ImageWindow(window=window)
         window.image.setParent(window.bodyContainer)
         window.image.show()
-        # window.image.resize(window.column_width, 180)
-        # window.image.move(2*window.column_width + 15, window.column_height_2//2 + 90)
     if window.MIC_LOOP:
-        # window.test = PlotWindow()
-        # window.test.playButtonClicked()
-        # window.test.show()
-        layout = window.bodyContainer.layout()
-        # layout.removeWidget(window.rounded3_1)
-        # window.rounded3_1.setParent(None)
         window.audio = PlotWidget(window=window)
         window.audio.setParent(window.bodyContainer)
         window.audio.show()
         window.audio.playButtonClicked()
     if window.TRANSCRIPT_LOOP:
-        layout = window.bodyContainer.layout()
-        # layout.removeWidget(window.rounded3_2)
-        # window.rounded3_2.setParent(None)
         window.transcript = TranscriptWidget(window=window)
         window.transcript.setParent(window.bodyContainer)
         window.transcript.show()
     if window.SKELETON_LOOP:
-        layout = window.bodyContainer.layout()
-        # layout.removeWidget(window.rounded3_4)
-        # window.rounded3_4.setParent(None)
         window.skeleton = ImageWindow(window=window, name="Skeleton")
         window.skeleton.setParent(window.bodyContainer)
         window.skeleton.show()
-        # window.image.resize(window.column_width, 180)
-        # window.image.move(2*window.column_width + 15, window.column_height_2//4 * 3)
     if window.VOICE_ACTIVITY_LOOP:
         window.circle4_1.window = window
         window.circle4_1.name = "Voice_Activity"
@@ -1196,143 +1189,112 @@ def PlayButtonClick(window):
         window.circle4_3.window = window
         window.circle4_3.name = "Body_Tracking"
     if window.PARA_PLEASURE:
-        layout = window.bodyContainer.layout()
-        # layout.removeWidget(window.rounded6_1)
-        # window.rounded6_1.setParent(None)
-        window.para_pleasure = floatWidget(name="Para_Pleasure")
+        window.para_pleasure = FloatWidget(name="Para_Pleasure")
         window.para_pleasure.setParent(window.bodyContainer)
-        window.para_pleasure.setFixedSize(100, 45)
+        window.para_pleasure.setFixedSize(window.rounded6_1.width(), window.rounded6_1.height())
         window.para_pleasure.move(
-            window.circle6_4.x() + int(window.rounded6_1.width() // 8),
-                5 + window.circle5_1_outer.height()//2 - window.rounded6_1.height()//2
+            window.rounded6_1.x(),
+            window.rounded6_1.y()
         )
         window.para_pleasure.show()
     if window.PARA_AROUSAL:
-        layout = window.bodyContainer.layout()
-        # layout.removeWidget(window.rounded6_2)
-        # window.rounded6_2.setParent(None)
-        window.para_arousal = floatWidget(name="Para_Arousal")
+        window.para_arousal = FloatWidget(name="Para_Arousal")
         window.para_arousal.setParent(window.bodyContainer)
-        window.para_arousal.setFixedSize(100, 45)
+        window.para_arousal.setFixedSize(window.rounded6_2.width(), window.rounded6_2.height())
         window.para_arousal.move(
-            window.rounded6_1.x(),
-                window.circle6_2.y() + window.circle6_2.radius - window.rounded6_2.height()//2
+            window.rounded6_2.x(),
+            window.rounded6_2.y()
         )
         window.para_arousal.show()    
     if window.PARA_DOMINANCE:
-        layout = window.bodyContainer.layout()
-        # layout.removeWidget(window.rounded6_3)
-        # window.rounded6_3.setParent(None)
-        window.para_dominance = floatWidget(name="Para_Dominance")
+        window.para_dominance = FloatWidget(name="Para_Dominance")
         window.para_dominance.setParent(window.bodyContainer)
-        window.para_dominance.setFixedSize(100, 45)
+        window.para_dominance.setFixedSize(window.rounded6_3.width(), window.rounded6_3.height())
         window.para_dominance.move(
-            window.rounded6_1.x(),
-                window.circle6_3.y() + window.circle6_3.radius - window.rounded6_3.height()//2
+            window.rounded6_3.x(),
+            window.rounded6_3.y()
         )
         window.para_dominance.show()
     if window.SENT_PLEASURE:
-        layout = window.bodyContainer.layout()
-        # layout.removeWidget(window.rounded6_4)
-        # window.rounded6_4.setParent(None)
-        window.sent_pleasure = floatWidget(name="Sent_Pleasure")
+        window.sent_pleasure = FloatWidget(name="Sent_Pleasure")
         window.sent_pleasure.setParent(window.bodyContainer)
-        window.sent_pleasure.setFixedSize(100, 45)
+        window.sent_pleasure.setFixedSize(window.rounded6_4.width(), window.rounded6_4.height())
         window.sent_pleasure.move(
-            window.rounded6_1.x(),
-                window.circle6_4.y() + window.circle6_4.radius - window.rounded6_4.height()//2
+            window.rounded6_4.x(),
+            window.rounded6_4.y()
         )
         window.sent_pleasure.show()
     if window.FACIAL_PLEASURE:
-        layout = window.bodyContainer.layout()
-        # layout.removeWidget(window.rounded6_5)
-        # window.rounded6_5.setParent(None)
-        window.facial_pleasure = floatWidget(name="Facial_Pleasure")
+        window.facial_pleasure = FloatWidget(name="Facial_Pleasure")
         window.facial_pleasure.setParent(window.bodyContainer)
-        window.facial_pleasure.setFixedSize(100, 45)
+        window.facial_pleasure.setFixedSize(window.rounded6_5.width(), window.rounded6_5.height())
         window.facial_pleasure.move(
-            window.rounded6_1.x(),
-                window.circle6_5.y() + window.circle6_5.radius - window.rounded6_5.height()//2
+           window.rounded6_5.x(),
+            window.rounded6_5.y()
         )
         window.facial_pleasure.show()
     if window.FACIAL_AROUSAL:
-        layout = window.bodyContainer.layout()
-        # layout.removeWidget(window.rounded6_6)
-        # window.rounded6_6.setParent(None)
-        window.facial_arousal = floatWidget(name="Facial_Arousal")
+        window.facial_arousal = FloatWidget(name="Facial_Arousal")
         window.facial_arousal.setParent(window.bodyContainer)
-        window.facial_arousal.setFixedSize(100, 45)
+        window.facial_arousal.setFixedSize(window.rounded6_6.width(), window.rounded6_6.height())
         window.facial_arousal.move(
-            window.rounded6_1.x(),
-                window.circle6_6.y() + window.circle6_6.radius - window.rounded6_6.height()//2
+            window.rounded6_6.x(),
+            window.rounded6_6.y()
         )
         window.facial_arousal.show()
     if window.FACIAL_DOMINANCE:
-        layout = window.bodyContainer.layout()
-        # layout.removeWidget(window.rounded6_7)
-        # window.rounded6_7.setParent(None)
-        window.facial_dominance = floatWidget(name="Facial_Dominance")
+        window.facial_dominance = FloatWidget(name="Facial_Dominance")
         window.facial_dominance.setParent(window.bodyContainer)
-        window.facial_dominance.setFixedSize(100, 45)
+        window.facial_dominance.setFixedSize(window.rounded6_7.width(), window.rounded6_7.height())
         window.facial_dominance.move(
-            window.rounded6_1.x(),
-                window.circle6_7.y() + window.circle6_7.radius - window.rounded6_7.height()//2
+           window.rounded6_7.x(),
+            window.rounded6_7.y()
         )
         window.facial_dominance.show()
     if window.POSE_DOMINANCE:
-        layout = window.bodyContainer.layout()
-        # layout.removeWidget(window.rounded6_8)
-        # window.rounded6_8.setParent(None)
-        window.pose_dominance = floatWidget(name="Pose_Dominance")
+        window.pose_dominance = FloatWidget(name="Pose_Dominance")
         window.pose_dominance.setParent(window.bodyContainer)
-        window.pose_dominance.setFixedSize(100, 45)
+        window.pose_dominance.setFixedSize(window.rounded6_8.width(), window.rounded6_8.height())
         window.pose_dominance.move(
-            window.rounded6_1.x(),
-                window.circle6_8.y() + window.circle6_8.radius - window.rounded6_8.height()//2
+            window.rounded6_8.x(),
+            window.rounded6_8.y()
         )
         window.pose_dominance.show()
     if window.PLEASURE:
-        layout = window.bodyContainer.layout()
-        # layout.removeWidget(window.rounded8_1)
-        # window.rounded8_1.setParent(None)
-        window.pleasure = floatWidget(name="Pleasure")
+        window.pleasure = FloatWidget(name="Pleasure")
         window.pleasure.setParent(window.bodyContainer)
-        window.pleasure.setFixedSize(int(window.screen_width *0.08) ,int(window.screen_height * 0.05))
+        window.pleasure.setFixedSize(window.rounded8_1.width(), window.rounded8_1.height())
         window.pleasure.move(
-            (window.bodyContainer.width() - int(window.bodyContainer.width() / 8) + int(window.bodyContainer.width() / 16)) - window.rounded8_1.width() // 3 ,
-            (window.column_height_light - window.rounded8_1.height()) // 2 - int(window.circle8_1.height() * 1.5)
+            window.rounded8_1.x(),
+            window.rounded8_1.y()
         )
         window.pleasure.show()
     if window.AROUSAL:
-        layout = window.bodyContainer.layout()
-        # layout.removeWidget(window.rounded8_2)
-        # window.rounded8_2.setParent(None)
-        window.arousal = floatWidget(name="Arousal")
+        window.arousal = FloatWidget(name="Arousal")
         window.arousal.setParent(window.bodyContainer)
-        window.arousal.setFixedSize(int(window.screen_width *0.08) ,int(window.screen_height * 0.05))
+        window.arousal.setFixedSize(window.rounded8_2.width(), window.rounded8_2.height())
         window.arousal.move(
-            (window.bodyContainer.width() - int(window.bodyContainer.width() / 8) + int(window.bodyContainer.width() / 16)) - window.rounded8_2.width() // 3,
-            (window.column_height_light - window.rounded8_2.height()) // 2
+            window.rounded8_2.x(),
+            window.rounded8_2.y()
         )
         window.arousal.show()
     if window.DOMINANCE:
-        layout = window.bodyContainer.layout()
-        # layout.removeWidget(window.rounded8_3)
-        # window.rounded8_3.setParent(None)
-        window.dominance = floatWidget(name="Dominance")
+        window.dominance = FloatWidget(name="Dominance")
         window.dominance.setParent(window.bodyContainer)
-        window.dominance.setFixedSize(int(window.screen_width *0.08) ,int(window.screen_height * 0.05))
+        window.dominance.setFixedSize(window.rounded8_3.width(), window.rounded8_3.height())
         window.dominance.move(
-            (window.bodyContainer.width() - int(window.bodyContainer.width() / 8) + int(window.bodyContainer.width() / 16)) - window.rounded8_3.width() // 3,
-            (window.column_height_light - window.rounded8_3.height()) // 2 + int(window.circle8_3.height() * 1.5)
+           window.rounded8_3.x(),
+            window.rounded8_3.y()
         )
         window.dominance.show()
     window.pipe.start(window)
 
 def StopButtonClick(window):
-    print("Stop Button Clicked")
+    """Implements the click event for the stop button that stops the AffectPipeline"""
+    
     window.pipe.stop()
     layout = window.bodyContainer.layout()
+    #Check if widgets are enabled and remove them if they are
     if window.image is not None:
         layout.removeWidget(window.image)
         window.image.setParent(None)
@@ -1430,6 +1392,7 @@ def StopButtonClick(window):
     gc.collect()
 
 def kafkaClick(window):
+    """Implements the click event for the kafka button"""
 
     def turnOn():
         window.kafka_button.setStyleSheet("background-color: green")
@@ -1445,23 +1408,25 @@ def kafkaClick(window):
         turnOn()
 
 def udpClick(window):
+    """Implements the click event for the udp button"""
+    def turnOn():
+        window.udp_button.setStyleSheet("background-color: green")
     
-        def turnOn():
-            window.udp_button.setStyleSheet("background-color: green")
-        
-        def turnOff():
-            window.udp_button.setStyleSheet("background-color: #f0f0f0")
-    
-        if window.UDP:
-            window.UDP = False
-            turnOff()
-        else:
-            window.UDP = True
-            turnOn()
-    
+    def turnOff():
+        window.udp_button.setStyleSheet("background-color: #f0f0f0")
+
+    if window.UDP:
+        window.UDP = False
+        turnOff()
+    else:
+        window.UDP = True
+        turnOn()
+
+####################################### Connection #######################################################
 def connect(window):
+    """Connects the click events to the widgets in the GUI"""
     #Upper
-    window.circle2_1.clicked.connect(lambda: headphonesClick(window)) 
+    window.circle2_1.clicked.connect(lambda: HeadphonesClick(window)) 
     window.rounded3_1.clicked.connect(lambda: AudioClick(window)) 
     window.rounded3_2.clicked.connect(lambda: TranscriptClick(window))
     window.rounded4_1.clicked.connect(lambda: VoiceActivityClick(window))
@@ -1491,6 +1456,7 @@ def connect(window):
     window.rounded8_2.clicked.connect(lambda: ArousalClick(window))
     window.rounded8_3.clicked.connect(lambda: DominanceClick(window))
 
+    #Buttons
     window.kafka_button.leftClicked.connect(lambda: kafkaClick(window))
     window.udp_button.leftClicked.connect(lambda: udpClick(window))
     

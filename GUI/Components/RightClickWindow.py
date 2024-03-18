@@ -2,12 +2,19 @@ from PyQt6.QtWidgets import QMainWindow, QWidget
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QVBoxLayout
 from PyQt6.QtWidgets import QDoubleSpinBox, QLabel, QSpacerItem, QSizePolicy, QLineEdit, QSpinBox
-from numpy import double
-from GUI.DeviceSelector import DeviceSelector
-from GUI.variables import changeValues
+from GUI.Components.DeviceSelector import DeviceSelector
+from GUI.Variables import changeValues
 
 class RightClickWindow(QMainWindow):
+    """A window that pops up when the user right-clicks on a frame. It allows the user to change the settings of the different sensors and data streams."""
     def __init__(self, parent=None, window=None, name=""):
+        """Constructor for the RightClickWindow class.
+        
+        Args:
+            parent (QWidget): The parent widget
+            window (MainWindow): The main window of the application
+            name (str): The name of the widget that was right-clicked
+        """
         super(RightClickWindow, self).__init__(parent)
         self.resize(300, 300)
 
@@ -15,13 +22,11 @@ class RightClickWindow(QMainWindow):
         central_widget = QWidget()
 
         self.window = window
-        
         self.name = name
-
         self.layout = QVBoxLayout(central_widget)
         self.layout.setSpacing(5)
 
-        # Create a QSpinBox
+        #Check which widget is rightlcicked and add the corresponding settings into a layout
         if name == "Camera":
             self.CameraLoopRate = None
             self.CameraLoopRateLabel = None
@@ -71,10 +76,10 @@ class RightClickWindow(QMainWindow):
             self.Device = DeviceSelector(window=window)
             self.layout.addWidget(self.Device)
 
-        # Erstellen Sie ein QSpacerItem
+        # Create a QSpacerItem to "press" the widgets to the top
         spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
-        # Fügen Sie das QSpacerItem zum Layout hinzu
+        # add the spacer to the layout
         self.layout.addItem(spacer)
         # Set the layout
         central_widget.setLayout(self.layout)
@@ -82,10 +87,14 @@ class RightClickWindow(QMainWindow):
         # Set the central widget
         self.setCentralWidget(central_widget)
 
-        # Connect the valueChanged signal to a slot
         self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
     
     def closeEvent(self, event):
+        """This method is called when the window is closed. It is used to save the selected camera and microphone.
+        
+        Args:
+            event (QCloseEvent): The close event
+        """
         if self.name == "Start":
             self.window.CAM_ID = self.Device.exp_selected_camera()
             self.window.MIC_ID = self.Device.exp_selected_microphone()
@@ -93,7 +102,12 @@ class RightClickWindow(QMainWindow):
             event.accept()
     
     def on_double_value_changed(self, value, name=""):
-        # This method will be called whenever the value of the spinBox is changed
+        """This method will be called whenever the value of the spinBox is changed.
+        
+        Args:
+            value (float): The new value of the spin box
+            name (str): The name of the spin box
+        """
         value = round(value, 1)
         if name == "CAMERA_LOOP_RATE":
             self.window.CAMERA_LOOP_RATE = value
@@ -122,10 +136,17 @@ class RightClickWindow(QMainWindow):
         elif name == "SEND_LOOP_RATE":
             self.window.SEND_LOOP_RATE = value
             changeValues(send_loop_rate=value)
-        
-        print(f"The {name}-Loop-Rate has been changed to {value}")
 
     def AddDoubleSpinBox(self, SpinBoxinstance, Labelinstance, baseValue=0.0, name="", variableName=""):
+        """ Add a double spin box to the layout with the given name and base value. The method also connects the valueChanged signal to the on_double_value_changed method.
+        
+        Args:
+            SpinBoxinstance (QDoubleSpinBox): The instance of the spin box
+            Labelinstance (QLabel): The instance of the label
+            baseValue (float): The base value of the spin box
+            name (str): The name of the spin box
+            variableName (str): The name of the variable that will be changed
+        """
         Labelinstance = QLabel(f"{variableName}:")
         Labelinstance.setFixedSize(300, 20)
         SpinBoxinstance = QDoubleSpinBox()
@@ -136,25 +157,25 @@ class RightClickWindow(QMainWindow):
         SpinBoxinstance.setSingleStep(0.1)
         SpinBoxinstance.valueChanged.connect(lambda value: self.on_double_value_changed(value=value, name=variableName))
         
-
-    #def AddDoubleSpinBox(self, baseValue=0.0, name=""):
-        # self.doublespinBoxLabel = QLabel(f"{name} Loop Rate:")
-        # self.doublespinBoxLabel.setFixedSize(300, 20)
-        # self.doublespinBox = QDoubleSpinBox()
-        # self.doublespinBox.setFixedSize(300, 20)
-        # self.layout.addWidget(self.doublespinBoxLabel)
-        # self.layout.addWidget(self.doublespinBox)
-        # self.doublespinBox.setValue(baseValue)
-        # self.doublespinBox.setSingleStep(0.1)
-        # self.doublespinBox.valueChanged.connect(lambda value: self.on_double_value_changed(value=value, name=name))
-
     def on_value_changed(self, value, name=""):
+        """This method will be called whenever the value of the spinBox is changed.
+        
+        Args:
+            value (int): The new value of the spin box
+            name (str): The name of the spin box
+        """
         if name == "Audio":
             self.window.SAMPLE_RATE = value
             changeValues(sample_rate=value)
         print(f"The {name}-Loop-Rate has been changed to {value}")
 
     def AddSpinBox(self, baseValue=0, name=""):
+        """ Add a spin box to the layout with the given name and base value. The method also connects the valueChanged signal to the on_value_changed method.
+        
+        Args:
+            baseValue (int): The base value of the spin box
+            name (str): The name of the spin box
+        """
         self.spinBoxLabel = QLabel(f"{name} Sample Rate:")
         self.spinBoxLabel.setFixedSize(300, 20)
         self.spinBox = QSpinBox()
@@ -167,6 +188,12 @@ class RightClickWindow(QMainWindow):
         self.spinBox.valueChanged.connect(lambda value: self.on_value_changed(value=value, name=name))
 
     def AddIp(self, baseValue='0.0.0.0', name=""):
+        """ Add a QLineEdit to the layout with the given name and base value. The method also connects the textChanged signal to the on_text_changed_IP method.
+        
+        Args:
+            baseValue (str): The base value of the QLineEdit
+            name (str): The name of the QLineEdit
+        """
         self.ipLabel = QLabel(f"{name}-IP Address:")
         self.ipLabel.setFixedSize(300, 20)
         self.ipLineEdit = QLineEdit()
@@ -177,16 +204,26 @@ class RightClickWindow(QMainWindow):
         self.ipLineEdit.textChanged.connect(lambda  text: self.on_text_changed_IP(text=text, name=name))
 
     def on_text_changed_IP(self, text, name=""):
-        # Diese Methode wird aufgerufen, wenn der Text im QLineEdit geändert wird
+        """Called, when text within QLineEdit is changed
+        
+        Args:
+            text (str): The new text of the QLineEdit
+            name (str): The name of the QLineEdit
+        """
         if name == "UDP":
             self.window.UDP_IP = text
             changeValues(udpIP=text)
         if name == "KAFKA":
             self.window.KAFKA_IP = text
             changeValues(kafkaIP=text)
-        #print(f"The IP address has been changed to {text}")
 
     def AddPort(self, baseValue=3000, name=""):
+        """ Add a QLineEdit to the layout with the given name and base value. The method also connects the textChanged signal to the on_text_changed_port method.
+        
+        Args:
+            baseValue (int): The base value of the QLineEdit
+            name (str): The name of the QLineEdit
+        """
         self.portLabel = QLabel(f"{name}-Port:")
         self.portLabel.setFixedSize(300, 20)
         self.portLineEdit = QLineEdit()
@@ -197,16 +234,26 @@ class RightClickWindow(QMainWindow):
         self.portLineEdit.textChanged.connect(lambda value: self.on_text_changed_port(value=value, name=name))
 
     def on_text_changed_port(self, value, name=""):
-        # Diese Methode wird aufgerufen, wenn der Text im QLineEdit geändert wird
+        """Called, when text within QLineEdit is changed.
+        
+        Args:
+            value (str): The new text of the QLineEdit
+            name (str): The name of the QLineEdit
+        """
         if name == "UDP":
             self.window.UDP_PORT = int(value)
             changeValues(udpPort=int(value))
         if name == "KAFKA":
             self.window.KAFKA_PORT = int(value)
             changeValues(kafkaPort=int(value))
-        #print(f"The {name}-Port has been changed to {value}")
 
     def AddTopic(self, baseValue='mithos', name=""):
+        """ Add a QLineEdit to the layout with the given name and base value. The method also connects the textChanged signal to the on_text_changed_topic method.
+        
+        Args:
+            baseValue (str): The base value of the QLineEdit
+            name (str): The name of the QLineEdit
+        """
         self.topicLabel = QLabel(f"{name}-Topic:")
         self.topicLabel.setFixedSize(300, 20)
         self.topicLineEdit = QLineEdit()
@@ -217,10 +264,14 @@ class RightClickWindow(QMainWindow):
         self.topicLineEdit.textChanged.connect(lambda value: self.on_text_changed_topic(value=value, name=name))
 
     def on_text_changed_topic(self, value, name=""):
-        # Diese Methode wird aufgerufen, wenn der Text im QLineEdit geändert wird
+        """Called, when text within QLineEdit is changed.
+        
+        Args:
+            value (str): The new text of the QLineEdit
+            name (str): The name of the QLineEdit
+        """
         if name == "KAFKA":
             self.window.KAFKA_TOPIC = value
             changeValues(kafkaTopic=value)
-        #print(f"The {name}-Topic has been changed to {value}")
             
         

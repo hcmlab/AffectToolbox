@@ -1,12 +1,15 @@
 import os, json
 
 def initVariables(window=None):
+    """Initialize the variables of the main window."""
     if window is not None:
+        # Load the configuration file
         current_dir = os.path.dirname(os.path.abspath(__file__))
         config_path = os.path.join(current_dir, '../config.json')
         with open(config_path, 'r') as file:
             data = json.load(file)
             file.close()
+        
         window.CAMERA = False
         window.HEADSET = False
         window.CAMERA_LOOP = False
@@ -67,6 +70,7 @@ def initVariables(window=None):
         window.MIC_ID = data["mic_id"]
 
 def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpPort=None, ser_loop_rate=None, stt_loop_rate=None, sentiment_loop_rate=None, vad_loop_rate=None, er_loop_rate=None, pose_loop_rate=None, send_loop_rate=None, camera_loop_rate=None, face_mesh_rate=None, sample_rate=None, cam_id=None, mic_id=None):
+    """Change the values of the config file."""
     current_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(current_dir, '../config.json')
     with open(config_path, 'r+') as file:

@@ -1,23 +1,22 @@
-from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPainter, QPen, QColor
 from PyQt6.QtWidgets import QWidget
 
-class HorLineWidget(QWidget):
+class VerLineWidget(QWidget):
+    """A vertical line widget that can be toggled between two colors"""
     def __init__(self, parent=None):
-        super(HorLineWidget, self).__init__(parent)
-        self.setMinimumHeight(3)  # Set a minimum height for the widget
-        # self.color = QColor("white")
+        super(VerLineWidget, self).__init__(parent)
+        self.setMinimumSize(1, 1) 
         self.color = QColor("#EFEEEE")
 
     def paintEvent(self, event):
+        """Draw the line"""
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-        pen = QPen(self.color, 6) 
-        painter.setPen(pen)
-        painter.drawLine(self.rect().topLeft(), self.rect().topRight())  # Draw a horizontal line
+        pen = QPen(self.color, 3)  
+        painter.setPen(pen) 
+        painter.drawLine(self.width() // 2, 0, self.width() // 2, self.height())
 
     def toggleColor(self):
+        """Toggle the color of the line"""
         if self.color == QColor("#EFEEEE"):
             self.color = QColor("green")
         elif self.color == QColor("green"):

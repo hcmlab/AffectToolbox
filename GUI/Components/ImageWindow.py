@@ -6,15 +6,24 @@ import modules.QueueSystem as qs
 from PyQt6.QtCore import Qt
 import cv2
 
-class ImageWindow(QWidget):  # Inherit from QWidget instead of QMainWindow
+class ImageWindow(QWidget):
+    """Class to create a widget that displays an image stream"""  
     def __init__(self, parent=None, window=None, name="Image"):
+        """Constructor for the ImageWindow class.
+        
+        Args:
+            parent: The parent widget
+            window: The main window
+            name (str, optional): The name of the stream. Defaults to "Image".
+        """
         super(ImageWindow, self).__init__(parent)
         self.image_label = QLabel()
         self.window = window
         layout = QVBoxLayout()
         layout.addWidget(self.image_label)
-        self.setLayout(layout)  # Set the layout directly on this widget
+        self.setLayout(layout)  
         self.timer = QTimer()
+        #Check which stream is being displayed
         if name == "Image":
             self.resize(window.column_width, 180)
             self.move(2*window.column_width + 15, window.column_height_2//2 + 70)
@@ -23,12 +32,11 @@ class ImageWindow(QWidget):  # Inherit from QWidget instead of QMainWindow
             self.resize(window.column_width, 180)
             self.move(2*window.column_width + 15, window.column_height_2//15 *14 + 15)
             self.timer.timeout.connect(lambda: self.update_image_skeleton())
-        self.timer.start(50)  # Update every second
+        self.timer.start(50)  
 
     def update_image(self):
+        """Method to update the image displayed in the window """
         if self.window.START == True:
-            # Assuming IMAGE_FACE_RAW is a global list that gets updated with numpy arrays representing images
-            #image = qs.IMAGE_FACE_RAW[len(qs.IMAGE_FACE_RAW) - 1]  # Get the latest image
             image = qs.IMAGE_FACE_PREPROCESSED[len(qs.IMAGE_FACE_PREPROCESSED) - 1]
             height, width, channel = image.shape
             bytes_per_line = 3 * width
@@ -41,6 +49,7 @@ class ImageWindow(QWidget):  # Inherit from QWidget instead of QMainWindow
             sleep(1)
 
     def update_image_skeleton(self):
+        """Method to update the image for the Skeleton stream displayed in the window"""
         if self.window.START == True:
             image = qs.IMAGE_BODY_SKEL[len(qs.IMAGE_BODY_SKEL) - 1]  # Get the latest image
             height, width, channel = image.shape
