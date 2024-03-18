@@ -5,7 +5,7 @@ from GUI.Components.RoundedFrameNoClick import RoundedFrameNoClick
 from GUI.Eventfilter import handleEventFilter
 from GUI.UIinitializer import initialize_ui
 from GUI.ClickEvents import connect
-from GUI.variables import initVariables
+from GUI.Variables import initVariables
 from GUI.RightClickEvents import Rightconnect
 
 class MainWindow(QMainWindow):
