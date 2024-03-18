@@ -441,7 +441,7 @@ def moveLinesFrom5to6(window):
         window.circle5_1_outer.y() + window.circle5_1_outer.height()//2
     )
     
-    collectorLine5to6_1_1_length = abs(window.collectorLine5to6_1.y() - collectorLine5to6_1_length - (window.rounded6_3.y() + window.rounded6_3.height()//2))
+    collectorLine5to6_1_1_length = abs(window.collectorLine5to6_1.y() + collectorLine5to6_1_length - (window.rounded6_3.y() + window.rounded6_3.height()//2))
     window.collectorLine5to6_1_1.setFixedSize(window.LINEWIDTH, abs(collectorLine5to6_1_1_length))
     window.collectorLine5to6_1_1.move(
         window.collectorLine5to6_1.x(),
