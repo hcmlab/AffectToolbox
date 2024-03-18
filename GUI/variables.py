@@ -10,7 +10,7 @@ def initVariables(window=None):
             data = json.load(file)
             file.close()
         
-        window.CAMERA = False
+        window.CAMERA = False 
         window.HEADSET = False
         window.CAMERA_LOOP = False
         window.MIC_LOOP = False
