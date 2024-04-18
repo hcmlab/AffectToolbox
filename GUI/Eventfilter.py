@@ -262,10 +262,10 @@ def moveButtons(window):
         window.play_button.y()
     )
 
-    window.console.move(
-        window.play_button.x(),
-        window.play_button.y() - window.console.height() - 10
-    )
+    # window.console.move(
+    #     window.play_button.x(),
+    #     window.play_button.y() - window.console.height() - 10
+    # )
 
 def moveLinesFrom7to8(window):
     """Function to move the lines from the 7th column to the 8th column"""

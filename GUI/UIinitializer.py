@@ -243,9 +243,9 @@ def AddButtons(window):
     window.udp_button.setParent(window.bodyContainer)
     window.udp_button.setStyleSheet("background-color: #f0f0f0;")
 
-    window.console = ConsoleOutput()
-    window.console.setFixedSize(300, 200)
-    window.console.setParent(window.bodyContainer)
+    # window.console = ConsoleOutput()
+    # window.console.setFixedSize(300, 200)
+    # window.console.setParent(window.bodyContainer)
 
 def AddLinesFromColumn7to8(window):
     """Add the lines from the 7th column to the 8th column to the window."""

@@ -1118,12 +1118,12 @@ def DominanceClick(window):
 
 def PlayButtonClick(window):
     """Implements the click event for the play button that starts the AffectPipeline"""
-    window.pipe = AffectPipeline(enable_log_to_console=False,
+    window.pipe = AffectPipeline(enable_log_to_console=True,
                       enable_vad_loop=window.MIC_LOOP,
                       enable_ser_loop=window.MIC_LOOP,
                       enable_stt_loop=window.TRANSCRIPT_LOOP,
                       enable_camera_loop=window.CAMERA_LOOP,
-                      enable_print_loop=False, #
+                      enable_print_loop=True,
                       enable_send_udp_loop=window.UDP,
                       enable_send_kafka_loop=window.KAFKA,
                       enable_face_er_loop= window.CAMERA_LOOP, 
