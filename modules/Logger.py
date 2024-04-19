@@ -1,12 +1,5 @@
 from termcolor import colored
 import os
-import random
-import tkinter
-from tkinter import *
-from tkinter import ttk
-import PIL
-from PIL import ImageTk, Image
-
 
 class LogModule():
 
@@ -42,14 +35,6 @@ class LogModule():
         self.TRACKING_VOICE = False
         self.TRACKING_FACE = False
         self.TRACKING_BODY = False
-
-        self.TK_ROOT = tk_root
-        self.TK_LOG_STRING = tkinter.StringVar()
-        self.TK_LOG_LABEL = tkinter.Label(self.TK_ROOT, textvariable=self.TK_LOG_STRING, bg="azure2")
-        self.TK_VIDEO_RAW = tkinter.Label(self.TK_ROOT)
-        self.TK_VIDEO_CROP = tkinter.Label(self.TK_ROOT)
-        self.TK_VIDEO_MESH = tkinter.Label(self.TK_ROOT)
-        self.TK_VIDEO_SKEL = tkinter.Label(self.TK_ROOT)
 
     def compose_value_string(self, value_dict):
 
@@ -125,39 +110,3 @@ class LogModule():
         if self.LOG_TO_CONSOLE:
             os.system('cls' if os.name == 'nt' else 'clear')
             print(self.value_string)
-
-        if self.PRINT_CAMERA_LOOP:
-            if img_raw is not None:
-                imgtk_raw = ImageTk.PhotoImage(image=PIL.Image.fromarray(img_raw).resize((250,
-                                                                                          250)))
-                self.TK_VIDEO_RAW.configure(image=imgtk_raw)
-                self.TK_VIDEO_RAW.image = imgtk_raw
-                self.TK_VIDEO_RAW.place(width=int(self.TK_ROOT.winfo_width() / 4),
-                                        height=int(self.TK_ROOT.winfo_height() / 2), x=0, y=0)
-
-            if img_preprocessed is not None:
-                imgtk_preprocessed = ImageTk.PhotoImage(image=PIL.Image.fromarray(img_preprocessed).resize((250, 250)))
-                self.TK_VIDEO_CROP.configure(image=imgtk_preprocessed)
-                self.TK_VIDEO_CROP.image = imgtk_preprocessed
-                self.TK_VIDEO_CROP.place(width=int(self.TK_ROOT.winfo_width() / 4),
-                                        height=int(self.TK_ROOT.winfo_height() / 2), x=int(self.TK_ROOT.winfo_width() / 4), y=0)
-
-        if self.PRINT_FACEMESH_LOOP:
-            if img_facemesh is not None:
-                imgtk_mesh = ImageTk.PhotoImage(image=PIL.Image.fromarray(img_facemesh).resize((250, 250)))
-                self.TK_VIDEO_MESH.configure(image=imgtk_mesh)
-                self.TK_VIDEO_MESH.image = imgtk_mesh
-                self.TK_VIDEO_MESH.place(width=int(self.TK_ROOT.winfo_width() / 4),
-                                        height=int(self.TK_ROOT.winfo_height() / 2), x=int(self.TK_ROOT.winfo_width() / 4)*2, y=0)
-
-        if self.PRINT_POSE_LOOP:
-            if img_bodyskel is not None:
-                imgtk_skel = ImageTk.PhotoImage(image=PIL.Image.fromarray(img_bodyskel).resize((250, 250)))
-                self.TK_VIDEO_SKEL.configure(image=imgtk_skel)
-                self.TK_VIDEO_SKEL.image = imgtk_skel
-                self.TK_VIDEO_SKEL.place(width=int(self.TK_ROOT.winfo_width() / 4),
-                                        height=int(self.TK_ROOT.winfo_height() / 2), x=int(self.TK_ROOT.winfo_width() / 4)*3, y=0)
-
-        self.TK_LOG_STRING.set(self.value_string)
-        self.TK_LOG_LABEL.place(width=int(self.TK_ROOT.winfo_width()), height=int(self.TK_ROOT.winfo_height() / 2), x=0,
-                                y=int(self.TK_ROOT.winfo_height() / 2))
