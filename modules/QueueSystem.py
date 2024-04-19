@@ -67,6 +67,10 @@ NEG_SENTIMENT = AffectDeque(maxlen=500)
 for i in range(0, 500):
     NEG_SENTIMENT.append(.0)
 
+PLEASURE_SENTIMENT = AffectDeque(maxlen=500)
+for i in range(0, 500):
+    PLEASURE_SENTIMENT.append(.0)
+
 FUSION = AffectDeque(maxlen=500)
 for i in range(0, 500):
     FUSION.append([.0, .0, .0])

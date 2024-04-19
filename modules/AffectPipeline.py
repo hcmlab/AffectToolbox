@@ -362,6 +362,8 @@ class AffectPipeline():
         qs.NEG_SENTIMENT.append(prediction[1][1])
         qs.NEU_SENTIMENT.append(prediction[2][1])
 
+        qs.PLEASURE_SENTIMENT.append(prediction[0][1] - prediction[1][1])
+
         seconds_sentiment_loop = time.time() - time_sentiment_loop_start
         # print(seconds_sentiment_loop)
 
