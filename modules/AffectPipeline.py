@@ -4,6 +4,7 @@ import numpy as np
 import pyaudio
 import threading
 import cv2
+import math
 from modules.Logger import LogModule
 import socket
 import lxml.etree
@@ -450,6 +451,31 @@ class AffectPipeline():
             prediction = self.IER_MODULE.predict(img)
             qs.VALENCE_FACE.append(prediction[0][0])
             qs.AROUSAL_FACE.append(prediction[0][1])
+
+            # DERIVE PERCEIVED DOMINANCE FROM VALENCE/AROUSAL
+            dominance_face_latest = 0.0
+            valence_face_latest = prediction[0][0]
+            arousal_face_latest = prediction[0][1]
+
+            if arousal_face_latest < 0.0:
+                dominance_face_latest = -1.0
+            elif arousal_face_latest > 0.5:
+                dominance_face_latest = 1.0
+            elif abs(valence_face_latest) > (-2.0 * arousal_face_latest + 1.0):
+                dominance_face_latest = 1.0
+            else:
+                dominance_face_latest = -1.0
+
+            # NORMALIZE PERCEIVED DOMINANCE
+            if dominance_face_latest == 1.0:
+                dominance_face_latest = (math.sqrt(
+                    math.pow(valence_face_latest, 2.0) + math.pow(arousal_face_latest, 2.0))) / 1.4
+            else:
+                dominance_face_latest = (math.sqrt(
+                    math.pow(valence_face_latest, 2.0) + math.pow(arousal_face_latest, 2.0))) / -1.4
+
+            # FACE - PERCEIVED DOMINANCE
+            qs.DOMINANCE_FACE.append(dominance_face_latest)
 
         seconds_er_loop = time.time() - time_er_loop_start
         er_timer = 1.0 / float(self._ER_LOOP_RATE) - seconds_er_loop

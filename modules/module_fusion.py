@@ -55,7 +55,7 @@ class FusionModule():
         self.face_weight_arousal = 0.5
         self.face_boost_arousal = 1.75
         self.face_weight_dominance = 1.0
-        self.face_boost_dominance = 1.0
+        self.face_boost_dominance = 1.25
 
         self.value_string = ''
 
@@ -121,31 +121,40 @@ class FusionModule():
                 EVENTS_AROUSAL.append(qs.AROUSAL_FACE[len(qs.AROUSAL_FACE) - index] * self.face_boost_arousal, self.face_weight_arousal, self.face_speed)
             index = index + 1
 
+        # .. moved to AffectPipeline.py
         # DERIVE PERCEIVED DOMINANCE FROM VALENCE/AROUSAL
-        dominance_face_latest = 0.0
-        valence_face_latest = 0.0
-        arousal_face_latest = 0.0
-        if qs.AROUSAL_FACE[len(qs.AROUSAL_FACE) - 1] is not None and qs.VALENCE_FACE[len(qs.AROUSAL_FACE) - 1] is not None:
-            valence_face_latest = qs.VALENCE_FACE[len(qs.VALENCE_FACE) - 1] * self.face_boost_valence
-            arousal_face_latest = qs.AROUSAL_FACE[len(qs.AROUSAL_FACE) - 1] * self.face_boost_arousal
-            if arousal_face_latest < 0.0:
-                dominance_face_latest = -1.0
-            elif arousal_face_latest > 0.5:
-                dominance_face_latest = 1.0
-            elif abs(valence_face_latest) > (-2.0 * arousal_face_latest + 1.0):
-                dominance_face_latest = 1.0
-            else:
-                dominance_face_latest = -1.0
+        # dominance_face_latest = 0.0
+        # valence_face_latest = 0.0
+        # arousal_face_latest = 0.0
+        # if qs.AROUSAL_FACE[len(qs.AROUSAL_FACE) - 1] is not None and qs.VALENCE_FACE[len(qs.AROUSAL_FACE) - 1] is not None:
+        #     valence_face_latest = qs.VALENCE_FACE[len(qs.VALENCE_FACE) - 1] * self.face_boost_valence
+        #     arousal_face_latest = qs.AROUSAL_FACE[len(qs.AROUSAL_FACE) - 1] * self.face_boost_arousal
+        #     if arousal_face_latest < 0.0:
+        #         dominance_face_latest = -1.0
+        #     elif arousal_face_latest > 0.5:
+        #         dominance_face_latest = 1.0
+        #     elif abs(valence_face_latest) > (-2.0 * arousal_face_latest + 1.0):
+        #         dominance_face_latest = 1.0
+        #     else:
+        #         dominance_face_latest = -1.0
 
         # NORMALIZE PERCEIVED DOMINANCE
-        if dominance_face_latest == 1.0:
-            dominance_face_latest = (math.sqrt(math.pow(valence_face_latest, 2.0) + math.pow(arousal_face_latest, 2.0))) / 1.4
-        else:
-            dominance_face_latest = (math.sqrt(math.pow(valence_face_latest, 2.0) + math.pow(arousal_face_latest, 2.0))) / -1.4
+        # if dominance_face_latest == 1.0:
+        #     dominance_face_latest = (math.sqrt(math.pow(valence_face_latest, 2.0) + math.pow(arousal_face_latest, 2.0))) / 1.4
+        # else:
+        #     dominance_face_latest = (math.sqrt(math.pow(valence_face_latest, 2.0) + math.pow(arousal_face_latest, 2.0))) / -1.4
 
         # FACE - PERCEIVED DOMINANCE
-        EVENTS_DOMINANCE.append(dominance_face_latest * self.face_boost_dominance, self.face_weight_dominance, self.face_speed)
-        qs.DOMINANCE_FACE.append(dominance_face_latest * self.face_boost_dominance)
+        # qs.DOMINANCE_FACE.append(dominance_face_latest * self.face_boost_dominance)
+        # EVENTS_DOMINANCE.append(dominance_face_latest * self.face_boost_dominance, self.face_weight_dominance, self.face_speed)
+        # .. instead now:
+
+        index = 1
+        while qs.DOMINANCE_FACE.time[len(qs.DOMINANCE_FACE) - index] > self.last_time_ms:
+            if qs.DOMINANCE_FACE.time[len(qs.DOMINANCE_FACE) - index] > self.last_time_ms:
+                EVENTS_DOMINANCE.append(qs.DOMINANCE_FACE[len(qs.DOMINANCE_FACE) - index] * self.face_boost_dominance,
+                                      self.face_weight_dominance, self.face_speed)
+            index = index + 1
 
         # VOICE - BUT ONLY IF VOICE ACTIVITY ...
         if qs.VOICE_ACTIVITY[len(qs.VOICE_ACTIVITY) - 1] != 0:
