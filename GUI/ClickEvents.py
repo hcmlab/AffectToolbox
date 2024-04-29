@@ -1461,4 +1461,4 @@ def connect(window):
     window.udp_button.leftClicked.connect(lambda: udpClick(window))
     
     window.play_button.clicked.connect(lambda: PlayButtonClick(window))
-    window.stop_button.clicked.connect(lambda: StopButtonClick(window))
+    # window.stop_button.clicked.connect(lambda: StopButtonClick(window))
