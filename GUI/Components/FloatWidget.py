@@ -43,7 +43,7 @@ class FloatWidget(QFrame):
             self.number = round(qs.DOMINANCE_SPEECH[len(qs.DOMINANCE_SPEECH) - 1],2)
             self.label.setText("D:{:.2f}".format(self.number))
         elif self.name == "Sent_Pleasure":
-            self.number = round(qs.PLEASURE_SENTIMENT[len(qs.PLEASURE_SENTIMENT) - 1],2)
+            self.number = round(qs.VALENCE_SENTIMENT[len(qs.VALENCE_SENTIMENT) - 1],2)
             self.label.setText("P:{:.2f}".format(self.number))
         elif self.name == "Facial_Pleasure":
             self.number = round(qs.VALENCE_FACE[len(qs.VALENCE_FACE) - 1],2)

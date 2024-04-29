@@ -57,6 +57,10 @@ class FusionModule():
         self.face_weight_dominance = 1.0
         self.face_boost_dominance = 1.25
 
+        self.sentiment_speed = 5000
+        self.sentiment_weight_valence = 1.0
+        self.sentiment_boost_valence = 1.0
+
         self.value_string = ''
 
     def update_fusion(self):
@@ -178,6 +182,15 @@ class FusionModule():
                 if qs.DOMINANCE_SPEECH.time[len(qs.DOMINANCE_SPEECH) - index] > self.last_time_ms:
                     EVENTS_DOMINANCE.append(qs.DOMINANCE_SPEECH[len(qs.DOMINANCE_SPEECH) - index] * self.voice_boost_dominance, self.voice_weight_dominance, self.voice_speed)
                 index = index + 1
+
+        # SENTIMENT - BUT ONLY IF VOICE ACTIVITY ...
+        # if qs.VOICE_ACTIVITY[len(qs.VOICE_ACTIVITY) - 1] != 0:
+            # SENTIMENT - VALENCE
+        index = 1
+        while qs.VALENCE_SENTIMENT.time[len(qs.VALENCE_SENTIMENT) - index] > self.last_time_ms:
+            if qs.VALENCE_SENTIMENT.time[len(qs.VALENCE_SENTIMENT) - index] > self.last_time_ms:
+                EVENTS_VALENCE.append(qs.VALENCE_SENTIMENT[len(qs.VALENCE_SENTIMENT) - index] * self.sentiment_boost_valence, self.sentiment_weight_valence, self.sentiment_speed)
+            index = index + 1
 
         # decay event contributions over event deques
         # VALENCE
