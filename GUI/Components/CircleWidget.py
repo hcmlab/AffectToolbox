@@ -27,27 +27,32 @@ class CircleWidget(QWidget):
         self.name = ""
         self.color = QColor(color)
         self.baseColor = self.color
-        self.setMinimumSize(10, 10) 
+        self.setMinimumSize(10, 10)
         self.setStyleSheet("background-color: transparent;")  
-        self.layout = QVBoxLayout(self)
-        self.label = QLabel(label, self)
-        self.label.setFont(QFont('Arial', font_size))
-        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.label.setWordWrap(True)
-        self.layout.addWidget(self.label)
-
+        self.layout = QVBoxLayout(self) 
+        
         #Add an image to the circle widget if a path is provided
         if image_path:
             # self.image = image_path
             # self.addImage(image_path)
             self.image_label = QLabel(self)
             pixmap = QPixmap(image_path)
-            pixmap = pixmap.scaled(48, 48, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)  # Change the size of the image
+            pixmap = pixmap.scaled(50, 50, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)  # Change the size of the image
             # pixmap = pixmap.scaled(self.width(), self.height(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)  # Change the size of the image
             self.image_label.setPixmap(pixmap)
             #self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)  # Center the image
             self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
             self.layout.addWidget(self.image_label)
+        
+
+        else :
+            self.label = QLabel(label, self)
+            self.label.setFont(QFont('Arial', font_size))
+            self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.label.setWordWrap(True)
+            self.layout.addWidget(self.label)
+
+        
         
         #Connect a timer to the trafficLight method
         self.timer = QTimer()

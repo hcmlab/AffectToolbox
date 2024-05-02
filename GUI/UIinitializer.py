@@ -129,39 +129,39 @@ def AddColumn6(window):
 def AddColumn5(window):
     """Add the widgets for the 5th column to the window."""
     window.circle5_1_outer = CircleWidget("#d9d9d9")  # Create a CircleWidget
-    window.circle5_1_outer.setFixedSize(110, 110) #150,150
+    window.circle5_1_outer.setFixedSize(112, 112) #150,150
     window.circle5_1_outer.radius = min(window.circle5_1_outer.width(), window.circle5_1_outer.height()) // 2
     window.circle5_1_outer.setParent(window.bodyContainer)
 
     window.circle5_1_inner = CircleWidget("#f2f2f2", "PARA - \nLINGUISTIC", 11)#15  # Create a CircleWidget
-    window.circle5_1_inner.setFixedSize(96, 96) #130,130
+    window.circle5_1_inner.setFixedSize(98, 98) #130,130
     window.circle5_1_inner.setParent(window.bodyContainer)
 
     window.circle5_2_outer = CircleWidget("#d9d9d9")  # Create a CircleWidget
-    window.circle5_2_outer.setFixedSize(110, 110)
+    window.circle5_2_outer.setFixedSize(112, 112)
     window.circle5_2_outer.radius = min(window.circle5_2_outer.width(), window.circle5_2_outer.height()) // 2
     window.circle5_2_outer.setParent(window.bodyContainer)
 
     window.circle5_2_inner = CircleWidget("#f2f2f2", "SENTIMENT", 11)  # Create a CircleWidget
-    window.circle5_2_inner.setFixedSize(96, 96)
+    window.circle5_2_inner.setFixedSize(98, 98)
     window.circle5_2_inner.setParent(window.bodyContainer)
 
     window.circle5_3_outer = CircleWidget("#d9d9d9")  # Create a CircleWidget
-    window.circle5_3_outer.setFixedSize(110, 110)
+    window.circle5_3_outer.setFixedSize(112, 112)
     window.circle5_3_outer.radius = min(window.circle5_3_outer.width(), window.circle5_3_outer.height()) // 2
     window.circle5_3_outer.setParent(window.bodyContainer)
 
     window.circle5_3_inner = CircleWidget("#f2f2f2", "FACIAL \nEXPRES-\nSION", 11)  # Create a CircleWidget
-    window.circle5_3_inner.setFixedSize(96, 96)
+    window.circle5_3_inner.setFixedSize(98, 98) #96
     window.circle5_3_inner.setParent(window.bodyContainer)
 
     window.circle5_4_outer = CircleWidget("#d9d9d9")  # Create a CircleWidget
-    window.circle5_4_outer.setFixedSize(110, 110)
+    window.circle5_4_outer.setFixedSize(112, 112)
     window.circle5_4_outer.radius = min(window.circle5_4_outer.width(), window.circle5_4_outer.height()) // 2
     window.circle5_4_outer.setParent(window.bodyContainer)
 
     window.circle5_4_inner = CircleWidget("#f2f2f2", "POSE", 11)  # Create a CircleWidget
-    window.circle5_4_inner.setFixedSize(96, 96)
+    window.circle5_4_inner.setFixedSize(98, 98)
     window.circle5_4_inner.setParent(window.bodyContainer)
 
 def AddColumn4(window):
@@ -213,12 +213,12 @@ def AddColumn3(window):
     
 def AddColumn2(window):
     window.circle2_1 = CircleWidget("#f2f2f2", image_path="./GUI/Icons/Mikrofon.svg" )  # Create a CircleWidget
-    window.circle2_1.setFixedSize(80, 80)
+    window.circle2_1.setFixedSize(90, 90)
     window.circle2_1.radius = min(window.circle2_1.width(), window.circle2_1.height()) // 2
     window.circle2_1.setParent(window.bodyContainer)
 
     window.circle2_2 = CircleWidget("#f2f2f2", image_path="./GUI/Icons/webcamIcon.svg" )  # Create a CircleWidget
-    window.circle2_2.setFixedSize(80, 80)
+    window.circle2_2.setFixedSize(90, 90)
     window.circle2_2.radius = min(window.circle2_2.width(), window.circle2_2.height()) // 2
     window.circle2_2.setParent(window.bodyContainer)
 
