@@ -28,27 +28,28 @@ class AffectDeque():
     def __len__(self):
         return len(self.q)
 
-VALENCE_FACE = AffectDeque(maxlen=500)
-for i in range(0, 500):
+
+VALENCE_FACE = AffectDeque(maxlen=100)
+for i in range(0, 100):
     VALENCE_FACE.append(.0)
 
-AROUSAL_FACE = AffectDeque(maxlen=500)
-for i in range(0, 500):
+AROUSAL_FACE = AffectDeque(maxlen=100)
+for i in range(0, 100):
     AROUSAL_FACE.append(.0)
 
-DOMINANCE_FACE = AffectDeque(maxlen=500)
-for i in range(0, 500):
+DOMINANCE_FACE = AffectDeque(maxlen=100)
+for i in range(0, 100):
     DOMINANCE_FACE.append(.0)
 
-VALENCE_SPEECH = AffectDeque(maxlen=500)
-for i in range(0, 500):
+VALENCE_SPEECH = AffectDeque(maxlen=100)
+for i in range(0, 100):
     VALENCE_SPEECH.append(.0)
 
-AROUSAL_SPEECH = AffectDeque(maxlen=500)
-for i in range(0, 500):
+AROUSAL_SPEECH = AffectDeque(maxlen=100)
+for i in range(0, 100):
     AROUSAL_SPEECH.append(.0)
 
-DOMINANCE_SPEECH = AffectDeque(maxlen=500)
+DOMINANCE_SPEECH = AffectDeque(maxlen=100)
 for i in range(0, 500):
     DOMINANCE_SPEECH.append(.0)
 
@@ -56,41 +57,45 @@ TRANSCRIPT_SPEECH = AffectDeque(maxlen=100)
 for i in range(0, 100):
     TRANSCRIPT_SPEECH.append('')
 
-RMS_VALUES = AffectDeque(maxlen=500)
-for i in range(0, 500):
+RMS_VALUES = AffectDeque(maxlen=100)
+for i in range(0, 100):
     RMS_VALUES.append(.0)
 
-POS_SENTIMENT = AffectDeque(maxlen=500)
-for i in range(0, 500):
+POS_SENTIMENT = AffectDeque(maxlen=100)
+for i in range(0, 100):
     POS_SENTIMENT.append(.0)
 
-NEU_SENTIMENT = AffectDeque(maxlen=500)
-for i in range(0, 500):
+NEU_SENTIMENT = AffectDeque(maxlen=100)
+for i in range(0, 100):
     NEU_SENTIMENT.append(.0)
 
-NEG_SENTIMENT = AffectDeque(maxlen=500)
-for i in range(0, 500):
+NEG_SENTIMENT = AffectDeque(maxlen=100)
+for i in range(0, 100):
     NEG_SENTIMENT.append(.0)
 
-FUSION = AffectDeque(maxlen=500)
-for i in range(0, 500):
+VALENCE_SENTIMENT = AffectDeque(maxlen=100)
+for i in range(0, 100):
+    VALENCE_SENTIMENT.append(.0)
+
+FUSION = AffectDeque(maxlen=100)
+for i in range(0, 100):
     FUSION.append([.0, .0, .0])
 
-VOICE_ACTIVITY = AffectDeque(maxlen=500)
-for i in range(0, 500000):
+VOICE_ACTIVITY = AffectDeque(maxlen=100000)
+for i in range(0, 100000):
     VOICE_ACTIVITY.append(.0)
 
-AUDIO_QUEUE = deque(maxlen=500000) # why not AffectDeque?
-for i in range(0, 500000):
+AUDIO_QUEUE = deque(maxlen=100000) # why not AffectDeque?
+for i in range(0, 100000):
     AUDIO_QUEUE.append(.0)
 
-IMAGE_FACE_RAW = AffectDeque(maxlen=500)
-IMAGE_FACE_PREPROCESSED = AffectDeque(maxlen=500)
-IMAGE_FACE_MESH = AffectDeque(maxlen=500)
-IMAGE_BODY_SKEL = AffectDeque(maxlen=500)
+IMAGE_FACE_RAW = AffectDeque(maxlen=100)
+IMAGE_FACE_PREPROCESSED = AffectDeque(maxlen=100)
+IMAGE_FACE_MESH = AffectDeque(maxlen=100)
+IMAGE_BODY_SKEL = AffectDeque(maxlen=100)
 
-FACE_MESH_QUEUE = AffectDeque(maxlen=500)
-for i in range(0, 500):
+FACE_MESH_QUEUE = AffectDeque(maxlen=100)
+for i in range(0, 100):
     FACE_MESH_QUEUE.append("not available")
 
 if __name__ == "__main__":

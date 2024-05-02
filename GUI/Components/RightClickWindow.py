@@ -81,6 +81,10 @@ class RightClickWindow(QMainWindow):
         elif name == "Microphone":
             self.Device = DeviceSelector(window=window, name="microphone")
             self.layout.addWidget(self.Device)
+        elif name == "Fusion":
+            self.FusionLoopRate = None
+            self.FusionLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionLoopRate, Labelinstance=self.FusionLoopRateLabel, baseValue=window.FUSION_LOOP_RATE, name="Fusion", variableName="FUSION_LOOP_RATE")
 
         # Create a QSpacerItem to "press" the widgets to the top
         spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
@@ -150,6 +154,9 @@ class RightClickWindow(QMainWindow):
         elif name == "SEND_LOOP_RATE":
             self.window.SEND_LOOP_RATE = value
             changeValues(send_loop_rate=value)
+        elif name == "FUSION_LOOP_RATE":
+            self.window.FUSION_LOOP_RATE = value
+            changeValues(fusion_loop_rate=value)
 
     def AddDoubleSpinBox(self, SpinBoxinstance, Labelinstance, baseValue=0.0, name="", variableName=""):
         """ Add a double spin box to the layout with the given name and base value. The method also connects the valueChanged signal to the on_double_value_changed method.

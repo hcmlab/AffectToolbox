@@ -1166,6 +1166,7 @@ def PlayButtonClick(window):
                       vad_loop_rate=window.VAD_LOOP_RATE,
                       er_loop_rate=window.ER_LOOP_RATE,
                       pose_loop_rate=window.POSE_LOOP_RATE,
+                      fusion_loop_rate=window.FUSION_LOOP_RATE,
                       send_loop_rate=window.SEND_LOOP_RATE,
                       camera_loop_rate=window.CAMERA_LOOP_RATE,
                       face_mesh_rate=window.FACE_MESH_RATE,
@@ -1181,7 +1182,7 @@ def PlayButtonClick(window):
                       microphone_chunks=16000,
                       microphone_id=window.MIC_ID,
                       stt_window_length=5,
-                      stt_model_size="base",
+                      stt_model_size="small",
                       sentiment_model="germansentiment")
     window.START = False # This is set to true when the pipeline is actually started
     
@@ -1485,4 +1486,4 @@ def connect(window):
     window.udp_button.leftClicked.connect(lambda: udpClick(window))
     
     window.play_button.clicked.connect(lambda: PlayButtonClick(window))
-    window.stop_button.clicked.connect(lambda: StopButtonClick(window))
+    # window.stop_button.clicked.connect(lambda: StopButtonClick(window))

@@ -291,13 +291,14 @@ def moveButtons(window):
         window.bodyContainer.height() - (3*window.play_button.height())
     )
 
-    window.stop_button.move(
-        window.play_button.x() + window.play_button.width() + 10,
-        window.play_button.y()
-    )
+    # window.stop_button.move(
+    #     window.play_button.x() + window.play_button.width() + 10,
+    #     window.play_button.y()
+    # )
 
     window.kafka_button.move(
-        window.stop_button.x() + window.stop_button.width() + 10,
+    #     window.stop_button.x() + window.stop_button.width() + 10,
+        window.play_button.x() + window.play_button.width() + 10,
         window.play_button.y()
     )
             

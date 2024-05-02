@@ -229,10 +229,10 @@ def AddButtons(window):
     window.play_button.setParent(window.bodyContainer)
     window.play_button.setStyleSheet("background-color: white;")
 
-    window.stop_button = MyButton("Stop")
-    window.stop_button.setFixedSize(70, 35)
-    window.stop_button.setParent(window.bodyContainer)
-    window.stop_button.setStyleSheet("background-color: white;")
+    # window.stop_button = MyButton("Stop")
+    # window.stop_button.setFixedSize(100, 50)
+    # window.stop_button.setParent(window.bodyContainer)
+    # window.stop_button.setStyleSheet("background-color: #f0f0f0;")
 
     window.kafka_button = MyButton("Kafka")
     window.kafka_button.setFixedSize(70, 35)
