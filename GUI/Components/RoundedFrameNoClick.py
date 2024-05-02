@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QFrame, QLabel, QVBoxLayout
 
 class RoundedFrameNoClick(QFrame):
     """Non-clickable rounded frame widget with a label in the center"""
-    def __init__(self, text="", color="#0071c1", text_color="#c9ffff", font_size=20, border=False):
+    def __init__(self, text="", color="#0071c1", text_color="#c9ffff", font_size=15, border=False):
         """Constructor of the non-clickable rounded frame widget.
         
         Args:

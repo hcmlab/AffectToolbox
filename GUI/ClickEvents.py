@@ -772,6 +772,8 @@ def SkeletonClick(window):
     def turnOff():
         if window.BODY_TRACKING_LOOP:
             BodyTrackingClick(window)
+        if window.POSE_LOOP:
+            PoseClick(window)
 
         window.rounded3_4.toggleColor()
         window.verlineWidgetVideotoSkel.toggleColor()
@@ -793,17 +795,29 @@ def BodyTrackingClick(window):
     """Implements the click event for the body tracking widget"""
     def turnOff():
         #BackTracking
-        if window.POSE_LOOP:
-            PoseClick(window)
+        # if window.POSE_LOOP:
+        #     PoseClick(window)
 
         window.rounded4_3.toggleColor()
         window.hlineWidgetSkeltoBody.toggleColor()
+        window.verlineWidgetSkeltoBody.toggleColor()
+        if window.POSE_LOOP:
+            window.verlineWidgetBodytoPose.toggleColor()
+            window.hlineWidgetBodytoPose.toggleColor()
+        if not window.POSE_LOOP:
+            window.hlineWidgetSkeltoPose.toggleColor()
     
     def turnOn():
         window.rounded4_3.toggleColor()
         window.hlineWidgetSkeltoBody.toggleColor()
+        window.verlineWidgetSkeltoBody.toggleColor()
         if not window.SKELETON_LOOP:
             SkeletonClick(window)
+        if not window.POSE_LOOP:
+            window.hlineWidgetSkeltoPose.toggleColor()
+        if window.POSE_LOOP:
+            window.verlineWidgetBodytoPose.toggleColor()
+            window.hlineWidgetBodytoPose.toggleColor()
     
     if window.BODY_TRACKING_LOOP:
         window.BODY_TRACKING_LOOP = False
@@ -820,13 +834,23 @@ def PoseClick(window):
             PoseDominanceClick(window)
 
         window.circle5_4_inner.toggleColor()
-        window.hlineWidgetBodytoPose.toggleColor()
+        window.hlineWidgetSkeltoPose2.toggleColor()
+        if not window.BODY_TRACKING_LOOP:
+            window.hlineWidgetSkeltoPose.toggleColor()
+        if window.BODY_TRACKING_LOOP:
+            window.verlineWidgetBodytoPose.toggleColor()
+            window.hlineWidgetBodytoPose.toggleColor()
     
     def turnOn():
         window.circle5_4_inner.toggleColor()
-        window.hlineWidgetBodytoPose.toggleColor()
+        window.hlineWidgetSkeltoPose2.toggleColor()
+        if not window.SKELETON_LOOP:
+            SkeletonClick(window)
         if not window.BODY_TRACKING_LOOP:
-            BodyTrackingClick(window)
+            window.hlineWidgetSkeltoPose.toggleColor()
+        if window.BODY_TRACKING_LOOP:
+            window.verlineWidgetBodytoPose.toggleColor()
+            window.hlineWidgetBodytoPose.toggleColor() 
 
     if window.POSE_LOOP:
         window.POSE_LOOP = False
@@ -1398,7 +1422,7 @@ def kafkaClick(window):
         window.kafka_button.setStyleSheet("background-color: green")
     
     def turnOff():
-        window.kafka_button.setStyleSheet("background-color: #f0f0f0")
+        window.kafka_button.setStyleSheet("background-color: white")
 
     if window.KAFKA:
         window.KAFKA = False
@@ -1413,7 +1437,7 @@ def udpClick(window):
         window.udp_button.setStyleSheet("background-color: green")
     
     def turnOff():
-        window.udp_button.setStyleSheet("background-color: #f0f0f0")
+        window.udp_button.setStyleSheet("background-color: white") # f0f0f0
 
     if window.UDP:
         window.UDP = False

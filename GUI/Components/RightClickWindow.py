@@ -27,10 +27,10 @@ class RightClickWindow(QMainWindow):
         self.layout.setSpacing(5)
 
         #Check which widget is rightlcicked and add the corresponding settings into a layout
-        if name == "Camera":
+        if name == "Video":
             self.CameraLoopRate = None
             self.CameraLoopRateLabel = None
-            self.AddDoubleSpinBox(SpinBoxinstance=self.CameraLoopRate, Labelinstance=self.CameraLoopRateLabel ,baseValue=window.CAMERA_LOOP_RATE, name="Camera", variableName="CAMERA_LOOP_RATE")
+            self.AddDoubleSpinBox(SpinBoxinstance=self.CameraLoopRate, Labelinstance=self.CameraLoopRateLabel ,baseValue=window.CAMERA_LOOP_RATE, name="Video", variableName="CAMERA_LOOP_RATE")
         elif name == "Kafka":
             self.AddIp(baseValue=window.KAFKA_IP, name="KAFKA")
             self.AddPort(baseValue=window.KAFKA_PORT, name="KAFKA")
@@ -72,8 +72,14 @@ class RightClickWindow(QMainWindow):
             self.STTLoopRate = None
             self.STTLoopRateLabel = None
             self.AddDoubleSpinBox( SpinBoxinstance=self.STTLoopRate, Labelinstance=self.STTLoopRateLabel ,baseValue=window.STT_LOOP_RATE, name="Transcript", variableName="STT_LOOP_RATE")
-        elif name == "Start":
-            self.Device = DeviceSelector(window=window)
+        # elif name == "Start":
+        #     self.Device = DeviceSelector(window=window, name="camera")
+        #     self.layout.addWidget(self.Device)
+        elif name == "Camera":
+            self.Device = DeviceSelector(window=window, name="camera")
+            self.layout.addWidget(self.Device)
+        elif name == "Microphone":
+            self.Device = DeviceSelector(window=window, name="microphone")
             self.layout.addWidget(self.Device)
 
         # Create a QSpacerItem to "press" the widgets to the top
@@ -95,10 +101,18 @@ class RightClickWindow(QMainWindow):
         Args:
             event (QCloseEvent): The close event
         """
-        if self.name == "Start":
+        # if self.name == "Start":
+        #     self.window.CAM_ID = self.Device.exp_selected_camera()
+        #     self.window.MIC_ID = self.Device.exp_selected_microphone()
+        #     changeValues(cam_id=self.window.CAM_ID, mic_id=self.window.MIC_ID)
+        #     event.accept()
+        if self.name == "Camera":
             self.window.CAM_ID = self.Device.exp_selected_camera()
+            changeValues(cam_id=self.window.CAM_ID)
+            event.accept()
+        elif self.name == "Microphone":
             self.window.MIC_ID = self.Device.exp_selected_microphone()
-            changeValues(cam_id=self.window.CAM_ID, mic_id=self.window.MIC_ID)
+            changeValues(mic_id=self.window.MIC_ID)
             event.accept()
     
     def on_double_value_changed(self, value, name=""):

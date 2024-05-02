@@ -11,17 +11,22 @@ class AffectDeque():
     def __init__(self, maxlen):
         self.q = deque(maxlen=maxlen)
         self.time = deque(maxlen=maxlen)
+        self.observers = []
 
+    def register_observer(self, observer):
+        self.observers.append(observer)
+    
     def append(self, x) -> None:
         self.q.append(x)
         self.time.append(round(time.time()*1000) - start_time)
-
+        for observer in self.observers:
+            observer(x)
+    
     def __getitem__(self, item):
         return self.q[item]
 
     def __len__(self):
         return len(self.q)
-
 
 VALENCE_FACE = AffectDeque(maxlen=500)
 for i in range(0, 500):

@@ -68,6 +68,10 @@ def initVariables(window=None):
         
         window.CAM_ID = data["cam_id"] 
         window.MIC_ID = data["mic_id"]
+        
+        window.image = None
+        window.transcript = None
+        window.skeleton = None
 
 def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpPort=None, ser_loop_rate=None, stt_loop_rate=None, sentiment_loop_rate=None, vad_loop_rate=None, er_loop_rate=None, pose_loop_rate=None, send_loop_rate=None, camera_loop_rate=None, face_mesh_rate=None, sample_rate=None, cam_id=None, mic_id=None):
     """Change the values of the config file."""

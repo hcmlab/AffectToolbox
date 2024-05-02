@@ -18,8 +18,11 @@ class TranscriptWidget(QWidget):
         layout.addWidget(self.transcript_label)
         self.setLayout(layout)
 
-        self.resize(window.column_width, 150)
-        self.move(2*window.column_width + 15, window.column_height_2//3)
+        # self.resize(window.column_width, 150)
+        self.resize(int(1.25*window.column_width), 120)
+        self.move(window.frames[1].x() + int(window.column_width_title*1.5) - window.column_width//2 ,
+        window.circle5_2_inner.y() -20)
+        # self.move(2*window.column_width + 15, window.column_height_2//3)
         self.setStyleSheet(f"QFrame {{background-color: white; border-radius: 10px; border: 1px solid black;}}")
 
         self.timer = QTimer()

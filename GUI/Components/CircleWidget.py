@@ -1,3 +1,4 @@
+from urllib.response import addinfo
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPainter, QColor, QFont, QPixmap
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
@@ -22,10 +23,11 @@ class CircleWidget(QWidget):
         """
         super(CircleWidget, self).__init__(parent)
         self.window = None
+        self.image = None
         self.name = ""
         self.color = QColor(color)
         self.baseColor = self.color
-        self.setMinimumSize(100, 100) 
+        self.setMinimumSize(10, 10) 
         self.setStyleSheet("background-color: transparent;")  
         self.layout = QVBoxLayout(self)
         self.label = QLabel(label, self)
@@ -36,11 +38,15 @@ class CircleWidget(QWidget):
 
         #Add an image to the circle widget if a path is provided
         if image_path:
+            # self.image = image_path
+            # self.addImage(image_path)
             self.image_label = QLabel(self)
             pixmap = QPixmap(image_path)
-            pixmap = pixmap.scaled(80, 80, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)  # Change the size of the image
+            pixmap = pixmap.scaled(48, 48, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)  # Change the size of the image
+            # pixmap = pixmap.scaled(self.width(), self.height(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)  # Change the size of the image
             self.image_label.setPixmap(pixmap)
-            self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)  # Center the image
+            #self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)  # Center the image
+            self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
             self.layout.addWidget(self.image_label)
         
         #Connect a timer to the trafficLight method
@@ -48,13 +54,28 @@ class CircleWidget(QWidget):
         self.timer.timeout.connect(lambda: self.trafficLight()) 
         self.timer.start(1000)
 
-
+    def addImage(self, image_path):
+        """Add an image to the circle widget.
+        
+        Args:
+            image_path (str): The path to the image.
+        """
+        self.image_label = QLabel(self)
+        pixmap = QPixmap(image_path)
+        pixmap = pixmap.scaled(self.width(), self.height(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        self.image_label.setPixmap(pixmap)
+        self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)  # Center the image
+        self.layout.addWidget(self.image_label)
+    
     def paintEvent(self, event):
         """Paint the circle"""
+        # if self.image:
+        #     self.addImage(self.image)
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setBrush(self.color)
         painter.drawEllipse(0, 0, self.width(), self.height())
+        
 
     def mousePressEvent(self, event) -> None:
         """Emit a signal when the widget is clicked"""

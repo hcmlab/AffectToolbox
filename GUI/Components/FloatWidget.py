@@ -26,12 +26,20 @@ class FloatWidget(QFrame):
 
         self.border_css = "border: 1px solid black;" if border else ""
         self.setStyleSheet(f"QFrame {{background-color: {color}; border-radius: 10px; {self.border_css}}}")
-        self.timer = QTimer()
-        self.timer.timeout.connect(lambda: self.update_number())
-        self.timer.start(1000)
+        qs.VALENCE_SPEECH.register_observer(self.update_number)
+        qs.AROUSAL_SPEECH.register_observer(self.update_number)
+        qs.DOMINANCE_SPEECH.register_observer(self.update_number)
+        qs.NEU_SENTIMENT.register_observer(self.update_number)
+        qs.VALENCE_FACE.register_observer(self.update_number)
+        qs.AROUSAL_FACE.register_observer(self.update_number)
+        qs.DOMINANCE_FACE.register_observer(self.update_number)
+        qs.FUSION.register_observer(self.update_number)
+        # self.timer = QTimer()
+        # self.timer.timeout.connect(lambda: self.update_number())
+        # self.timer.start(1000)
         
         
-    def update_number(self):
+    def update_number(self, value=0.0):
         """Function to update the number in the label every second depending on the name of the widget"""
         if self.name == "Para_Pleasure":
             self.number = round(qs.VALENCE_SPEECH[len(qs.VALENCE_SPEECH) - 1],2)

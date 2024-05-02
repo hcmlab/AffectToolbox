@@ -29,8 +29,10 @@ class PlotWidget(QWidget):
         self.setLayout(layout)
 
         # Set the size and position of the widget
-        self.resize(window.column_width, 155)
-        self.move(2*window.column_width + 15, window.LINEWIDTH)
+        self.resize(window.column_width, 100)#155
+        self.move(window.frames[1].x() + int(window.column_width_title*1.5) - self.width()//2 ,
+        window.circle5_1_inner.y() +2 )
+        # self.move(2*window.column_width + 15, window.LINEWIDTH)
 
         # Create a timer to update the plot
         self.timer = QtCore.QTimer()

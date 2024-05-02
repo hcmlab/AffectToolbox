@@ -20,6 +20,7 @@ class MainWindow(QMainWindow):
         connect(self)
         Rightconnect(self)
         self.setStyleSheet("background-color: black;")
+        self.resize(1280, 720)
         
     def eventFilter(self, source, event):
         """Event filter for the main window"""
@@ -31,8 +32,9 @@ class MainWindow(QMainWindow):
         
     def initSizes(self):
         """Initialize the sizes of the main window"""
-        self.screen_height = QApplication.instance().primaryScreen().geometry().height()
-        self.screen_width = QApplication.instance().primaryScreen().geometry().width()
+        self.screen_height = 720#QApplication.instance().primaryScreen().geometry().height()
+        self.screen_width = 1280#QApplication.instance().primaryScreen().geometry().width()
+        self.column_width_title = 158
         self.column_width = int((self.screen_width - 45) / 8)
         self.column_height_light = int(self.screen_height * 0.87)
         self.column_height_5 = int(self.screen_height * 0.8)
@@ -54,7 +56,8 @@ class MainWindow(QMainWindow):
 
         # Replace the first title with an empty widget
         empty_widget = QWidget()
-        empty_widget.setFixedWidth(int(self.screen_width // 8) - 5)
+        empty_widget.setFixedWidth(int(self.screen_width // 10) - 5)
+        #empty_widget.setFixedWidth(10)
         self.titleLayout.addWidget(empty_widget)
 
         # Add the titles to the layout
@@ -75,15 +78,16 @@ class MainWindow(QMainWindow):
         for i in range(8):
             if(i == 0):
                 self.frame = ImageRoundedFrame(color="black", image_path="./GUI/Icons/logo2.png")
+                self.frame.setFixedWidth(int(self.screen_width // 10) - 5)
                 self.secondLayout.addWidget(self.frame)
                 self.secondLayout.setAlignment(self.frame, Qt.AlignmentFlag.AlignTop)
                 continue
             else: 
                 frame = RoundedFrameNoClick(color="#bdd7ee")
-            if (i <= 4):
-                frame.setFixedHeight(int(self.screen_height*0.4 + self.screen_height * (i) * 0.1))
+            if (i <= 3):
+                frame.setFixedHeight(min(int(self.screen_height*0.5 + self.screen_height * (i) * 0.1),self.screen_height * 0.92)) #0.4
             else :
-                frame.setFixedHeight(int(self.screen_height * 0.87))
+                frame.setFixedHeight(int(self.screen_height * 0.92)) #0.87
             self.secondLayout.addWidget(frame)
             self.secondLayout.setAlignment(frame, Qt.AlignmentFlag.AlignTop)
 

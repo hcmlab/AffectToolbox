@@ -25,12 +25,18 @@ class ImageWindow(QWidget):
         self.timer = QTimer()
         #Check which stream is being displayed
         if name == "Image":
-            self.resize(window.column_width, 180)
-            self.move(2*window.column_width + 15, window.column_height_2//2 + 70)
+            #self.resize(window.column_width, 180)
+            self.resize(135, 160)
+            self.move(window.frames[1].x() + int(window.column_width_title*1.5) - self.width()//2 + 5, 
+                      window.circle5_3_inner.y() - self.height()//4)
+            #self.move(2*window.column_width + 15, window.column_height_2//2 + 70)
             self.timer.timeout.connect(lambda: self.update_image())
         elif name == "Skeleton":
-            self.resize(window.column_width, 180)
-            self.move(2*window.column_width + 15, window.column_height_2//15 *14 + 15)
+            # self.resize(window.column_width, 180)
+            self.resize(window.column_width_title, 125)
+            self.move(window.frames[1].x() + int(window.column_width_title*1.5) - self.width()//2 ,
+                        window.circle5_4_inner.y())
+            # self.move(2*window.column_width + 15, window.column_height_2//15 *14 + 15)
             self.timer.timeout.connect(lambda: self.update_image_skeleton())
         self.timer.start(50)  
 

@@ -9,9 +9,11 @@ def InitSettingWindow(window, name=""):
 
 def Rightconnect(window):
     """Connect the right click events to the widgets in the GUI"""
+    window.circle2_1.rightClicked.connect(lambda: InitSettingWindow(window=window, name="Microphone"))
+    window.circle2_2.rightClicked.connect(lambda: InitSettingWindow(window=window, name="Camera"))
     window.rounded3_1.rightClicked.connect(lambda: InitSettingWindow(window=window, name="Audio"))
     window.rounded3_2.rightClicked.connect(lambda: InitSettingWindow(window=window, name="Transcript"))
-    window.rounded3_3.rightClicked.connect(lambda: InitSettingWindow(window=window, name="Camera"))
+    window.rounded3_3.rightClicked.connect(lambda: InitSettingWindow(window=window, name="Video"))
     window.rounded3_4.rightClicked.connect(lambda: InitSettingWindow(window=window, name="Skeleton"))
     window.rounded4_1.rightClicked.connect(lambda: InitSettingWindow(window=window, name="VoiceActivity"))
     window.rounded4_2.rightClicked.connect(lambda: InitSettingWindow(window=window, name="FaceTracking"))
