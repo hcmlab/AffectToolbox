@@ -123,9 +123,16 @@ class AffectPipeline():
                                         enable_pose_loop, enable_fusion_loop)
 
         # Initialize necessary modules
+        if enable_fusion_loop:
+            from modules.module_fusion import FusionModule
+            self.FUSION_MODULE = FusionModule()
         if enable_vad_loop:
             from modules.module_vad import VoiceActivity
             self.VAD_MODULE = VoiceActivity(segment_length=480, sample_rate=16000, threshold=vad_threshold)
+            self.FUSION_MODULE.voice_activity_tracked = True
+        else:
+            self.LOGGING_MODULE.TRACKING_VOICE = True
+            self.FUSION_MODULE.voice_activity_tracked = False
         if enable_ser_loop:
             from modules.module_ser import SpeechEmotion
             self.SER_MODULE = SpeechEmotion(self.SAMPLE_RATE)
@@ -141,9 +148,6 @@ class AffectPipeline():
         if enable_pose_loop:
             from modules.module_pose import PoseFromCam
             self.POSE_MODULE = PoseFromCam()
-        if enable_fusion_loop:
-            from modules.module_fusion import FusionModule
-            self.FUSION_MODULE = FusionModule()
 
         if self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP:
             self.audio = pyaudio.PyAudio()

@@ -41,6 +41,7 @@ class FusionModule():
         self.event_threshold = 0.1
         self.fusion_speed = 1000
 
+        self.voice_activity_tracked = False
         self.voice_speed = 5000
         self.voice_weight_valence = 1.0
         self.voice_boost_valence = 1.0
@@ -161,7 +162,7 @@ class FusionModule():
             index = index + 1
 
         # VOICE - BUT ONLY IF VOICE ACTIVITY ...
-        if qs.VOICE_ACTIVITY[len(qs.VOICE_ACTIVITY) - 1] != 0:
+        if qs.VOICE_ACTIVITY[len(qs.VOICE_ACTIVITY) - 1] != 0 or not self.voice_activity_tracked:
             # VOICE - VALENCE
             index = 1
             while qs.VALENCE_SPEECH.time[len(qs.VALENCE_SPEECH) - index] > self.last_time_ms:
@@ -184,7 +185,7 @@ class FusionModule():
                 index = index + 1
 
         # SENTIMENT - BUT ONLY IF VOICE ACTIVITY ...
-        # if qs.VOICE_ACTIVITY[len(qs.VOICE_ACTIVITY) - 1] != 0:
+        # if qs.VOICE_ACTIVITY[len(qs.VOICE_ACTIVITY) - 1] != 0 or not self.voice_activity_tracked:
             # SENTIMENT - VALENCE
         index = 1
         while qs.VALENCE_SENTIMENT.time[len(qs.VALENCE_SENTIMENT) - index] > self.last_time_ms:
