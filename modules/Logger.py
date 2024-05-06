@@ -3,7 +3,7 @@ import os
 
 class LogModule():
 
-    def __init__(self, tk_root,
+    def __init__(self,
                  enable_log_to_console=True,
                  enable_vad_loop=True,
                  enable_ser_loop=True,

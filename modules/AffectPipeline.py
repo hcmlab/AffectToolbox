@@ -13,7 +13,6 @@ from termcolor import colored
 import os
 import modules.QueueSystem as qs
 import json
-import tkinter
 
 
 class DeviceManager():
@@ -73,7 +72,6 @@ class AffectPipeline():
                  enable_fusion_loop=True,
                  enable_sentiment_loop=True,
                  show_face_mesh=True,
-                 enable_web_app=False,
                  face_mesh_show_face_edges=True,
                  face_mesh_show_face_pupils=False,
                  face_mesh_show_face_contour=False,
@@ -93,8 +91,6 @@ class AffectPipeline():
                  udp_port=5006,
                  kafka_ip='127.0.0.1',
                  kafka_port=9092,
-                 web_app_port=5000,
-                 web_app_communication_port=5001,
                  kafka_topic_name='AffectToolbox',
                  sample_rate=16000,
                  vad_threshold=0.6,
@@ -125,12 +121,6 @@ class AffectPipeline():
         self.FACE_MESH_SHOW_FACE_EDGES = face_mesh_show_face_edges
         self.FACE_MESH_SHOW_FACE_PUPILS = face_mesh_show_face_pupils
         self.FACE_MESH_SHOW_FACE_CONTOUR = face_mesh_show_face_contour
-
-        self.WEB_APP = enable_web_app
-        self.WEB_APP_UDP_PORT = web_app_communication_port
-        if self.WEB_APP:
-            from res.unity_build.unity import start_web_app
-            start_web_app(web_app_port)
 
         self._SER_LOOP_RATE = ser_loop_rate
         self._STT_LOOP_RATE = stt_loop_rate
@@ -170,12 +160,7 @@ class AffectPipeline():
         self.CHUNK_SIZE = int(self.STEP * self.SAMPLE_RATE)
         self._LAST_IMAGE = None
 
-        self.tk_root = tkinter.Tk()  # main window
-        self.tk_root.title("AffectToolbox")
-        self.tk_root.geometry("1280x600")
-        self.tk_root.resizable(width="True", height="True")
-
-        self.LOGGING_MODULE = LogModule(self.tk_root, enable_log_to_console, enable_vad_loop, enable_ser_loop, enable_stt_loop,
+        self.LOGGING_MODULE = LogModule(enable_log_to_console, enable_vad_loop, enable_ser_loop, enable_stt_loop,
                                         enable_sentiment_loop, enable_face_er_loop, enable_face_mesh_loop,
                                         enable_pose_loop, enable_fusion_loop)
 
@@ -684,8 +669,6 @@ class AffectPipeline():
         if self.SEND_UDP_LOOP:
             print("UDP send")
             self._SOCKET.sendto(command, (self._UDP_IP, self._UDP_PORT))
-        if self.WEB_APP:
-            self._SOCKET.sendto(command, (self._UDP_IP, self.WEB_APP_UDP_PORT))
         if self.SEND_KAFKA_LOOP:
             print("Kafka send")
             string_from_byte = str({'pleasure': m_f[0],
@@ -723,7 +706,7 @@ class AffectPipeline():
             self.stt_loop()
         if self.SENTIMENT_LOOP:
             self.sentiment_loop()
-        if self.SEND_UDP_LOOP or self.SEND_KAFKA_LOOP or self.WEB_APP:
+        if self.SEND_UDP_LOOP or self.SEND_KAFKA_LOOP:
             self.send_loop()
         if self.PRINT_LOOP:
             self.print_loop()
@@ -736,8 +719,6 @@ class AffectPipeline():
             self.fusion_loop()
 
         window.START = True
-
-        #self.tk_root.mainloop()  # start tkinter main loop
 
     def stop(self):
         if self.fusion_loop_thread is not None:

@@ -1175,8 +1175,6 @@ def PlayButtonClick(window):
                       udp_port=window.UDP_PORT,
                       kafka_ip=window.KAFKA_IP,
                       kafka_port=window.KAFKA_PORT,
-                      web_app_port=5000,
-                      web_app_communication_port=5001,
                       kafka_topic_name=window.KAFKA_TOPIC,
                       sample_rate=window.SAMPLE_RATE,
                       vad_threshold=0.25,
