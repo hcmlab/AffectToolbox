@@ -17,7 +17,7 @@ class DeviceSelector(QWidget):
         layout = QVBoxLayout(self)
         self.window = window
         
-        if name == "microphone":
+        if name == "Microphone":
             self.microphone_selector = QComboBox(self)
             layout.addWidget(self.microphone_selector)
             self.update_audio_devices()
@@ -28,7 +28,7 @@ class DeviceSelector(QWidget):
                 self.microphone_selector.setCurrentIndex(microphone_index)
             self.microphone_selector.currentIndexChanged.connect(self.exp_selected_microphone)
             
-        elif name == "camera":
+        elif name == "Camera":
             self.camera_selector = QComboBox(self)
             layout.addWidget(self.camera_selector)
             self.update_camera_devices()
