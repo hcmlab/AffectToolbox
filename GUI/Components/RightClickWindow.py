@@ -38,6 +38,9 @@ class RightClickWindow(QMainWindow):
             self.CameraLoopRateLabel = None
             self.AddDoubleSpinBox(SpinBoxinstance=self.CameraLoopRate, Labelinstance=self.CameraLoopRateLabel, baseValue=window.CAMERA_LOOP_RATE, name="Video", variableName="CAMERA_LOOP_RATE")
         elif name == "FaceTracking":
+            self.FaceTrackingPadding = None
+            self.FaceTrackingPaddingLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FaceTrackingPadding, Labelinstance=self.FaceTrackingPaddingLabel, baseValue=window.FACE_PADDING, name="FaceTracking", variableName="FACE_PADDING")
             self.FaceMeshLoopRate = None
             self.FaceMeshLoopRateLabel = None
             self.AddDoubleSpinBox(SpinBoxinstance=self.FaceMeshLoopRate, Labelinstance=self.FaceMeshLoopRateLabel, baseValue=window.FACE_MESH_RATE, name="FaceTracking", variableName="FACE_MESH_RATE")
@@ -165,6 +168,9 @@ class RightClickWindow(QMainWindow):
         elif name == "STT_WINDOW_SIZE":
             self.window.STT_WINDOW_SIZE = value
             changeValues(stt_window_size=value)
+        elif name == "FACE_PADDING":
+            self.window.FACE_PADDING = value
+            changeValues(face_padding=value)
         elif name == "SEND_LOOP_RATE":
             self.window.SEND_LOOP_RATE = value
             changeValues(send_loop_rate=value)

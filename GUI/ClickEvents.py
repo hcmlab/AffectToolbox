@@ -1178,7 +1178,7 @@ def PlayButtonClick(window):
                       kafka_topic_name=window.KAFKA_TOPIC,
                       sample_rate=window.SAMPLE_RATE,
                       vad_threshold=window.VAD_THRESHOLD,
-                      face_padding=0.2,
+                      face_padding=window.FACE_PADDING,
                       microphone_chunks=16000,
                       microphone_id=window.MIC_ID,
                       stt_window_length=window.STT_WINDOW_SIZE,

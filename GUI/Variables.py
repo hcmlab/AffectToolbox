@@ -70,6 +70,7 @@ def initVariables(window=None):
         #Various
         window.STT_WINDOW_SIZE = data["various"]["STT_WINDOW_SIZE"] #5 #Seconds STT Window
         window.VAD_THRESHOLD = data["various"]["VAD_THRESHOLD"] #0.25 #vad_thres
+        window.FACE_PADDING = data["various"]["FACE_PADDING"] #0.2 FaceTracking
         
         window.CAM_ID = data["cam_id"] 
         window.MIC_ID = data["mic_id"]
@@ -78,7 +79,7 @@ def initVariables(window=None):
         window.transcript = None
         window.skeleton = None
 
-def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpPort=None, ser_loop_rate=None, stt_loop_rate=None, sentiment_loop_rate=None, vad_loop_rate=None, er_loop_rate=None, pose_loop_rate=None, fusion_loop_rate=None, send_loop_rate=None, camera_loop_rate=None, face_mesh_rate=None, sample_rate=None, stt_window_size=None, vad_threshold=None, cam_id=None, mic_id=None):
+def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpPort=None, ser_loop_rate=None, stt_loop_rate=None, sentiment_loop_rate=None, vad_loop_rate=None, er_loop_rate=None, pose_loop_rate=None, fusion_loop_rate=None, send_loop_rate=None, camera_loop_rate=None, face_mesh_rate=None, sample_rate=None, stt_window_size=None, vad_threshold=None, face_padding=None, cam_id=None, mic_id=None):
     """Change the values of the config file."""
     current_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(current_dir, '../config.json')
@@ -120,6 +121,8 @@ def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpP
             data["various"]["STT_WINDOW_SIZE"] = stt_window_size
         if vad_threshold is not None:
             data["various"]["VAD_THRESHOLD"] = vad_threshold
+        if face_padding is not None:
+            data["various"]["FACE_PADDING"] = face_padding
         if cam_id is not None:
             data["cam_id"] = cam_id
         if mic_id is not None:
