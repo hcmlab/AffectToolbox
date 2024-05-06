@@ -130,6 +130,7 @@ def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpP
             data["cam_id"] = cam_id
         if mic_id is not None:
             data["mic_id"] = mic_id
+
         file.seek(0)
         json.dump(data, file)
         file.truncate()
