@@ -27,64 +27,66 @@ class RightClickWindow(QMainWindow):
         self.layout.setSpacing(5)
 
         #Check which widget is rightlcicked and add the corresponding settings into a layout
-        if name == "Video":
+        if name == "Camera":
+            self.Device = DeviceSelector(window=window, name="camera")
+            self.layout.addWidget(self.Device)
+        elif name == "Microphone":
+            self.Device = DeviceSelector(window=window, name="microphone")
+            self.layout.addWidget(self.Device)
+        elif name == "Video":
             self.CameraLoopRate = None
             self.CameraLoopRateLabel = None
-            self.AddDoubleSpinBox(SpinBoxinstance=self.CameraLoopRate, Labelinstance=self.CameraLoopRateLabel ,baseValue=window.CAMERA_LOOP_RATE, name="Video", variableName="CAMERA_LOOP_RATE")
+            self.AddDoubleSpinBox(SpinBoxinstance=self.CameraLoopRate, Labelinstance=self.CameraLoopRateLabel, baseValue=window.CAMERA_LOOP_RATE, name="Video", variableName="CAMERA_LOOP_RATE")
+        elif name == "FaceTracking":
+            self.FaceMeshLoopRate = None
+            self.FaceMeshLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FaceMeshLoopRate, Labelinstance=self.FaceMeshLoopRateLabel, baseValue=window.FACE_MESH_RATE, name="FaceTracking", variableName="FACE_MESH_RATE")
+        elif name == "FacialExpression":
+            self.ERLoopRate = None
+            self.ERLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.ERLoopRate, Labelinstance=self.ERLoopRateLabel, baseValue=window.ER_LOOP_RATE, name="FacialExpression", variableName="ER_LOOP_RATE")
+        elif name == "Audio":
+            self.AddSpinBox(baseValue=window.SAMPLE_RATE, name="Audio")
+        elif name == "VoiceActivity":
+            self.VADLoopRate = None
+            self.VADLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.VADLoopRate, Labelinstance=self.VADLoopRateLabel, baseValue=window.VAD_LOOP_RATE, name="VoiceActivity", variableName="VAD_LOOP_RATE")
+        elif name == "Para":
+            self.SERLoopRate = None
+            self.SERLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.SERLoopRate, Labelinstance=self.SERLoopRateLabel, baseValue=window.SER_LOOP_RATE, name="Audio", variableName="SER_LOOP_RATE")
+        elif name == "Transcript":
+            self.STTLoopRate = None
+            self.STTLoopRateLabel = None
+            self.AddDoubleSpinBox( SpinBoxinstance=self.STTLoopRate, Labelinstance=self.STTLoopRateLabel, baseValue=window.STT_LOOP_RATE, name="Transcript", variableName="STT_LOOP_RATE")
+        elif name == "Sentiment":
+            self.SentimentLoopRate = None
+            self.SentimentLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.SentimentLoopRate, Labelinstance=self.SentimentLoopRateLabel, baseValue=window.SENTIMENT_LOOP_RATE, name="Sentiment", variableName="SENTIMENT_LOOP_RATE")
+        elif name == "Pose":
+            self.PoseLoopRate = None
+            self.PoseLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.PoseLoopRate, Labelinstance=self.PoseLoopRateLabel, baseValue=window.POSE_LOOP_RATE, name="Pose", variableName="POSE_LOOP_RATE")
+        elif name == "Fusion":
+            self.FusionLoopRate = None
+            self.FusionLoopRateLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionLoopRate, Labelinstance=self.FusionLoopRateLabel, baseValue=window.FUSION_LOOP_RATE, name="Fusion", variableName="FUSION_LOOP_RATE")
         elif name == "Kafka":
             self.AddIp(baseValue=window.KAFKA_IP, name="KAFKA")
             self.AddPort(baseValue=window.KAFKA_PORT, name="KAFKA")
             self.AddTopic(baseValue=window.KAFKA_TOPIC, name="KAFKA")
             self.kafkaSendLoopRate = None
             self.kafkaSendLoopRateLabel = None
-            self.AddDoubleSpinBox(SpinBoxinstance=self.kafkaSendLoopRate, Labelinstance=self.kafkaSendLoopRateLabel,baseValue=window.SEND_LOOP_RATE, name="KAFKA", variableName="SEND_LOOP_RATE")
+            self.AddDoubleSpinBox(SpinBoxinstance=self.kafkaSendLoopRate, Labelinstance=self.kafkaSendLoopRateLabel, baseValue=window.SEND_LOOP_RATE, name="KAFKA", variableName="SEND_LOOP_RATE")
         elif name == "UDP":
             self.AddIp(baseValue=window.UDP_IP, name="UDP")
             self.AddPort(baseValue=window.UDP_PORT, name="UDP")
             self.udpSendLoopRate = None
             self.udpSendLoopRateLabel = None
-            self.AddDoubleSpinBox(SpinBoxinstance=self.udpSendLoopRate, Labelinstance=self.udpSendLoopRateLabel ,baseValue=window.SEND_LOOP_RATE, name="UDP", variableName="SEND_LOOP_RATE")
-        elif name == "Sentiment":
-            self.SentimentLoopRate = None
-            self.SentimentLoopRateLabel = None
-            self.AddDoubleSpinBox(SpinBoxinstance=self.SentimentLoopRate, Labelinstance=self.SentimentLoopRateLabel ,baseValue=window.SENTIMENT_LOOP_RATE, name="Sentiment", variableName="SENTIMENT_LOOP_RATE")
-        elif name == "Audio":
-            self.VADLoopRate = None
-            self.VADLoopRateLabel = None
-            self.AddDoubleSpinBox(SpinBoxinstance=self.VADLoopRate, Labelinstance=self.VADLoopRateLabel ,baseValue=window.VAD_LOOP_RATE, name="Audio", variableName="VAD_LOOP_RATE")
-            self.SERLoopRate = None
-            self.SERLoopRateLabel = None
-            self.AddDoubleSpinBox(SpinBoxinstance=self.SERLoopRate, Labelinstance=self.SERLoopRateLabel ,baseValue=window.SER_LOOP_RATE, name="Audio", variableName="SER_LOOP_RATE")
-            self.AddSpinBox(baseValue=window.SAMPLE_RATE, name="Audio")
-        elif name == "Pose":
-            self.PoseLoopRate = None
-            self.PoseLoopRateLabel = None
-            self.AddDoubleSpinBox(SpinBoxinstance=self.PoseLoopRate, Labelinstance=self.PoseLoopRateLabel ,baseValue=window.POSE_LOOP_RATE, name="Pose", variableName="POSE_LOOP_RATE")
-        elif name == "FaceTracking":
-            self.FaceMeshLoopRate = None
-            self.FaceMeshLoopRateLabel = None
-            self.AddDoubleSpinBox(SpinBoxinstance=self.FaceMeshLoopRate, Labelinstance=self.FaceMeshLoopRateLabel,baseValue=window.FACE_MESH_RATE, name="FaceTracking", variableName="FACE_MESH_RATE")
-        elif name == "FacialExpression":
-            self.ERLoopRate = None
-            self.ERLoopRateLabel = None
-            self.AddDoubleSpinBox(SpinBoxinstance=self.ERLoopRate, Labelinstance=self.ERLoopRateLabel ,baseValue=window.ER_LOOP_RATE, name="FacialExpression", variableName="ER_LOOP_RATE")
-        elif name == "Transcript":
-            self.STTLoopRate = None
-            self.STTLoopRateLabel = None
-            self.AddDoubleSpinBox( SpinBoxinstance=self.STTLoopRate, Labelinstance=self.STTLoopRateLabel ,baseValue=window.STT_LOOP_RATE, name="Transcript", variableName="STT_LOOP_RATE")
+            self.AddDoubleSpinBox(SpinBoxinstance=self.udpSendLoopRate, Labelinstance=self.udpSendLoopRateLabel, baseValue=window.SEND_LOOP_RATE, name="UDP", variableName="SEND_LOOP_RATE")
         # elif name == "Start":
         #     self.Device = DeviceSelector(window=window, name="camera")
         #     self.layout.addWidget(self.Device)
-        elif name == "Camera":
-            self.Device = DeviceSelector(window=window, name="camera")
-            self.layout.addWidget(self.Device)
-        elif name == "Microphone":
-            self.Device = DeviceSelector(window=window, name="microphone")
-            self.layout.addWidget(self.Device)
-        elif name == "Fusion":
-            self.FusionLoopRate = None
-            self.FusionLoopRateLabel = None
-            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionLoopRate, Labelinstance=self.FusionLoopRateLabel, baseValue=window.FUSION_LOOP_RATE, name="Fusion", variableName="FUSION_LOOP_RATE")
 
         # Create a QSpacerItem to "press" the widgets to the top
         spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
