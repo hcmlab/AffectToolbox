@@ -94,16 +94,16 @@ class RightClickWindow(QMainWindow):
             self.AddDoubleSpinBox(SpinBoxinstance=self.FusionLoopRate, Labelinstance=self.FusionLoopRateLabel,
                                   baseValue=window.FUSION_LOOP_RATE, variableName="FUSION_LOOP_RATE")
         elif name == "Kafka":
-            self.AddIp(baseValue=window.KAFKA_IP, name="KafkaIP")
-            self.AddPort(baseValue=window.KAFKA_PORT, name="KafkaPort")
-            self.AddTopic(baseValue=window.KAFKA_TOPIC, name="KafkaTopic")
+            self.AddIp(baseValue=window.KAFKA_IP, variableName="KAFKA_IP")
+            self.AddPort(baseValue=window.KAFKA_PORT, variableName="KAFKA_PORT")
+            self.AddTopic(baseValue=window.KAFKA_TOPIC, variableName="KAFKA_TOPIC")
             self.kafkaSendLoopRate = None
             self.kafkaSendLoopRateLabel = None
             self.AddDoubleSpinBox(SpinBoxinstance=self.kafkaSendLoopRate, Labelinstance=self.kafkaSendLoopRateLabel,
                                   baseValue=window.SEND_LOOP_RATE, variableName="SEND_LOOP_RATE")
         elif name == "UDP":
-            self.AddIp(baseValue=window.UDP_IP, name="UdpIP")
-            self.AddPort(baseValue=window.UDP_PORT, name="UdpPort")
+            self.AddIp(baseValue=window.UDP_IP, variableName="UDP_IP")
+            self.AddPort(baseValue=window.UDP_PORT, variableName="UDP_PORT")
             self.udpSendLoopRate = None
             self.udpSendLoopRateLabel = None
             self.AddDoubleSpinBox(SpinBoxinstance=self.udpSendLoopRate, Labelinstance=self.udpSendLoopRateLabel,
@@ -237,91 +237,94 @@ class RightClickWindow(QMainWindow):
         self.spinBox.setSingleStep(1000)
         self.spinBox.valueChanged.connect(lambda value: self.on_int_value_changed(value=value, variableName=variableName))
 
-    def AddIp(self, baseValue='0.0.0.0', name=""):
+    def AddIp(self, baseValue='0.0.0.0', variableName=""):
         """ Add a QLineEdit to the layout with the given name and base value. The method also connects the textChanged signal to the on_text_changed_IP method.
         
         Args:
             baseValue (str): The base value of the QLineEdit
-            name (str): The name of the QLineEdit
+            variableName (str): The name of the QLineEdit
         """
-        self.ipLabel = QLabel(f"{name}-IP Address:")
+        self.ipLabel = QLabel(f"{variableName}:")
         self.ipLabel.setFixedSize(300, 20)
         self.ipLineEdit = QLineEdit()
         self.ipLineEdit.setFixedSize(300, 20)
         self.layout.addWidget(self.ipLabel)
         self.layout.addWidget(self.ipLineEdit)
         self.ipLineEdit.setText(baseValue)
-        self.ipLineEdit.textChanged.connect(lambda  text: self.on_text_changed_IP(text=text, name=name))
+        self.ipLineEdit.textChanged.connect(lambda  text: self.on_text_changed_IP(text=text, variableName=variableName))
 
-    def on_text_changed_IP(self, text, name=""):
+    def on_text_changed_IP(self, text, variableName=""):
         """Called, when text within QLineEdit is changed
         
         Args:
             text (str): The new text of the QLineEdit
-            name (str): The name of the QLineEdit
+            variableName (str): The name of the QLineEdit
         """
-        if name == "UDP":
+        if variableName == "UDP_IP":
             self.window.UDP_IP = text
             changeValues(udpIP=text)
-        if name == "KAFKA":
+        if variableName == "KAFKA_IP":
             self.window.KAFKA_IP = text
             changeValues(kafkaIP=text)
+        print(f"{variableName} has been changed to {text}")
 
-    def AddPort(self, baseValue=3000, name=""):
+    def AddPort(self, baseValue=3000, variableName=""):
         """ Add a QLineEdit to the layout with the given name and base value. The method also connects the textChanged signal to the on_text_changed_port method.
         
         Args:
             baseValue (int): The base value of the QLineEdit
-            name (str): The name of the QLineEdit
+            variableName (str): The name of the QLineEdit
         """
-        self.portLabel = QLabel(f"{name}-Port:")
+        self.portLabel = QLabel(f"{variableName}:")
         self.portLabel.setFixedSize(300, 20)
         self.portLineEdit = QLineEdit()
         self.portLineEdit.setFixedSize(300, 20)
         self.layout.addWidget(self.portLabel)
         self.layout.addWidget(self.portLineEdit)
         self.portLineEdit.setText(str(baseValue))
-        self.portLineEdit.textChanged.connect(lambda value: self.on_text_changed_port(value=value, name=name))
+        self.portLineEdit.textChanged.connect(lambda value: self.on_text_changed_port(value=value, variableName=variableName))
 
-    def on_text_changed_port(self, value, name=""):
+    def on_text_changed_port(self, value, variableName=""):
         """Called, when text within QLineEdit is changed.
         
         Args:
             value (str): The new text of the QLineEdit
-            name (str): The name of the QLineEdit
+            variableName (str): The name of the QLineEdit
         """
-        if name == "UDP":
+        if variableName == "UDP_PORT":
             self.window.UDP_PORT = int(value)
             changeValues(udpPort=int(value))
-        if name == "KAFKA":
+        if variableName == "KAFKA_PORT":
             self.window.KAFKA_PORT = int(value)
             changeValues(kafkaPort=int(value))
+        print(f"{variableName} has been changed to {value}")
 
-    def AddTopic(self, baseValue='mithos', name=""):
+    def AddTopic(self, baseValue='PAD', variableName=""):
         """ Add a QLineEdit to the layout with the given name and base value. The method also connects the textChanged signal to the on_text_changed_topic method.
         
         Args:
             baseValue (str): The base value of the QLineEdit
-            name (str): The name of the QLineEdit
+            variableName (str): The name of the QLineEdit
         """
-        self.topicLabel = QLabel(f"{name}-Topic:")
+        self.topicLabel = QLabel(f"{variableName}:")
         self.topicLabel.setFixedSize(300, 20)
         self.topicLineEdit = QLineEdit()
         self.topicLineEdit.setFixedSize(300, 20)
         self.layout.addWidget(self.topicLabel)
         self.layout.addWidget(self.topicLineEdit)
         self.topicLineEdit.setText(baseValue)
-        self.topicLineEdit.textChanged.connect(lambda value: self.on_text_changed_topic(value=value, name=name))
+        self.topicLineEdit.textChanged.connect(lambda value: self.on_text_changed_topic(value=value, variableName=variableName))
 
-    def on_text_changed_topic(self, value, name=""):
+    def on_text_changed_topic(self, value, variableName=""):
         """Called, when text within QLineEdit is changed.
         
         Args:
             value (str): The new text of the QLineEdit
-            name (str): The name of the QLineEdit
+            variableName (str): The name of the QLineEdit
         """
-        if name == "KAFKA":
+        if variableName == "KAFKA_TOPIC":
             self.window.KAFKA_TOPIC = value
             changeValues(kafkaTopic=value)
+        print(f"{variableName} has been changed to {value}")
             
         

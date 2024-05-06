@@ -1,7 +1,7 @@
 from modules.AffectPipeline import AffectPipeline, DeviceManager
 from modules.ConfigManager import config
 
-conf = config("examples/mithos.conf")
+conf = config("../examples/mithos.conf")
 
 dm = DeviceManager()
 mic_id = dm.choose_microphone()
