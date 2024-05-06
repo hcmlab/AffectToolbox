@@ -51,6 +51,9 @@ class RightClickWindow(QMainWindow):
             self.VADLoopRate = None
             self.VADLoopRateLabel = None
             self.AddDoubleSpinBox(SpinBoxinstance=self.VADLoopRate, Labelinstance=self.VADLoopRateLabel, baseValue=window.VAD_LOOP_RATE, name="VoiceActivity", variableName="VAD_LOOP_RATE")
+            self.VADTreshold = None
+            self.VADTresholdLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.VADTreshold, Labelinstance=self.VADTresholdLabel, baseValue=window.VAD_THRESHOLD, name="VoiceActivity", variableName="VAD_THRESHOLD")
         elif name == "Para":
             self.SERLoopRate = None
             self.SERLoopRateLabel = None
@@ -59,6 +62,9 @@ class RightClickWindow(QMainWindow):
             self.STTLoopRate = None
             self.STTLoopRateLabel = None
             self.AddDoubleSpinBox( SpinBoxinstance=self.STTLoopRate, Labelinstance=self.STTLoopRateLabel, baseValue=window.STT_LOOP_RATE, name="Transcript", variableName="STT_LOOP_RATE")
+            self.STTWindowSize = None
+            self.STTWindowSizeLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.STTWindowSize, Labelinstance=self.STTWindowSizeLabel, baseValue=window.STT_WINDOW_SIZE, name="Transcript", variableName="STT_WINDOW_SIZE")
         elif name == "Sentiment":
             self.SentimentLoopRate = None
             self.SentimentLoopRateLabel = None
@@ -138,6 +144,9 @@ class RightClickWindow(QMainWindow):
         elif name == "VAD_LOOP_RATE":
             self.window.VAD_LOOP_RATE = value
             changeValues(vad_loop_rate=value)
+        elif name == "VAD_THRESHOLD":
+            self.window.VAD_THRESHOLD = value
+            changeValues(vad_threshold=value)
         elif name == "SER_LOOP_RATE":
             self.window.SER_LOOP_RATE = value
             changeValues(ser_loop_rate=value)
@@ -153,6 +162,9 @@ class RightClickWindow(QMainWindow):
         elif name == "STT_LOOP_RATE":
             self.window.STT_LOOP_RATE = value
             changeValues(stt_loop_rate=value)
+        elif name == "STT_WINDOW_SIZE":
+            self.window.STT_WINDOW_SIZE = value
+            changeValues(stt_window_size=value)
         elif name == "SEND_LOOP_RATE":
             self.window.SEND_LOOP_RATE = value
             changeValues(send_loop_rate=value)

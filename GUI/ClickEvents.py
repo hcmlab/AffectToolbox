@@ -1177,11 +1177,11 @@ def PlayButtonClick(window):
                       kafka_port=window.KAFKA_PORT,
                       kafka_topic_name=window.KAFKA_TOPIC,
                       sample_rate=window.SAMPLE_RATE,
-                      vad_threshold=0.25,
+                      vad_threshold=window.VAD_THRESHOLD,
                       face_padding=0.2,
                       microphone_chunks=16000,
                       microphone_id=window.MIC_ID,
-                      stt_window_length=5,
+                      stt_window_length=window.STT_WINDOW_SIZE,
                       stt_model_size="small",
                       sentiment_model="germansentiment")
     window.START = False # This is set to true when the pipeline is actually started
