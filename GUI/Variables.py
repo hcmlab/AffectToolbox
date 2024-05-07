@@ -41,6 +41,15 @@ def initVariables(window=None):
 
         window.POSE_DOMINANCE = False
 
+        window.FUSION_USE_PARA_V = False
+        window.FUSION_USE_PARA_A = False
+        window.FUSION_USE_PARA_D = False
+        window.FUSION_USE_SENTIMENT_V = False
+        window.FUSION_USE_FACE_V = False
+        window.FUSION_USE_FACE_A = False
+        window.FUSION_USE_FACE_D = False
+        window.FUSION_USE_POSE_D = False
+
         #Kafka / UDP Variables
         window.KAFKA = False
         window.KAFKA_IP = data["kafka"]["IP"] #'127.0.0.1'

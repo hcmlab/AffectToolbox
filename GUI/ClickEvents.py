@@ -126,6 +126,8 @@ def ParaClick(window):
 def ParaPleasureClick(window):
     """Implements the click event for the Para-Linguistic-Pleasure widget"""
     def turnOff():
+        print('FUSION_USE_PARA_V set to False')
+        window.FUSION_USE_PARA_V = False
         #Left side
         window.rounded6_1.toggleColor()
         window.hline1fromCol5to6_1.toggleColor()
@@ -160,6 +162,8 @@ def ParaPleasureClick(window):
                 window.collectorLine6to7_1.toggleColor()
 
     def turnOn():
+        print('FUSION_USE_PARA_V set to True')
+        window.FUSION_USE_PARA_V = True
         #Left side
         window.rounded6_1.toggleColor()
         if not window.PARA_LOOP:
@@ -206,6 +210,8 @@ def ParaPleasureClick(window):
 def ParaArousalClick(window):
     """Implements the click event for the Para-Linguistic-Arousal widget"""
     def turnOff():
+        print('FUSION_USE_PARA_A set to False')
+        window.FUSION_USE_PARA_A = False
         #Left side
         window.rounded6_2.toggleColor()
         window.hline2fromCol5to6_1.toggleColor()
@@ -238,6 +244,8 @@ def ParaArousalClick(window):
                     return
 
     def turnOn():
+        print('FUSION_USE_PARA_A set to True')
+        window.FUSION_USE_PARA_A = True
         #Left side
         window.rounded6_2.toggleColor()
         if not window.PARA_LOOP:
@@ -281,6 +289,8 @@ def ParaArousalClick(window):
 def ParaDominanceClick(window):
     """Implements the click event for the Para-Linguistic-Dominance widget"""
     def turnOff():
+        print('FUSION_USE_PARA_D set to False')
+        window.FUSION_USE_PARA_D = False
         #Left side
         window.rounded6_3.toggleColor()
         window.hline3fromCol5to6_1.toggleColor()
@@ -310,6 +320,8 @@ def ParaDominanceClick(window):
                 window.collectorLine6to7_3.toggleColor()
     
     def turnOn():
+        print('FUSION_USE_PARA_D set to True')
+        window.FUSION_USE_PARA_D = True
         #Left side
         window.rounded6_3.toggleColor()
         window.collectorLine5to6_1_1.toggleColor()
@@ -394,6 +406,8 @@ def SentimentClick(window):
 def SentimentPleasureClick(window):
     """Implements the click event for the sentiment-pleasure widget"""
     def turnOff():
+        print('FUSION_USE_SENTIMENT_V set to False')
+        window.FUSION_USE_SENTIMENT_V = False
         #Left side
         window.rounded6_4.toggleColor()
         window.horLineWidgetSertoVer.toggleColor()
@@ -417,6 +431,8 @@ def SentimentPleasureClick(window):
                 return
     
     def turnOn():
+        print('FUSION_USE_SENTIMENT_V set to True')
+        window.FUSION_USE_SENTIMENT_V = True
         #LeftSide
         window.rounded6_4.toggleColor()
         if not window.SENTIMENT_LOOP:
@@ -563,6 +579,8 @@ def FacialExpressionClick(window):
 def FacialPleasureClick(window):
     """Implements the click event for the facial expression pleasure widget"""
     def turnOff():
+        print('FUSION_USE_FACE_V set to False')
+        window.FUSION_USE_FACE_V = False
         #Left side
         window.rounded6_5.toggleColor()
         window.hline1fromCol5to6_2.toggleColor()
@@ -587,6 +605,8 @@ def FacialPleasureClick(window):
                 return
     
     def turnOn():
+        print('FUSION_USE_FACE_V set to True')
+        window.FUSION_USE_FACE_V = True
         #Left Side
         window.rounded6_5.toggleColor()
         window.hline1fromCol5to6_2.toggleColor()
@@ -622,6 +642,8 @@ def FacialPleasureClick(window):
 def FacialArousalClick(window):
     """Implements the click event for the facial expression arousal widget"""
     def turnOff():
+        print('FUSION_USE_FACE_A set to False')
+        window.FUSION_USE_FACE_A = False
         #Left Side
         window.rounded6_6.toggleColor()
         window.hline2fromCol5to6_2.toggleColor()
@@ -651,6 +673,8 @@ def FacialArousalClick(window):
                 window.collectorLine6to7_6.toggleColor()
     
     def turnOn():
+        print('FUSION_USE_FACE_A set to True')
+        window.FUSION_USE_FACE_A = True
         #Left Side
         window.rounded6_6.toggleColor()
         window.hline2fromCol5to6_2.toggleColor()
@@ -691,6 +715,8 @@ def FacialArousalClick(window):
 def FacialDominanceClick(window):
     """Implements the click event for the facial expression dominance widget"""
     def turnOff():
+        print('FUSION_USE_FACE_D set to False')
+        window.FUSION_USE_FACE_D = False
         #Left side
         window.rounded6_7.toggleColor()
         window.hline3fromCol5to6_2.toggleColor()
@@ -725,6 +751,8 @@ def FacialDominanceClick(window):
                     return
     
     def turnOn():
+        print('FUSION_USE_FACE_D set to True')
+        window.FUSION_USE_FACE_D = True
         #Left side
         window.rounded6_7.toggleColor()
         window.hline3fromCol5to6_2.toggleColor()
@@ -862,6 +890,8 @@ def PoseClick(window):
 def PoseDominanceClick(window):
     """Implements the click event for the pose-dominance widget"""
     def turnOff():
+        print('FUSION_USE_POSE_D set to False')
+        window.FUSION_USE_POSE_D = False
         #Left side
         window.rounded6_8.toggleColor()
         window.hLineWidgetPosetoVer.toggleColor()
@@ -900,6 +930,8 @@ def PoseDominanceClick(window):
                 window.hlineWidgettoCol8.toggleColor()
     
     def turnOn():
+        print('FUSION_USE_POSE_D set to False')
+        window.FUSION_USE_POSE_D = False
         #Left side
         window.rounded6_8.toggleColor()
         window.hLineWidgetPosetoVer.toggleColor()
@@ -1183,7 +1215,16 @@ def PlayButtonClick(window):
                       microphone_id=window.MIC_ID,
                       stt_window_length=window.STT_WINDOW_SIZE,
                       stt_model_size="small",
-                      sentiment_model="germansentiment")
+                      sentiment_model="germansentiment",
+                      fusion_use_para_v=window.FUSION_USE_PARA_V,
+                      fusion_use_para_a=window.FUSION_USE_PARA_A,
+                      fusion_use_para_d=window.FUSION_USE_PARA_D,
+                      fusion_use_sentiment_v=window.FUSION_USE_SENTIMENT_V,
+                      fusion_use_face_v=window.FUSION_USE_FACE_V,
+                      fusion_use_face_a=window.FUSION_USE_FACE_A,
+                      fusion_use_face_d=window.FUSION_USE_FACE_D,
+                      fusion_use_pose_d=window.FUSION_USE_POSE_D
+                    )
     window.START = False # This is set to true when the pipeline is actually started
     
     #Check whether or not certain widgets are enabled

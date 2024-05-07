@@ -57,7 +57,15 @@ class AffectPipeline():
                  microphone_id=0,
                  stt_window_length=10,
                  stt_model_size="base",
-                 sentiment_model='germansentiment'
+                 sentiment_model='germansentiment',
+                 fusion_use_para_v=False,
+                 fusion_use_para_a=False,
+                 fusion_use_para_d=False,
+                 fusion_use_sentiment_v=False,
+                 fusion_use_face_v=False,
+                 fusion_use_face_a=False,
+                 fusion_use_face_d=False,
+                 fusion_use_pose_d=False
                  ):
 
         self.LOG_TO_CONSOLE = enable_log_to_console
@@ -118,6 +126,15 @@ class AffectPipeline():
         self.CHUNK_SIZE = int(self.STEP * self.SAMPLE_RATE)
         self._LAST_IMAGE = None
 
+        # self.FUSION_USE_PARA_V = fusion_use_para_v
+        # self.FUSION_USE_PARA_A = fusion_use_para_a
+        # self.FUSION_USE_PARA_D = fusion_use_para_d
+        # self.FUSION_USE_SENTIMENT_V = fusion_use_sentiment_v
+        # self.FUSION_USE_FACE_V = fusion_use_face_v
+        # self.FUSION_USE_FACE_A = fusion_use_face_a
+        # self.FUSION_USE_FACE_D = fusion_use_face_d
+        # self.FUSION_USE_POSE_D = fusion_use_pose_d
+
         self.LOGGING_MODULE = LogModule(enable_log_to_console, enable_vad_loop, enable_ser_loop, enable_stt_loop,
                                         enable_sentiment_loop, enable_face_er_loop, enable_face_mesh_loop,
                                         enable_pose_loop, enable_fusion_loop)
@@ -126,6 +143,14 @@ class AffectPipeline():
         if enable_fusion_loop:
             from modules.module_fusion import FusionModule
             self.FUSION_MODULE = FusionModule()
+            self.FUSION_MODULE.FUSION_USE_PARA_V = fusion_use_para_v
+            self.FUSION_MODULE.FUSION_USE_PARA_A = fusion_use_para_a
+            self.FUSION_MODULE.FUSION_USE_PARA_D = fusion_use_para_d
+            self.FUSION_MODULE.FUSION_USE_SENTIMENT_V = fusion_use_sentiment_v
+            self.FUSION_MODULE.FUSION_USE_FACE_V = fusion_use_face_v
+            self.FUSION_MODULE.FUSION_USE_FACE_A = fusion_use_face_a
+            self.FUSION_MODULE.FUSION_USE_FACE_D = fusion_use_face_d
+            self.FUSION_MODULE.FUSION_USE_POSE_D = fusion_use_pose_d
         if enable_vad_loop:
             from modules.module_vad import VoiceActivity
             self.VAD_MODULE = VoiceActivity(segment_length=480, sample_rate=16000, threshold=vad_threshold)

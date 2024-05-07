@@ -64,6 +64,15 @@ class FusionModule():
 
         self.value_string = ''
 
+        self.FUSION_USE_PARA_V = False
+        self.FUSION_USE_PARA_A = False
+        self.FUSION_USE_PARA_D = False
+        self.FUSION_USE_SENTIMENT_V = False
+        self.FUSION_USE_FACE_V = False
+        self.FUSION_USE_FACE_A = False
+        self.FUSION_USE_FACE_D = False
+        self.FUSION_USE_POSE_D = False
+
     def update_fusion(self):
 
         # reset
@@ -111,20 +120,21 @@ class FusionModule():
                     break
 
         # add new events to event deques
-        # FACE - ALWAYS ON ...
         # FACE - VALENCE
-        index = 1
-        while qs.VALENCE_FACE.time[len(qs.VALENCE_FACE) - index] > self.last_time_ms:
-            if qs.VALENCE_FACE.time[len(qs.VALENCE_FACE) - index] > self.last_time_ms:
-                EVENTS_VALENCE.append(qs.VALENCE_FACE[len(qs.VALENCE_FACE) - index] * self.face_boost_valence, self.face_weight_valence, self.face_speed)
-            index = index + 1
+        if self.FUSION_USE_FACE_V:
+            index = 1
+            while qs.VALENCE_FACE.time[len(qs.VALENCE_FACE) - index] > self.last_time_ms:
+                if qs.VALENCE_FACE.time[len(qs.VALENCE_FACE) - index] > self.last_time_ms:
+                    EVENTS_VALENCE.append(qs.VALENCE_FACE[len(qs.VALENCE_FACE) - index] * self.face_boost_valence, self.face_weight_valence, self.face_speed)
+                index = index + 1
 
         # FACE - AROUSAL
-        index = 1
-        while qs.AROUSAL_FACE.time[len(qs.AROUSAL_FACE) - index] > self.last_time_ms:
-            if qs.AROUSAL_FACE.time[len(qs.AROUSAL_FACE) - index] > self.last_time_ms:
-                EVENTS_AROUSAL.append(qs.AROUSAL_FACE[len(qs.AROUSAL_FACE) - index] * self.face_boost_arousal, self.face_weight_arousal, self.face_speed)
-            index = index + 1
+        if self.FUSION_USE_FACE_A:
+            index = 1
+            while qs.AROUSAL_FACE.time[len(qs.AROUSAL_FACE) - index] > self.last_time_ms:
+                if qs.AROUSAL_FACE.time[len(qs.AROUSAL_FACE) - index] > self.last_time_ms:
+                    EVENTS_AROUSAL.append(qs.AROUSAL_FACE[len(qs.AROUSAL_FACE) - index] * self.face_boost_arousal, self.face_weight_arousal, self.face_speed)
+                index = index + 1
 
         # .. moved to AffectPipeline.py
         # DERIVE PERCEIVED DOMINANCE FROM VALENCE/AROUSAL
@@ -154,44 +164,49 @@ class FusionModule():
         # EVENTS_DOMINANCE.append(dominance_face_latest * self.face_boost_dominance, self.face_weight_dominance, self.face_speed)
         # .. instead now:
 
-        index = 1
-        while qs.DOMINANCE_FACE.time[len(qs.DOMINANCE_FACE) - index] > self.last_time_ms:
-            if qs.DOMINANCE_FACE.time[len(qs.DOMINANCE_FACE) - index] > self.last_time_ms:
-                EVENTS_DOMINANCE.append(qs.DOMINANCE_FACE[len(qs.DOMINANCE_FACE) - index] * self.face_boost_dominance,
-                                      self.face_weight_dominance, self.face_speed)
-            index = index + 1
+        if self.FUSION_USE_FACE_D:
+            index = 1
+            while qs.DOMINANCE_FACE.time[len(qs.DOMINANCE_FACE) - index] > self.last_time_ms:
+                if qs.DOMINANCE_FACE.time[len(qs.DOMINANCE_FACE) - index] > self.last_time_ms:
+                    EVENTS_DOMINANCE.append(qs.DOMINANCE_FACE[len(qs.DOMINANCE_FACE) - index] * self.face_boost_dominance,
+                                          self.face_weight_dominance, self.face_speed)
+                index = index + 1
 
         # VOICE - BUT ONLY IF VOICE ACTIVITY ...
         if qs.VOICE_ACTIVITY[len(qs.VOICE_ACTIVITY) - 1] != 0 or not self.voice_activity_tracked:
             # VOICE - VALENCE
-            index = 1
-            while qs.VALENCE_SPEECH.time[len(qs.VALENCE_SPEECH) - index] > self.last_time_ms:
-                if qs.VALENCE_SPEECH.time[len(qs.VALENCE_SPEECH) - index] > self.last_time_ms:
-                    EVENTS_VALENCE.append(qs.VALENCE_SPEECH[len(qs.VALENCE_SPEECH) - index] * self.voice_boost_valence, self.voice_weight_valence, self.voice_speed)
-                index = index + 1
+            if self.FUSION_USE_PARA_V:
+                index = 1
+                while qs.VALENCE_SPEECH.time[len(qs.VALENCE_SPEECH) - index] > self.last_time_ms:
+                    if qs.VALENCE_SPEECH.time[len(qs.VALENCE_SPEECH) - index] > self.last_time_ms:
+                        EVENTS_VALENCE.append(qs.VALENCE_SPEECH[len(qs.VALENCE_SPEECH) - index] * self.voice_boost_valence, self.voice_weight_valence, self.voice_speed)
+                    index = index + 1
 
             # VOICE - AROUSAL
-            index = 1
-            while qs.AROUSAL_SPEECH.time[len(qs.AROUSAL_SPEECH) - index] > self.last_time_ms:
-                if qs.AROUSAL_SPEECH.time[len(qs.AROUSAL_SPEECH) - index] > self.last_time_ms:
-                    EVENTS_AROUSAL.append(qs.AROUSAL_SPEECH[len(qs.AROUSAL_SPEECH) - index] * self.voice_boost_arousal, self.voice_weight_arousal, self.voice_speed)
-                index = index + 1
+            if self.FUSION_USE_PARA_A:
+                index = 1
+                while qs.AROUSAL_SPEECH.time[len(qs.AROUSAL_SPEECH) - index] > self.last_time_ms:
+                    if qs.AROUSAL_SPEECH.time[len(qs.AROUSAL_SPEECH) - index] > self.last_time_ms:
+                        EVENTS_AROUSAL.append(qs.AROUSAL_SPEECH[len(qs.AROUSAL_SPEECH) - index] * self.voice_boost_arousal, self.voice_weight_arousal, self.voice_speed)
+                    index = index + 1
 
             # VOICE - DOMINANCE
-            index = 1
-            while qs.DOMINANCE_SPEECH.time[len(qs.DOMINANCE_SPEECH) - index] > self.last_time_ms:
-                if qs.DOMINANCE_SPEECH.time[len(qs.DOMINANCE_SPEECH) - index] > self.last_time_ms:
-                    EVENTS_DOMINANCE.append(qs.DOMINANCE_SPEECH[len(qs.DOMINANCE_SPEECH) - index] * self.voice_boost_dominance, self.voice_weight_dominance, self.voice_speed)
-                index = index + 1
+            if self.FUSION_USE_PARA_D:
+                index = 1
+                while qs.DOMINANCE_SPEECH.time[len(qs.DOMINANCE_SPEECH) - index] > self.last_time_ms:
+                    if qs.DOMINANCE_SPEECH.time[len(qs.DOMINANCE_SPEECH) - index] > self.last_time_ms:
+                        EVENTS_DOMINANCE.append(qs.DOMINANCE_SPEECH[len(qs.DOMINANCE_SPEECH) - index] * self.voice_boost_dominance, self.voice_weight_dominance, self.voice_speed)
+                    index = index + 1
 
         # SENTIMENT - BUT ONLY IF VOICE ACTIVITY ...
         # if qs.VOICE_ACTIVITY[len(qs.VOICE_ACTIVITY) - 1] != 0 or not self.voice_activity_tracked:
-            # SENTIMENT - VALENCE
-        index = 1
-        while qs.VALENCE_SENTIMENT.time[len(qs.VALENCE_SENTIMENT) - index] > self.last_time_ms:
-            if qs.VALENCE_SENTIMENT.time[len(qs.VALENCE_SENTIMENT) - index] > self.last_time_ms:
-                EVENTS_VALENCE.append(qs.VALENCE_SENTIMENT[len(qs.VALENCE_SENTIMENT) - index] * self.sentiment_boost_valence, self.sentiment_weight_valence, self.sentiment_speed)
-            index = index + 1
+        # SENTIMENT - VALENCE
+        if self.FUSION_USE_SENTIMENT_V:
+            index = 1
+            while qs.VALENCE_SENTIMENT.time[len(qs.VALENCE_SENTIMENT) - index] > self.last_time_ms:
+                if qs.VALENCE_SENTIMENT.time[len(qs.VALENCE_SENTIMENT) - index] > self.last_time_ms:
+                    EVENTS_VALENCE.append(qs.VALENCE_SENTIMENT[len(qs.VALENCE_SENTIMENT) - index] * self.sentiment_boost_valence, self.sentiment_weight_valence, self.sentiment_speed)
+                index = index + 1
 
         # decay event contributions over event deques
         # VALENCE
