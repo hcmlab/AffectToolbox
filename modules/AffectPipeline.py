@@ -65,7 +65,22 @@ class AffectPipeline():
                  fusion_use_face_v=False,
                  fusion_use_face_a=False,
                  fusion_use_face_d=False,
-                 fusion_use_pose_d=False
+                 fusion_use_pose_d=False,
+                 fusion_speed=1000,
+                 fusion_voice_speed = 5000,
+                 fusion_voice_valence_weight = 1.0,
+                 fusion_voice_valence_boost = 1.0,
+                 fusion_voice_arousal_weight = 1.0,
+                 fusion_voice_arousal_boost = 1.0,
+                 fusion_voice_dominance_weight = 1.0,
+                 fusion_voice_dominance_boost = 1.0,
+                 fusion_face_speed = 5000,
+                 fusion_face_valence_weight = 1.0,
+                 fusion_face_valence_boost = 1.0,
+                 fusion_face_arousal_weight = 1.0,
+                 fusion_face_arousal_boost = 1.0,
+                 fusion_face_dominance_weight = 1.0,
+                 fusion_face_dominance_boost = 1.0
                  ):
 
         self.LOG_TO_CONSOLE = enable_log_to_console
@@ -143,6 +158,7 @@ class AffectPipeline():
         if enable_fusion_loop:
             from modules.module_fusion import FusionModule
             self.FUSION_MODULE = FusionModule()
+
             self.FUSION_MODULE.FUSION_USE_PARA_V = fusion_use_para_v
             self.FUSION_MODULE.FUSION_USE_PARA_A = fusion_use_para_a
             self.FUSION_MODULE.FUSION_USE_PARA_D = fusion_use_para_d
@@ -151,6 +167,24 @@ class AffectPipeline():
             self.FUSION_MODULE.FUSION_USE_FACE_A = fusion_use_face_a
             self.FUSION_MODULE.FUSION_USE_FACE_D = fusion_use_face_d
             self.FUSION_MODULE.FUSION_USE_POSE_D = fusion_use_pose_d
+
+            self.FUSION_MODULE.fusion_speed = fusion_speed
+
+            self.FUSION_MODULE.voice_speed = fusion_voice_speed
+            self.FUSION_MODULE.voice_weight_valence = fusion_voice_valence_weight
+            self.FUSION_MODULE.voice_boost_valence = fusion_voice_valence_boost
+            self.FUSION_MODULE.voice_weight_arousal = fusion_voice_arousal_weight
+            self.FUSION_MODULE.voice_boost_arousal = fusion_voice_arousal_boost
+            self.FUSION_MODULE.voice_weight_dominance = fusion_voice_dominance_weight
+            self.FUSION_MODULE.voice_boost_dominance = fusion_voice_dominance_boost
+
+            self.FUSION_MODULE.face_speed = fusion_face_speed
+            self.FUSION_MODULE.face_weight_valence = fusion_face_valence_weight
+            self.FUSION_MODULE.face_boost_valence = fusion_face_valence_boost
+            self.FUSION_MODULE.face_weight_arousal = fusion_face_arousal_weight
+            self.FUSION_MODULE.face_boost_arousal = fusion_face_arousal_boost
+            self.FUSION_MODULE.face_weight_dominance = fusion_face_dominance_weight
+            self.FUSION_MODULE.face_boost_dominance = fusion_face_dominance_boost
         if enable_vad_loop:
             from modules.module_vad import VoiceActivity
             self.VAD_MODULE = VoiceActivity(segment_length=480, sample_rate=16000, threshold=vad_threshold)

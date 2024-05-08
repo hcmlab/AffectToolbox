@@ -93,6 +93,99 @@ class RightClickWindow(QMainWindow):
             self.FusionLoopRateLabel = None
             self.AddDoubleSpinBox(SpinBoxinstance=self.FusionLoopRate, Labelinstance=self.FusionLoopRateLabel,
                                   baseValue=window.FUSION_LOOP_RATE, variableName="FUSION_LOOP_RATE")
+
+            self.FusionSpeed = None
+            self.FusionSpeedLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionSpeed, Labelinstance=self.FusionSpeedLabel,
+                                  baseValue=window.FUSION_SPEED, variableName="FUSION_SPEED")
+
+            self.FusionVoiceSpeed = None
+            self.FusionVoiceSpeedLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionVoiceSpeed, Labelinstance=self.FusionVoiceSpeedLabel,
+                                  baseValue=window.FUSION_VOICE_SPEED, variableName="FUSION_VOICE_SPEED")
+
+            self.FusionVoiceValenceWeight = None
+            self.FusionVoiceValenceWeightLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionVoiceValenceWeight,
+                                  Labelinstance=self.FusionVoiceValenceWeightLabel,
+                                  baseValue=window.FUSION_VOICE_VALENCE_WEIGHT,
+                                  variableName="FUSION_VOICE_VALENCE_WEIGHT")
+            self.FusionVoiceValenceBoost = None
+            self.FusionVoiceValenceBoostLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionVoiceValenceBoost,
+                                  Labelinstance=self.FusionVoiceValenceBoostLabel,
+                                  baseValue=window.FUSION_VOICE_VALENCE_BOOST,
+                                  variableName="FUSION_VOICE_VALENCE_BOOST")
+
+            self.FusionVoiceArousalWeight = None
+            self.FusionVoiceArousalWeightLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionVoiceArousalWeight,
+                                  Labelinstance=self.FusionVoiceArousalWeightLabel,
+                                  baseValue=window.FUSION_VOICE_AROUSAL_WEIGHT,
+                                  variableName="FUSION_VOICE_AROUSAL_WEIGHT")
+            self.FusionVoiceArousalBoost = None
+            self.FusionVoiceArousalBoostLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionVoiceArousalBoost,
+                                  Labelinstance=self.FusionVoiceArousalBoostLabel,
+                                  baseValue=window.FUSION_VOICE_AROUSAL_BOOST,
+                                  variableName="FUSION_VOICE_AROUSAL_BOOST")
+
+            self.FusionVoiceDominanceWeight = None
+            self.FusionVoiceDominanceWeightLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionVoiceDominanceWeight,
+                                  Labelinstance=self.FusionVoiceDominanceWeightLabel,
+                                  baseValue=window.FUSION_VOICE_DOMINANCE_WEIGHT,
+                                  variableName="FUSION_VOICE_DOMINANCE_WEIGHT")
+            self.FusionVoiceDominanceBoost = None
+            self.FusionVoiceDominanceBoostLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionVoiceDominanceBoost,
+                                  Labelinstance=self.FusionVoiceDominanceBoostLabel,
+                                  baseValue=window.FUSION_VOICE_DOMINANCE_BOOST,
+                                  variableName="FUSION_VOICE_DOMINANCE_BOOST")
+
+            self.FusionFaceSpeed = None
+            self.FusionFaceSpeedLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionFaceSpeed, Labelinstance=self.FusionFaceSpeedLabel,
+                                  baseValue=window.FUSION_FACE_SPEED, variableName="FUSION_FACE_SPEED")
+
+            self.FusionFaceValenceWeight = None
+            self.FusionFaceValenceWeightLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionFaceValenceWeight,
+                                  Labelinstance=self.FusionFaceValenceWeightLabel,
+                                  baseValue=window.FUSION_FACE_VALENCE_WEIGHT,
+                                  variableName="FUSION_FACE_VALENCE_WEIGHT")
+            self.FusionFaceValenceBoost = None
+            self.FusionFaceValenceBoostLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionFaceValenceBoost,
+                                  Labelinstance=self.FusionFaceValenceBoostLabel,
+                                  baseValue=window.FUSION_FACE_VALENCE_BOOST,
+                                  variableName="FUSION_FACE_VALENCE_BOOST")
+
+            self.FusionFaceArousalWeight = None
+            self.FusionFaceArousalWeightLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionFaceArousalWeight,
+                                  Labelinstance=self.FusionFaceArousalWeightLabel,
+                                  baseValue=window.FUSION_FACE_AROUSAL_WEIGHT,
+                                  variableName="FUSION_FACE_AROUSAL_WEIGHT")
+            self.FusionFaceArousalBoost = None
+            self.FusionFaceArousalBoostLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionFaceArousalBoost,
+                                  Labelinstance=self.FusionFaceArousalBoostLabel,
+                                  baseValue=window.FUSION_FACE_AROUSAL_BOOST,
+                                  variableName="FUSION_FACE_AROUSAL_BOOST")
+
+            self.FusionFaceDominanceWeight = None
+            self.FusionFaceDominanceWeightLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionFaceDominanceWeight,
+                                  Labelinstance=self.FusionFaceDominanceWeightLabel,
+                                  baseValue=window.FUSION_FACE_DOMINANCE_WEIGHT,
+                                  variableName="FUSION_FACE_DOMINANCE_WEIGHT")
+            self.FusionFaceDominanceBoost = None
+            self.FusionFaceDominanceBoostLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionFaceDominanceBoost,
+                                  Labelinstance=self.FusionFaceDominanceBoostLabel,
+                                  baseValue=window.FUSION_FACE_DOMINANCE_BOOST,
+                                  variableName="FUSION_FACE_DOMINANCE_BOOST")
         elif name == "Kafka":
             self.AddIp(baseValue=window.KAFKA_IP, variableName="KAFKA_IP")
             self.AddPort(baseValue=window.KAFKA_PORT, variableName="KAFKA_PORT")
@@ -195,6 +288,51 @@ class RightClickWindow(QMainWindow):
         elif variableName == "FUSION_LOOP_RATE":
             self.window.FUSION_LOOP_RATE = value
             changeValues(fusion_loop_rate=value)
+        elif variableName == "FUSION_SPEED":
+            self.window.FUSION_SPEED = value
+            changeValues(fusion_speed=value)
+        elif variableName == "FUSION_VOICE_SPEED":
+            self.window.FUSION_VOICE_SPEED = value
+            changeValues(fusion_voice_speed=value)
+        elif variableName == "FUSION_VOICE_VALENCE_WEIGHT":
+            self.window.FUSION_VOICE_VALENCE_WEIGHT = value
+            changeValues(fusion_voice_valence_weight=value)
+        elif variableName == "FUSION_VOICE_VALENCE_BOOST":
+            self.window.FUSION_VOICE_VALENCE_BOOST = value
+            changeValues(fusion_voice_valence_boost=value)
+        elif variableName == "FUSION_VOICE_AROUSAL_WEIGHT":
+            self.window.FUSION_VOICE_AROUSAL_WEIGHT = value
+            changeValues(fusion_voice_arousal_weight=value)
+        elif variableName == "FUSION_VOICE_AROUSAL_BOOST":
+            self.window.FUSION_VOICE_AROUSAL_BOOST = value
+            changeValues(fusion_voice_arousal_boost=value)
+        elif variableName == "FUSION_VOICE_DOMINANCE_WEIGHT":
+            self.window.FUSION_VOICE_DOMINANCE_WEIGHT = value
+            changeValues(fusion_voice_dominance_weight=value)
+        elif variableName == "FUSION_VOICE_DOMINANCE_BOOST":
+            self.window.FUSION_VOICE_DOMINANCE_BOOST = value
+            changeValues(fusion_voice_dominance_boost=value)
+        elif variableName == "FUSION_FACE_SPEED":
+            self.window.FUSION_FACE_SPEED = value
+            changeValues(fusion_face_speed=value)
+        elif variableName == "FUSION_FACE_VALENCE_WEIGHT":
+            self.window.FUSION_FACE_VALENCE_WEIGHT = value
+            changeValues(fusion_face_valence_weight=value)
+        elif variableName == "FUSION_FACE_VALENCE_BOOST":
+            self.window.FUSION_FACE_VALENCE_BOOST = value
+            changeValues(fusion_face_valence_boost=value)
+        elif variableName == "FUSION_FACE_AROUSAL_WEIGHT":
+            self.window.FUSION_FACE_AROUSAL_WEIGHT = value
+            changeValues(fusion_face_arousal_weight=value)
+        elif variableName == "FUSION_FACE_AROUSAL_BOOST":
+            self.window.FUSION_FACE_AROUSAL_BOOST = value
+            changeValues(fusion_face_arousal_boost=value)
+        elif variableName == "FUSION_FACE_DOMINANCE_WEIGHT":
+            self.window.FUSION_FACE_DOMINANCE_WEIGHT = value
+            changeValues(fusion_face_dominance_weight=value)
+        elif variableName == "FUSION_FACE_DOMINANCE_BOOST":
+            self.window.FUSION_FACE_DOMINANCE_BOOST = value
+            changeValues(fusion_face_dominance_boost=value)
         print(f"{variableName} has been changed to {value}")
 
     def AddDoubleSpinBox(self, SpinBoxinstance, Labelinstance, baseValue=0.0, variableName=""):
@@ -212,6 +350,8 @@ class RightClickWindow(QMainWindow):
         SpinBoxinstance.setFixedSize(300, 20)
         self.layout.addWidget(Labelinstance)
         self.layout.addWidget(SpinBoxinstance)
+        SpinBoxinstance.setMaximum(100000.0)
+        SpinBoxinstance.setMinimum(-100000.0)
         SpinBoxinstance.setValue(baseValue)
         SpinBoxinstance.setSingleStep(0.1)
         SpinBoxinstance.valueChanged.connect(lambda value: self.on_double_value_changed(value=value, variableName=variableName))

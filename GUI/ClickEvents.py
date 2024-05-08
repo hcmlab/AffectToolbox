@@ -1223,7 +1223,22 @@ def PlayButtonClick(window):
                       fusion_use_face_v=window.FUSION_USE_FACE_V,
                       fusion_use_face_a=window.FUSION_USE_FACE_A,
                       fusion_use_face_d=window.FUSION_USE_FACE_D,
-                      fusion_use_pose_d=window.FUSION_USE_POSE_D
+                      fusion_use_pose_d=window.FUSION_USE_POSE_D,
+                      fusion_speed=window.FUSION_SPEED,
+                      fusion_voice_speed=window.FUSION_VOICE_SPEED,
+                      fusion_voice_valence_weight=window.FUSION_VOICE_VALENCE_WEIGHT,
+                      fusion_voice_valence_boost=window.FUSION_VOICE_VALENCE_BOOST,
+                      fusion_voice_arousal_weight=window.FUSION_VOICE_AROUSAL_WEIGHT,
+                      fusion_voice_arousal_boost=window.FUSION_VOICE_AROUSAL_BOOST,
+                      fusion_voice_dominance_weight=window.FUSION_VOICE_DOMINANCE_WEIGHT,
+                      fusion_voice_dominance_boost=window.FUSION_VOICE_DOMINANCE_BOOST,
+                      fusion_face_speed=window.FUSION_FACE_SPEED,
+                      fusion_face_valence_weight=window.FUSION_FACE_VALENCE_WEIGHT,
+                      fusion_face_valence_boost=window.FUSION_FACE_VALENCE_BOOST,
+                      fusion_face_arousal_weight=window.FUSION_FACE_AROUSAL_WEIGHT,
+                      fusion_face_arousal_boost=window.FUSION_FACE_AROUSAL_BOOST,
+                      fusion_face_dominance_weight=window.FUSION_FACE_DOMINANCE_WEIGHT,
+                      fusion_face_dominance_boost=window.FUSION_FACE_DOMINANCE_BOOST
                     )
     window.START = False # This is set to true when the pipeline is actually started
     

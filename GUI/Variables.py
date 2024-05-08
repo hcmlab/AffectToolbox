@@ -81,6 +81,25 @@ def initVariables(window=None):
         window.VAD_THRESHOLD = data["various"]["VAD_THRESHOLD"] #0.25 #vad_thres
         window.FACE_PADDING = data["various"]["FACE_PADDING"] #0.2 FaceTracking
         window.MIC_CHUNKS = data["various"]["MIC_CHUNKS"] #16000 #AudioBuffering
+
+        #Fusion
+        window.FUSION_SPEED = data["fusion"]["FUSION_SPEED"] # 1000ms
+
+        window.FUSION_VOICE_SPEED = data["fusion"]["FUSION_VOICE_SPEED"] # 5000ms
+        window.FUSION_VOICE_VALENCE_WEIGHT = data["fusion"]["FUSION_VOICE_VALENCE_WEIGHT"] # 1.0
+        window.FUSION_VOICE_VALENCE_BOOST = data["fusion"]["FUSION_VOICE_VALENCE_BOOST"] # 1.0
+        window.FUSION_VOICE_AROUSAL_WEIGHT = data["fusion"]["FUSION_VOICE_AROUSAL_WEIGHT"]  # 1.0
+        window.FUSION_VOICE_AROUSAL_BOOST = data["fusion"]["FUSION_VOICE_AROUSAL_BOOST"]  # 1.0
+        window.FUSION_VOICE_DOMINANCE_WEIGHT = data["fusion"]["FUSION_VOICE_DOMINANCE_WEIGHT"]  # 1.0
+        window.FUSION_VOICE_DOMINANCE_BOOST = data["fusion"]["FUSION_VOICE_DOMINANCE_BOOST"]  # 1.0
+
+        window.FUSION_FACE_SPEED = data["fusion"]["FUSION_FACE_SPEED"]  # 5000ms
+        window.FUSION_FACE_VALENCE_WEIGHT = data["fusion"]["FUSION_FACE_VALENCE_WEIGHT"]  # 1.0
+        window.FUSION_FACE_VALENCE_BOOST = data["fusion"]["FUSION_FACE_VALENCE_BOOST"]  # 1.25
+        window.FUSION_FACE_AROUSAL_WEIGHT = data["fusion"]["FUSION_FACE_AROUSAL_WEIGHT"]  # 0.5
+        window.FUSION_FACE_AROUSAL_BOOST = data["fusion"]["FUSION_FACE_AROUSAL_BOOST"]  # 1.75
+        window.FUSION_FACE_DOMINANCE_WEIGHT = data["fusion"]["FUSION_FACE_DOMINANCE_WEIGHT"]  # 1.0
+        window.FUSION_FACE_DOMINANCE_BOOST = data["fusion"]["FUSION_FACE_DOMINANCE_BOOST"]  # 1.25
         
         window.CAM_ID = data["cam_id"] 
         window.MIC_ID = data["mic_id"]
@@ -89,11 +108,24 @@ def initVariables(window=None):
         window.transcript = None
         window.skeleton = None
 
-def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpPort=None, ser_loop_rate=None, stt_loop_rate=None, sentiment_loop_rate=None, vad_loop_rate=None, er_loop_rate=None, pose_loop_rate=None, fusion_loop_rate=None, send_loop_rate=None, camera_loop_rate=None, face_mesh_rate=None, sample_rate=None, stt_window_size=None, vad_threshold=None, face_padding=None, mic_chunks=None, cam_id=None, mic_id=None):
+def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpPort=None, ser_loop_rate=None,
+                stt_loop_rate=None, sentiment_loop_rate=None, vad_loop_rate=None, er_loop_rate=None,
+                pose_loop_rate=None, fusion_loop_rate=None, send_loop_rate=None, camera_loop_rate=None,
+                face_mesh_rate=None, sample_rate=None, stt_window_size=None, vad_threshold=None, face_padding=None,
+                fusion_speed=None,
+                fusion_voice_speed=None,
+                fusion_voice_valence_weight=None, fusion_voice_valence_boost=None,
+                fusion_voice_arousal_weight=None, fusion_voice_arousal_boost=None,
+                fusion_voice_dominance_weight=None, fusion_voice_dominance_boost=None,
+                fusion_face_speed=None,
+                fusion_face_valence_weight=None, fusion_face_valence_boost=None,
+                fusion_face_arousal_weight=None, fusion_face_arousal_boost=None,
+                fusion_face_dominance_weight=None, fusion_face_dominance_boost=None,
+                mic_chunks=None, cam_id=None, mic_id=None):
     """Change the values of the config file."""
     current_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(current_dir, '../config.json')
-    with open(config_path, 'r+') as file:
+    with (open(config_path, 'r+') as file):
         data = json.load(file)
         if kafkaIP is not None:
             data["kafka"]["IP"] = kafkaIP
@@ -133,6 +165,36 @@ def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpP
             data["various"]["VAD_THRESHOLD"] = vad_threshold
         if face_padding is not None:
             data["various"]["FACE_PADDING"] = face_padding
+        if fusion_speed is not None:
+            data["fusion"]["FUSION_SPEED"] = fusion_speed
+        if fusion_voice_speed is not None:
+            data["fusion"]["FUSION_VOICE_SPEED"] = fusion_voice_speed
+        if fusion_voice_valence_weight is not None:
+            data["fusion"]["FUSION_VOICE_VALENCE_WEIGHT"] = fusion_voice_valence_weight
+        if fusion_voice_valence_boost is not None:
+            data["fusion"]["FUSION_VOICE_VALENCE_BOOST"] = fusion_voice_valence_boost
+        if fusion_voice_arousal_weight is not None:
+            data["fusion"]["FUSION_VOICE_AROUSAL_WEIGHT"] = fusion_voice_arousal_weight
+        if fusion_voice_arousal_boost is not None:
+            data["fusion"]["FUSION_VOICE_AROUSAL_BOOST"] = fusion_voice_arousal_boost
+        if fusion_voice_dominance_weight is not None:
+            data["fusion"]["FUSION_VOICE_DOMINANCE_WEIGHT"] = fusion_voice_dominance_weight
+        if fusion_voice_dominance_boost is not None:
+            data["fusion"]["FUSION_VOICE_DOMINANCE_BOOST"] = fusion_voice_dominance_boost
+        if fusion_face_speed is not None:
+            data["fusion"]["FUSION_FACE_SPEED"] = fusion_face_speed
+        if fusion_face_valence_weight is not None:
+            data["fusion"]["FUSION_FACE_VALENCE_WEIGHT"] = fusion_face_valence_weight
+        if fusion_face_valence_boost is not None:
+            data["fusion"]["FUSION_FACE_VALENCE_BOOST"] = fusion_face_valence_boost
+        if fusion_face_arousal_weight is not None:
+            data["fusion"]["FUSION_FACE_AROUSAL_WEIGHT"] = fusion_face_arousal_weight
+        if fusion_face_arousal_boost is not None:
+            data["fusion"]["FUSION_FACE_AROUSAL_BOOST"] = fusion_face_arousal_boost
+        if fusion_face_dominance_weight is not None:
+            data["fusion"]["FUSION_FACE_DOMINANCE_WEIGHT"] = fusion_face_dominance_weight
+        if fusion_face_dominance_boost is not None:
+            data["fusion"]["FUSION_FACE_DOMINANCE_BOOST"] = fusion_face_dominance_boost
         if mic_chunks is not None:
             data["various"]["MIC_CHUNKS"] = mic_chunks
         if cam_id is not None:
