@@ -80,7 +80,10 @@ class AffectPipeline():
                  fusion_face_arousal_weight = 1.0,
                  fusion_face_arousal_boost = 1.0,
                  fusion_face_dominance_weight = 1.0,
-                 fusion_face_dominance_boost = 1.0
+                 fusion_face_dominance_boost = 1.0,
+                 fusion_sentiment_speed = 5000,
+                 fusion_sentiment_weight = 1.0,
+                 fusion_sentiment_boost = 1.0
                  ):
 
         self.LOG_TO_CONSOLE = enable_log_to_console
@@ -185,6 +188,10 @@ class AffectPipeline():
             self.FUSION_MODULE.face_boost_arousal = fusion_face_arousal_boost
             self.FUSION_MODULE.face_weight_dominance = fusion_face_dominance_weight
             self.FUSION_MODULE.face_boost_dominance = fusion_face_dominance_boost
+
+            self.FUSION_MODULE.sentiment_speed = fusion_sentiment_speed
+            self.FUSION_MODULE.sentiment_weight_valence = fusion_sentiment_weight
+            self.FUSION_MODULE.sentiment_boost_valence = fusion_sentiment_boost
         if enable_vad_loop:
             from modules.module_vad import VoiceActivity
             self.VAD_MODULE = VoiceActivity(segment_length=480, sample_rate=16000, threshold=vad_threshold)

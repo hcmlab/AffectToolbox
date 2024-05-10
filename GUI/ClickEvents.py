@@ -1238,7 +1238,10 @@ def PlayButtonClick(window):
                       fusion_face_arousal_weight=window.FUSION_FACE_AROUSAL_WEIGHT,
                       fusion_face_arousal_boost=window.FUSION_FACE_AROUSAL_BOOST,
                       fusion_face_dominance_weight=window.FUSION_FACE_DOMINANCE_WEIGHT,
-                      fusion_face_dominance_boost=window.FUSION_FACE_DOMINANCE_BOOST
+                      fusion_face_dominance_boost=window.FUSION_FACE_DOMINANCE_BOOST,
+                      fusion_sentiment_speed = window.FUSION_SENTIMENT_SPEED,
+                      fusion_sentiment_weight = window.FUSION_SENTIMENT_WEIGHT,
+                      fusion_sentiment_boost = window.FUSION_SENTIMENT_BOOST
                     )
     window.START = False # This is set to true when the pipeline is actually started
     

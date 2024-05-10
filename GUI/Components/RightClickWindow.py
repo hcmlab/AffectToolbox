@@ -186,6 +186,24 @@ class RightClickWindow(QMainWindow):
                                   Labelinstance=self.FusionFaceDominanceBoostLabel,
                                   baseValue=window.FUSION_FACE_DOMINANCE_BOOST,
                                   variableName="FUSION_FACE_DOMINANCE_BOOST")
+
+            self.FusionSentimentSpeed = None
+            self.FusionSentimentSpeedLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionSentimentSpeed, Labelinstance=self.FusionSentimentSpeedLabel,
+                                  baseValue=window.FUSION_SENTIMENT_SPEED, variableName="FUSION_SENTIMENT_SPEED")
+
+            self.FusionSentimentWeight = None
+            self.FusionSentimentWeightLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionSentimentWeight,
+                                  Labelinstance=self.FusionSentimentWeightLabel,
+                                  baseValue=window.FUSION_SENTIMENT_WEIGHT,
+                                  variableName="FUSION_SENTIMENT_WEIGHT")
+            self.FusionSentimentBoost = None
+            self.FusionSentimentBoostLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionSentimentBoost,
+                                  Labelinstance=self.FusionSentimentBoostLabel,
+                                  baseValue=window.FUSION_SENTIMENT_BOOST,
+                                  variableName="FUSION_SENTIMENT_BOOST")
         elif name == "Kafka":
             self.AddIp(baseValue=window.KAFKA_IP, variableName="KAFKA_IP")
             self.AddPort(baseValue=window.KAFKA_PORT, variableName="KAFKA_PORT")
@@ -333,6 +351,15 @@ class RightClickWindow(QMainWindow):
         elif variableName == "FUSION_FACE_DOMINANCE_BOOST":
             self.window.FUSION_FACE_DOMINANCE_BOOST = value
             changeValues(fusion_face_dominance_boost=value)
+        elif variableName == "FUSION_SENTIMENT_SPEED":
+            self.window.FUSION_SENTIMENT_SPEED = value
+            changeValues(fusion_sentiment_speed=value)
+        elif variableName == "FUSION_SENTIMENT_WEIGHT":
+            self.window.FUSION_SENTIMENT_WEIGHT = value
+            changeValues(fusion_sentiment_weight=value)
+        elif variableName == "FUSION_SENTIMENT_BOOST":
+            self.window.FUSION_SENTIMENT_BOOST = value
+            changeValues(fusion_sentiment_boost=value)
         print(f"{variableName} has been changed to {value}")
 
     def AddDoubleSpinBox(self, SpinBoxinstance, Labelinstance, baseValue=0.0, variableName=""):
