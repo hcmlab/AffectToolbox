@@ -172,35 +172,35 @@ class RightClickWindow(QMainWindow):
             self.AddDoubleSpinBox(SpinBoxinstance=self.SentimentLoopRate, Labelinstance=self.SentimentLoopRateLabel,
                                   baseValue=window.SENTIMENT_LOOP_RATE, variableName="SENTIMENT_LOOP_RATE")
 
-            self.FusionPoseDominanceSpeed = None
-            self.FusionPoseDominanceSpeedLabel = None
-            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionPoseDominanceSpeed,
-                                  Labelinstance=self.FusionPoseDominanceSpeedLabel,
-                                  baseValue=window.FUSION_POSE_DOMINANCE_SPEED, variableName="FUSION_POSE_DOMINANCE_SPEED")
+            self.FusionSentimentSpeed = None
+            self.FusionSentimentSpeedLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionSentimentSpeed,
+                                  Labelinstance=self.FusionSentimentSpeedLabel,
+                                  baseValue=window.FUSION_SENTIMENT_SPEED, variableName="FUSION_SENTIMENT_SPEED")
 
-            self.FusionPoseDominanceWeight = None
-            self.FusionPoseDominanceWeightLabel = None
-            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionPoseDominanceWeight,
-                                  Labelinstance=self.FusionPoseDominanceWeightLabel,
-                                  baseValue=window.FUSION_POSE_DOMINANCE_WEIGHT,
-                                  variableName="FUSION_POSE_DOMINANCE_WEIGHT")
-            self.FusionPoseDominanceBoost = None
-            self.FusionPoseDominanceBoostLabel = None
-            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionPoseDominanceBoost,
-                                  Labelinstance=self.FusionPoseDominanceBoostLabel,
-                                  baseValue=window.FUSION_POSE_DOMINANCE_BOOST,
-                                  variableName="FUSION_POSE_DOMINANCE_BOOST")
+            self.FusionSentimentWeight = None
+            self.FusionSentimentWeightLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionSentimentWeight,
+                                  Labelinstance=self.FusionSentimentWeightLabel,
+                                  baseValue=window.FUSION_SENTIMENT_WEIGHT,
+                                  variableName="FUSION_SENTIMENT_WEIGHT")
+            self.FusionSentimentBoost = None
+            self.FusionSentimentBoostLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionSentimentBoost,
+                                  Labelinstance=self.FusionSentimentBoostLabel,
+                                  baseValue=window.FUSION_SENTIMENT_BOOST,
+                                  variableName="FUSION_SENTIMENT_BOOST")
         elif name == "Pose":
             self.PoseLoopRate = None
             self.PoseLoopRateLabel = None
             self.AddDoubleSpinBox(SpinBoxinstance=self.PoseLoopRate, Labelinstance=self.PoseLoopRateLabel,
                                   baseValue=window.POSE_LOOP_RATE, variableName="POSE_LOOP_RATE")
 
-            self.FusionPoseDominanceSpeed = None
-            self.FusionPoseDominanceSpeedLabel = None
-            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionPoseDominanceSpeed,
-                                  Labelinstance=self.FusionPoseDominanceSpeedLabel,
-                                  baseValue=window.FUSION_POSE_DOMINANCE_SPEED, variableName="FUSION_POSE_DOMINANCE_SPEED")
+            self.FusionPoseSpeed = None
+            self.FusionPoseSpeedLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.FusionPoseSpeed,
+                                  Labelinstance=self.FusionPoseSpeedLabel,
+                                  baseValue=window.FUSION_POSE_SPEED, variableName="FUSION_POSE_SPEED")
 
             self.FusionPoseDominanceWeight = None
             self.FusionPoseDominanceWeightLabel = None
@@ -380,9 +380,9 @@ class RightClickWindow(QMainWindow):
         elif variableName == "FUSION_SENTIMENT_BOOST":
             self.window.FUSION_SENTIMENT_BOOST = value
             changeValues(fusion_sentiment_boost=value)
-        elif variableName == "FUSION_POSE_DOMINANCE_SPEED":
-            self.window.FUSION_POSE_DOMINANCE_SPEED = value
-            changeValues(fusion_pose_dominance_speed=value)
+        elif variableName == "FUSION_POSE_SPEED":
+            self.window.FUSION_POSE_SPEED = value
+            changeValues(fusion_pose_speed=value)
         elif variableName == "FUSION_POSE_DOMINANCE_WEIGHT":
             self.window.FUSION_POSE_DOMINANCE_WEIGHT = value
             changeValues(fusion_pose_dominance_weight=value)

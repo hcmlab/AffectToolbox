@@ -27,6 +27,9 @@ class PoseFromCam():
         self.overall_activation_right_last = 0.0
         self.overall_activation_min = math.inf
         self.overall_activation_max = -math.inf
+
+        self.dominance = 0.0
+
         self.tracking = False
 
     def predict(self, img):
@@ -129,6 +132,17 @@ class PoseFromCam():
         look_down = round(self.norm(look_down, self.look_down_min, self.look_down_max), 2)
         overall_activation = round(self.norm(overall_activation, self.overall_activation_min, self.overall_activation_max), 2)
 
+        dominance = 0.0
+        dominance -= (math.fabs(look_left - look_right) * 0.25)
+        dominance += (look_up * 0.5)
+        dominance -= (look_down * 0.25)
+        # dominance += overall_activation
+
+        if dominance < -1.0:
+            dominance = -1.0
+        elif dominance > 1.0:
+            dominance = 1.0
+
         self.value_string = '|| '
         self.value_string += 'LookLeft: '
         self.value_string += f'{look_left}'
@@ -145,6 +159,11 @@ class PoseFromCam():
         self.value_string += f'Overall Activation: '
         self.value_string += f'{overall_activation}'
         self.value_string += ' || '
+        self.value_string += f'Dominance: '
+        self.value_string += f'{dominance}'
+        self.value_string += ' || '
+
+        self.dominance = dominance
 
         # print("\r" + self.value_string, end='')
 

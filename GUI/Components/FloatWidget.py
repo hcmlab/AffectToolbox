@@ -62,10 +62,9 @@ class FloatWidget(QFrame):
         elif self.name == "Facial_Dominance":
             self.number = round(qs.DOMINANCE_FACE[len(qs.DOMINANCE_FACE) - 1], 2)
             self.label.setText("D:{:.2f}".format(self.number))
-            pass
         elif self.name == "Pose_Dominance":
-             # Needed to be implemented within the AffectPipeline
-            pass
+            self.number = round(qs.DOMINANCE_POSE[len(qs.DOMINANCE_POSE) - 1], 2)
+            self.label.setText("D:{:.2f}".format(self.number))
         elif self.name == "Pleasure":
             self.number = round(qs.FUSION[len(qs.FUSION) - 1][0],2)
             self.label.setText("P:{:.2f}".format(self.number))

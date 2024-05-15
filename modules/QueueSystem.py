@@ -50,7 +50,7 @@ for i in range(0, 100):
     AROUSAL_SPEECH.append(.0)
 
 DOMINANCE_SPEECH = AffectDeque(maxlen=100)
-for i in range(0, 500):
+for i in range(0, 100):
     DOMINANCE_SPEECH.append(.0)
 
 TRANSCRIPT_SPEECH = AffectDeque(maxlen=100)
@@ -76,6 +76,10 @@ for i in range(0, 100):
 VALENCE_SENTIMENT = AffectDeque(maxlen=100)
 for i in range(0, 100):
     VALENCE_SENTIMENT.append(.0)
+
+DOMINANCE_POSE = AffectDeque(maxlen=100)
+for i in range(0, 100):
+    DOMINANCE_POSE.append(.0)
 
 FUSION = AffectDeque(maxlen=100)
 for i in range(0, 100):

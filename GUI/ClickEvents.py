@@ -930,8 +930,8 @@ def PoseDominanceClick(window):
                 window.hlineWidgettoCol8.toggleColor()
     
     def turnOn():
-        print('FUSION_USE_POSE_D set to False')
-        window.FUSION_USE_POSE_D = False
+        print('FUSION_USE_POSE_D set to True')
+        window.FUSION_USE_POSE_D = True
         #Left side
         window.rounded6_8.toggleColor()
         window.hLineWidgetPosetoVer.toggleColor()
@@ -1242,7 +1242,7 @@ def PlayButtonClick(window):
                       fusion_sentiment_speed = window.FUSION_SENTIMENT_SPEED,
                       fusion_sentiment_weight = window.FUSION_SENTIMENT_WEIGHT,
                       fusion_sentiment_boost = window.FUSION_SENTIMENT_BOOST,
-                      fusion_pose_dominance_speed=window.FUSION_POSE_DOMINANCE_SPEED,
+                      fusion_pose_speed=window.FUSION_POSE_SPEED,
                       fusion_pose_dominance_weight=window.FUSION_POSE_DOMINANCE_WEIGHT,
                       fusion_pose_dominance_boost=window.FUSION_POSE_DOMINANCE_BOOST
                     )

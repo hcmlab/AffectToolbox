@@ -84,7 +84,7 @@ class AffectPipeline():
                  fusion_sentiment_speed = 5000,
                  fusion_sentiment_weight = 1.0,
                  fusion_sentiment_boost = 1.0,
-                 fusion_pose_dominance_speed = 1.0,
+                 fusion_pose_speed = 1.0,
                  fusion_pose_dominance_weight = 1.0,
                  fusion_pose_dominance_boost = 1.0
                  ):
@@ -196,9 +196,9 @@ class AffectPipeline():
             self.FUSION_MODULE.sentiment_weight_valence = fusion_sentiment_weight
             self.FUSION_MODULE.sentiment_boost_valence = fusion_sentiment_boost
 
-            self.FUSION_MODULE.pose_dominance_speed = fusion_pose_dominance_speed
-            self.FUSION_MODULE.pose_dominance_weight_valence = fusion_pose_dominance_weight
-            self.FUSION_MODULE.pose_dominance_boost_valence = fusion_pose_dominance_boost
+            self.FUSION_MODULE.pose_speed = fusion_pose_speed
+            self.FUSION_MODULE.pose_weight_dominance = fusion_pose_dominance_weight
+            self.FUSION_MODULE.pose_boost_dominance = fusion_pose_dominance_boost
         if enable_vad_loop:
             from modules.module_vad import VoiceActivity
             self.VAD_MODULE = VoiceActivity(segment_length=480, sample_rate=16000, threshold=vad_threshold)
@@ -563,6 +563,7 @@ class AffectPipeline():
         time_pose_loop_start = time.time()
         img = qs.IMAGE_FACE_RAW[len(qs.IMAGE_FACE_RAW) - 1]
         self.POSE_MODULE.predict(img)
+        qs.DOMINANCE_POSE.append(self.POSE_MODULE.dominance)
         qs.IMAGE_BODY_SKEL.append(self.POSE_MODULE.image)
 
         seconds_pose_loop = time.time() - time_pose_loop_start

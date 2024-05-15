@@ -62,9 +62,9 @@ class FusionModule():
         self.sentiment_weight_valence = 1.0
         self.sentiment_boost_valence = 1.0
 
-        self.pose_dominance_speed = 5000
-        self.pose_dominance_weight_valence = 1.0
-        self.pose_dominance_boost_valence = 1.0
+        self.pose_speed = 5000
+        self.pose_weight_dominance = 1.0
+        self.pose_boost_dominance = 1.0
 
         self.value_string = ''
 
@@ -210,6 +210,15 @@ class FusionModule():
             while qs.VALENCE_SENTIMENT.time[len(qs.VALENCE_SENTIMENT) - index] > self.last_time_ms:
                 if qs.VALENCE_SENTIMENT.time[len(qs.VALENCE_SENTIMENT) - index] > self.last_time_ms:
                     EVENTS_VALENCE.append(qs.VALENCE_SENTIMENT[len(qs.VALENCE_SENTIMENT) - index] * self.sentiment_boost_valence, self.sentiment_weight_valence, self.sentiment_speed)
+                index = index + 1
+
+        # POSE - DOMINANCE
+        if self.FUSION_USE_POSE_D:
+            index = 1
+            while qs.DOMINANCE_POSE.time[len(qs.DOMINANCE_POSE) - index] > self.last_time_ms:
+                if qs.DOMINANCE_POSE.time[len(qs.DOMINANCE_POSE) - index] > self.last_time_ms:
+                    EVENTS_DOMINANCE.append(
+                        qs.DOMINANCE_POSE[len(qs.DOMINANCE_POSE) - index] * self.pose_boost_dominance, self.pose_weight_dominance, self.pose_speed)
                 index = index + 1
 
         # decay event contributions over event deques
