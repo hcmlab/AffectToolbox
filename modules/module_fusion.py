@@ -62,6 +62,10 @@ class FusionModule():
         self.sentiment_weight_valence = 1.0
         self.sentiment_boost_valence = 1.0
 
+        self.pose_dominance_speed = 5000
+        self.pose_dominance_weight_valence = 1.0
+        self.pose_dominance_boost_valence = 1.0
+
         self.value_string = ''
 
         self.FUSION_USE_PARA_V = False

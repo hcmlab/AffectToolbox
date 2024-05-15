@@ -104,6 +104,10 @@ def initVariables(window=None):
         window.FUSION_SENTIMENT_SPEED = data["fusion"]["FUSION_SENTIMENT_SPEED"]  # 5000ms
         window.FUSION_SENTIMENT_WEIGHT = data["fusion"]["FUSION_SENTIMENT_WEIGHT"]  # 1.0
         window.FUSION_SENTIMENT_BOOST = data["fusion"]["FUSION_SENTIMENT_BOOST"]  # 1.0
+
+        window.FUSION_POSE_DOMINANCE_SPEED = data["fusion"]["FUSION_POSE_DOMINANCE_SPEED"]  # 5000ms
+        window.FUSION_POSE_DOMINANCE_WEIGHT = data["fusion"]["FUSION_POSE_DOMINANCE_WEIGHT"]  # 1.0
+        window.FUSION_POSE_DOMINANCE_BOOST = data["fusion"]["FUSION_POSE_DOMINANCE_BOOST"]  # 1.0
         
         window.CAM_ID = data["cam_id"] 
         window.MIC_ID = data["mic_id"]
@@ -127,6 +131,8 @@ def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpP
                 fusion_face_dominance_weight=None, fusion_face_dominance_boost=None,
                 fusion_sentiment_speed=None,
                 fusion_sentiment_weight=None, fusion_sentiment_boost=None,
+                fusion_pose_dominance_speed=None,
+                fusion_pose_dominance_weight=None, fusion_pose_dominance_boost=None,
                 mic_chunks=None, cam_id=None, mic_id=None):
     """Change the values of the config file."""
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -207,6 +213,12 @@ def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpP
             data["fusion"]["FUSION_SENTIMENT_WEIGHT"] = fusion_sentiment_weight
         if fusion_sentiment_boost is not None:
             data["fusion"]["FUSION_SENTIMENT_BOOST"] = fusion_sentiment_boost
+        if fusion_pose_dominance_speed is not None:
+            data["fusion"]["FUSION_POSE_DOMINANCE_SPEED"] = fusion_pose_dominance_speed
+        if fusion_pose_dominance_weight is not None:
+            data["fusion"]["FUSION_POSE_DOMINANCE_WEIGHT"] = fusion_pose_dominance_weight
+        if fusion_pose_dominance_boost is not None:
+            data["fusion"]["FUSION_POSE_DOMINANCE_BOOST"] = fusion_pose_dominance_boost
         if mic_chunks is not None:
             data["various"]["MIC_CHUNKS"] = mic_chunks
         if cam_id is not None:
