@@ -119,6 +119,13 @@ class RightClickWindow(QMainWindow):
             self.AddDoubleSpinBox(SpinBoxinstance=self.FusionVoiceSpeed, Labelinstance=self.FusionVoiceSpeedLabel,
                                   baseValue=window.FUSION_VOICE_SPEED, variableName="FUSION_VOICE_SPEED")
 
+            self.SerValenceOffset = None
+            self.SerValenceOffsetLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.SerValenceOffset,
+                                  Labelinstance=self.SerValenceOffsetLabel,
+                                  baseValue=window.SER_VALENCE_OFFSET,
+                                  variableName="SER_VALENCE_OFFSET")
+
             self.FusionVoiceValenceWeight = None
             self.FusionVoiceValenceWeightLabel = None
             self.AddDoubleSpinBox(SpinBoxinstance=self.FusionVoiceValenceWeight,
@@ -132,6 +139,13 @@ class RightClickWindow(QMainWindow):
                                   baseValue=window.FUSION_VOICE_VALENCE_BOOST,
                                   variableName="FUSION_VOICE_VALENCE_BOOST")
 
+            self.SerArousalOffset = None
+            self.SerArousalOffsetLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.SerArousalOffset,
+                                  Labelinstance=self.SerArousalOffsetLabel,
+                                  baseValue=window.SER_AROUSAL_OFFSET,
+                                  variableName="SER_AROUSAL_OFFSET")
+
             self.FusionVoiceArousalWeight = None
             self.FusionVoiceArousalWeightLabel = None
             self.AddDoubleSpinBox(SpinBoxinstance=self.FusionVoiceArousalWeight,
@@ -144,6 +158,13 @@ class RightClickWindow(QMainWindow):
                                   Labelinstance=self.FusionVoiceArousalBoostLabel,
                                   baseValue=window.FUSION_VOICE_AROUSAL_BOOST,
                                   variableName="FUSION_VOICE_AROUSAL_BOOST")
+
+            self.SerDominanceOffset = None
+            self.SerDominanceOffsetLabel = None
+            self.AddDoubleSpinBox(SpinBoxinstance=self.SerDominanceOffset,
+                                  Labelinstance=self.SerDominanceOffsetLabel,
+                                  baseValue=window.SER_DOMINANCE_OFFSET,
+                                  variableName="SER_DOMINANCE_OFFSET")
 
             self.FusionVoiceDominanceWeight = None
             self.FusionVoiceDominanceWeightLabel = None
@@ -332,6 +353,15 @@ class RightClickWindow(QMainWindow):
         elif variableName == "FUSION_VOICE_SPEED":
             self.window.FUSION_VOICE_SPEED = value
             changeValues(fusion_voice_speed=value)
+        elif variableName == "SER_VALENCE_OFFSET":
+            self.window.SER_VALENCE_OFFSET = value
+            changeValues(ser_valence_offset=value)
+        elif variableName == "SER_AROUSAL_OFFSET":
+            self.window.SER_AROUSAL_OFFSET = value
+            changeValues(ser_arousal_offset=value)
+        elif variableName == "SER_DOMINANCE_OFFSET":
+            self.window.SER_DOMINANCE_OFFSET = value
+            changeValues(ser_dominance_offset=value)
         elif variableName == "FUSION_VOICE_VALENCE_WEIGHT":
             self.window.FUSION_VOICE_VALENCE_WEIGHT = value
             changeValues(fusion_voice_valence_weight=value)

@@ -77,6 +77,9 @@ def initVariables(window=None):
         window.SAMPLE_RATE = data["loop_rates"]["SAMPLE_RATE"] #16000 #Audio Sample Rate
 
         #Various
+        window.SER_VALENCE_OFFSET = data["various"]["SER_VALENCE_OFFSET"]  # 0.0 #Speech Emotion Recognition
+        window.SER_AROUSAL_OFFSET = data["various"]["SER_AROUSAL_OFFSET"]  # 0.0 #Speech Emotion Recognition
+        window.SER_DOMINANCE_OFFSET = data["various"]["SER_DOMINANCE_OFFSET"]  # 0.0 #Speech Emotion Recognition
         window.STT_WINDOW_SIZE = data["various"]["STT_WINDOW_SIZE"] #5 #Seconds STT Window
         window.VAD_THRESHOLD = data["various"]["VAD_THRESHOLD"] #0.25 #vad_thres
         window.FACE_PADDING = data["various"]["FACE_PADDING"] #0.2 FaceTracking
@@ -116,7 +119,8 @@ def initVariables(window=None):
         window.transcript = None
         window.skeleton = None
 
-def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpPort=None, ser_loop_rate=None,
+def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpPort=None,
+                ser_loop_rate=None, ser_valence_offset=None, ser_arousal_offset=None, ser_dominance_offset=None,
                 stt_loop_rate=None, sentiment_loop_rate=None, vad_loop_rate=None, er_loop_rate=None,
                 pose_loop_rate=None, fusion_loop_rate=None, send_loop_rate=None, camera_loop_rate=None,
                 face_mesh_rate=None, sample_rate=None, stt_window_size=None, vad_threshold=None, face_padding=None,
@@ -173,6 +177,12 @@ def changeValues(kafkaIP=None, kafkaPort=None, kafkaTopic=None, udpIP=None, udpP
             data["loop_rates"]["SAMPLE_RATE"] = sample_rate
         if stt_window_size is not None:
             data["various"]["STT_WINDOW_SIZE"] = stt_window_size
+        if ser_valence_offset is not None:
+            data["various"]["SER_VALENCE_OFFSET"] = ser_valence_offset
+        if ser_arousal_offset is not None:
+            data["various"]["SER_AROUSAL_OFFSET"] = ser_arousal_offset
+        if ser_dominance_offset is not None:
+            data["various"]["SER_DOMINANCE_OFFSET"] = ser_dominance_offset
         if vad_threshold is not None:
             data["various"]["VAD_THRESHOLD"] = vad_threshold
         if face_padding is not None:

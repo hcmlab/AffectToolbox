@@ -35,6 +35,9 @@ class AffectPipeline():
                  face_mesh_show_face_contour=False,
                  camera_id=0,
                  ser_loop_rate=2.0,
+                 ser_valence_offset=0.0,
+                 ser_arousal_offset=0.0,
+                 ser_dominance_offset=0.0,
                  stt_loop_rate=0.1,
                  sentiment_loop_rate=2.0,
                  vad_loop_rate=20.0,
@@ -110,6 +113,9 @@ class AffectPipeline():
         self.FACE_MESH_SHOW_FACE_CONTOUR = face_mesh_show_face_contour
 
         self._SER_LOOP_RATE = ser_loop_rate
+        self.SER_VALENCE_OFFSET = ser_valence_offset
+        self.SER_AROUSAL_OFFSET = ser_arousal_offset
+        self.SER_DOMINANCE_OFFSET = ser_dominance_offset
         self._STT_LOOP_RATE = stt_loop_rate
         self._SENTIMENT_LOOP_RATE = sentiment_loop_rate
         self._VAD_LOOP_RATE = vad_loop_rate
@@ -210,7 +216,7 @@ class AffectPipeline():
                 self.FUSION_MODULE.voice_activity_tracked = False
         if enable_ser_loop:
             from modules.module_ser import SpeechEmotion
-            self.SER_MODULE = SpeechEmotion(self.SAMPLE_RATE)
+            self.SER_MODULE = SpeechEmotion(self.SAMPLE_RATE, self.SER_VALENCE_OFFSET, self.SER_AROUSAL_OFFSET, self.SER_DOMINANCE_OFFSET)
         if enable_stt_loop:
             from modules.module_stt import SpeechToText
             self.STT_MODULE = SpeechToText(self.SAMPLE_RATE, self._STT_MODEL_SIZE)
@@ -336,8 +342,7 @@ class AffectPipeline():
 
         signal = np.asarray(signal, dtype=np.float32)
         ser_prediction, _ = self.SER_MODULE.process(signal.astype(np.float32), extract_embeddings=False)
-        valence, arousal, dominance = (ser_prediction[0] * 2) - 1, (ser_prediction[1] * 2) - 1, (
-                ser_prediction[2] * 2) - 1
+        valence, arousal, dominance = ser_prediction[0], ser_prediction[1], ser_prediction[2]
         qs.VALENCE_SPEECH.append(valence)
         qs.AROUSAL_SPEECH.append(arousal)
         qs.DOMINANCE_SPEECH.append(dominance)
