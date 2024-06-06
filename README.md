@@ -1,6 +1,9 @@
-# Affect Toolbox
-
-## **1. Installation**
+![AffectToolbox](/AffectToolbox.png)
+# The AffectToolbox: Affect Analysis for Everyone
+## **1. What it is about**
+The AffectToolbox provides a user-friendly solution for multimodal realtime analysis of Pleasure, Arousal and Dominance. See our paper for in-depth information: 
+[ArXiv Link]([https://link-url-here.org](https://arxiv.org/pdf/2402.15195))
+## **2. Installation**
 
 Tested with Python 3.9
 
