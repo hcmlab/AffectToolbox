@@ -10,7 +10,7 @@ def sub_main():
     window = MainWindow()
     window.setWindowTitle("AffectPipeline")
     window.setWindowIcon(QIcon("./GUI/Icons/python.svg"))
-    window.show() #Windowed mode
+    #window.show() #Windowed mode
     #window.showFullScreen() #Fullscreen mode
 
     ClickEvents.PleasureClick(window)
