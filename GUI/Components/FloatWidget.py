@@ -26,14 +26,29 @@ class FloatWidget(QFrame):
 
         self.border_css = "border: 1px solid black;" if border else ""
         self.setStyleSheet(f"QFrame {{background-color: {color}; border-radius: 10px; {self.border_css}}}")
-        qs.VALENCE_SPEECH.register_observer(self.update_number)
-        qs.AROUSAL_SPEECH.register_observer(self.update_number)
-        qs.DOMINANCE_SPEECH.register_observer(self.update_number)
-        qs.NEU_SENTIMENT.register_observer(self.update_number)
-        qs.VALENCE_FACE.register_observer(self.update_number)
-        qs.AROUSAL_FACE.register_observer(self.update_number)
-        qs.DOMINANCE_FACE.register_observer(self.update_number)
-        qs.FUSION.register_observer(self.update_number)
+        if self.name == "Para_Pleasure":
+            qs.VALENCE_SPEECH.register_observer(self.update_number)
+        elif self.name == "Para_Arousal":
+            qs.AROUSAL_SPEECH.register_observer(self.update_number)
+        elif self.name == "Para_Dominance":
+            qs.DOMINANCE_SPEECH.register_observer(self.update_number)
+        elif self.name == "Sent_Pleasure":
+            qs.VALENCE_SENTIMENT.register_observer(self.update_number)
+        elif self.name == "Facial_Pleasure":
+            qs.VALENCE_FACE.register_observer(self.update_number)
+        elif self.name == "Facial_Arousal":
+            qs.AROUSAL_FACE.register_observer(self.update_number)
+        elif self.name == "Facial_Dominance":
+            qs.DOMINANCE_FACE.register_observer(self.update_number)
+        elif self.name == "Pose_Dominance":
+            qs.DOMINANCE_POSE.register_observer(self.update_number)
+        elif self.name == "Pleasure":
+            qs.FUSION.register_observer(self.update_number)
+        elif self.name == "Arousal":
+            qs.FUSION.register_observer(self.update_number)
+        elif self.name == "Dominance":
+            qs.FUSION.register_observer(self.update_number)
+
         # self.timer = QTimer()
         # self.timer.timeout.connect(lambda: self.update_number())
         # self.timer.start(1000)

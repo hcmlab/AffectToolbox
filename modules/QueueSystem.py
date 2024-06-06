@@ -19,8 +19,10 @@ class AffectDeque():
     def append(self, x) -> None:
         self.q.append(x)
         self.time.append(round(time.time()*1000) - start_time)
+        # print(len(self.observers))
         for observer in self.observers:
             observer(x)
+
     
     def __getitem__(self, item):
         return self.q[item]
