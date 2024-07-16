@@ -660,6 +660,7 @@ class AffectPipeline():
         a_f = qs.AROUSAL_FACE[len(qs.AROUSAL_FACE) - 1]
         face_mesh_raw = qs.FACE_MESH_QUEUE[len(qs.FACE_MESH_QUEUE) - 1]
         m_f = qs.FUSION[len(qs.FUSION) - 1]
+        v_act = qs.VOICE_ACTIVITY[len(qs.VOICE_ACTIVITY) - 1]
         face_mesh = ""
         i = 0
         if isinstance(face_mesh_raw, str):
@@ -691,6 +692,7 @@ class AffectPipeline():
         S_POS = E.s_pos
         S_NEU = E.s_neu
         S_NEG = E.s_neg
+        V_ACT = E.v_act
         the_doc = ROOT(
             DOC(
                 V_S(str(v_s), name='Valence Speech'),
@@ -704,8 +706,8 @@ class AffectPipeline():
                 T_S(str(t_s), name='Transcript'),
                 S_POS(str(s_pos), name='Sentiment positive'),
                 S_NEU(str(s_neu), name='Sentiment neutral'),
-                S_NEG(str(s_neg), name='Sentiment negative')
-
+                S_NEG(str(s_neg), name='Sentiment negative'),
+                V_ACT(str(v_act), name='Voice Activity')
             )
         )
         command = lxml.etree.tostring(the_doc)
