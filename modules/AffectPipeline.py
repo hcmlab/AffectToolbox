@@ -450,8 +450,11 @@ class AffectPipeline():
                 bb_width = min(bb_width, img_w - origin_x)
 
         if found_face == True:
+            qs.FACE_ACTIVITY.append(1.0)
             cropped_img = img[origin_y:origin_y + bb_height, origin_x:origin_x + bb_width]
             img = cropped_img
+        else:
+            qs.FACE_ACTIVITY.append(0.0)
 
         # if type(img) == np.ndarray:
             # img2 = cv2.normalize(img, None, -1.0, 1.0, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
@@ -661,6 +664,7 @@ class AffectPipeline():
         face_mesh_raw = qs.FACE_MESH_QUEUE[len(qs.FACE_MESH_QUEUE) - 1]
         m_f = qs.FUSION[len(qs.FUSION) - 1]
         v_act = qs.VOICE_ACTIVITY[len(qs.VOICE_ACTIVITY) - 1]
+        f_act = qs.FACE_ACTIVITY[len(qs.FACE_ACTIVITY) - 1]
         face_mesh = ""
         i = 0
         if isinstance(face_mesh_raw, str):
@@ -693,6 +697,7 @@ class AffectPipeline():
         S_NEU = E.s_neu
         S_NEG = E.s_neg
         V_ACT = E.v_act
+        F_ACT = E.f_act
         the_doc = ROOT(
             DOC(
                 V_S(str(v_s), name='Valence Speech'),
@@ -707,7 +712,8 @@ class AffectPipeline():
                 S_POS(str(s_pos), name='Sentiment positive'),
                 S_NEU(str(s_neu), name='Sentiment neutral'),
                 S_NEG(str(s_neg), name='Sentiment negative'),
-                V_ACT(str(v_act), name='Voice Activity')
+                V_ACT(str(v_act), name='Voice Activity'),
+                F_ACT(str(f_act), name="Face Activity")
             )
         )
         command = lxml.etree.tostring(the_doc)

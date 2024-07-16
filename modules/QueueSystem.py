@@ -87,9 +87,13 @@ FUSION = AffectDeque(maxlen=100)
 for i in range(0, 100):
     FUSION.append([.0, .0, .0])
 
-VOICE_ACTIVITY = AffectDeque(maxlen=100000)
-for i in range(0, 100000):
+VOICE_ACTIVITY = AffectDeque(maxlen=1000)
+for i in range(0, 1000):
     VOICE_ACTIVITY.append(.0)
+
+FACE_ACTIVITY = AffectDeque(maxlen=1000)
+for i in range(0, 1000):
+    FACE_ACTIVITY.append(.0)
 
 AUDIO_QUEUE = deque(maxlen=100000) # why not AffectDeque?
 for i in range(0, 100000):
