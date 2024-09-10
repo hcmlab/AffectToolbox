@@ -60,7 +60,7 @@ class AffectPipeline():
                  microphone_id=0,
                  stt_window_length=10,
                  stt_model_size="base",
-                 sentiment_model='germansentiment',
+                 sentiment_model='multilingual',
                  fusion_use_para_v=False,
                  fusion_use_para_a=False,
                  fusion_use_para_d=False,

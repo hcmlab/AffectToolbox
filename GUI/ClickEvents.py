@@ -1218,7 +1218,7 @@ def PlayButtonClick(window):
                       microphone_id=window.MIC_ID,
                       stt_window_length=window.STT_WINDOW_SIZE,
                       stt_model_size="base",
-                      sentiment_model="germansentiment",
+                      sentiment_model="multilingual",
                       fusion_use_para_v=window.FUSION_USE_PARA_V,
                       fusion_use_para_a=window.FUSION_USE_PARA_A,
                       fusion_use_para_d=window.FUSION_USE_PARA_D,

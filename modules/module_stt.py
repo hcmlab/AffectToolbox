@@ -32,7 +32,7 @@ class SpeechToText:
         signal_mel = whisper.log_mel_spectrogram(signal_pad).to(self.model.device)
 
         # decode the audio
-        options = whisper.DecodingOptions(fp16=False,language="de")
+        options = whisper.DecodingOptions(fp16=False,language="en")
         result = whisper.decode(self.model, signal_mel, options)
 
         return result.text
