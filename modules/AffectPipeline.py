@@ -572,6 +572,7 @@ class AffectPipeline():
         img = qs.IMAGE_FACE_RAW[len(qs.IMAGE_FACE_RAW) - 1]
         self.POSE_MODULE.predict(img)
         qs.DOMINANCE_POSE.append(self.POSE_MODULE.dominance)
+        qs.FACINGCAM_POSE.append(self.POSE_MODULE.facing_cam)
         qs.IMAGE_BODY_SKEL.append(self.POSE_MODULE.image)
 
         seconds_pose_loop = time.time() - time_pose_loop_start
@@ -665,6 +666,8 @@ class AffectPipeline():
         m_f = qs.FUSION[len(qs.FUSION) - 1]
         v_act = qs.VOICE_ACTIVITY[len(qs.VOICE_ACTIVITY) - 1]
         f_act = qs.FACE_ACTIVITY[len(qs.FACE_ACTIVITY) - 1]
+        f_facing = qs.FACINGCAM_POSE[len(qs.FACINGCAM_POSE) - 1]
+
         face_mesh = ""
         i = 0
         if isinstance(face_mesh_raw, str):
@@ -698,6 +701,8 @@ class AffectPipeline():
         S_NEG = E.s_neg
         V_ACT = E.v_act
         F_ACT = E.f_act
+        F_FACING = E.f_facing
+
         the_doc = ROOT(
             DOC(
                 V_S(str(v_s), name='Valence Speech'),
@@ -713,7 +718,8 @@ class AffectPipeline():
                 S_NEU(str(s_neu), name='Sentiment neutral'),
                 S_NEG(str(s_neg), name='Sentiment negative'),
                 V_ACT(str(v_act), name='Voice Activity'),
-                F_ACT(str(f_act), name="Face Activity")
+                F_ACT(str(f_act), name="Face Activity"),
+                F_FACING(str(f_facing), name="Facing Cam")
             )
         )
         command = lxml.etree.tostring(the_doc)

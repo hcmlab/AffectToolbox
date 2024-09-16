@@ -28,6 +28,7 @@ class PoseFromCam():
         self.overall_activation_min = math.inf
         self.overall_activation_max = -math.inf
 
+        self.facing_cam = 0.0
         self.dominance = 0.0
 
         self.tracking = False
@@ -138,6 +139,11 @@ class PoseFromCam():
         dominance -= (look_down * 0.25)
         # dominance += overall_activation
 
+        if look_left < 0.75 and look_right < 0.75:
+            facing_cam = 1.0
+        else:
+            facing_cam = 0.0
+
         if dominance < -1.0:
             dominance = -1.0
         elif dominance > 1.0:
@@ -163,6 +169,7 @@ class PoseFromCam():
         self.value_string += f'{dominance}'
         self.value_string += ' || '
 
+        self.facing_cam = facing_cam
         self.dominance = dominance
 
         # print("\r" + self.value_string, end='')

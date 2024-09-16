@@ -95,6 +95,10 @@ FACE_ACTIVITY = AffectDeque(maxlen=1000)
 for i in range(0, 1000):
     FACE_ACTIVITY.append(.0)
 
+FACINGCAM_POSE = AffectDeque(maxlen=1000)
+for i in range(0, 1000):
+    FACINGCAM_POSE.append(.0)
+
 AUDIO_QUEUE = deque(maxlen=100000) # why not AffectDeque?
 for i in range(0, 100000):
     AUDIO_QUEUE.append(.0)
