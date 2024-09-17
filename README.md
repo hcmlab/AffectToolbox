@@ -12,7 +12,7 @@ And here is how it looks:
 
 For the standard installation via Python environment do the following:
 - Clone repository
-- Create Python environment (tested with Python 3.9, but should work for newer versions as well)
+- Create Python environment (use Python 3.9!)
 - Install packages listed in requirements.txt
 - ask Silvan Mertes (silvan.mertes@uni-a.de) for access to the model ressources. Then, put the res-Folder that you will get in root-Directory
 - Run it!
