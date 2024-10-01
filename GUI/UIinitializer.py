@@ -6,6 +6,9 @@ from GUI.Components.HorizontalLineWidget import HorLineWidget
 from GUI.Components.VerticalLineWidget import VerLineWidget
 from GUI.Components.Consoleoutput import ConsoleOutput
 from GUI.Components.MyButton import MyButton
+from GUI.Components.StartButton import StartButton
+from GUI.Components.StopButton import StopButton
+
 
 def AddColumn8(window):
     """Add the widgets for the 8th column to the window."""
@@ -224,15 +227,20 @@ def AddColumn2(window):
 
 def AddButtons(window):
     """Add the buttons to the window."""
-    window.play_button = MyButton("Start")
+    window.play_button = StartButton()
     window.play_button.setFixedSize(70, 35) #100, 50
     window.play_button.setParent(window.bodyContainer)
     window.play_button.setStyleSheet("background-color: white;")
 
     # window.stop_button = MyButton("Stop")
-    # window.stop_button.setFixedSize(100, 50)
+    # window.stop_button.setFixedSize(70, 35)  # 100, 50
     # window.stop_button.setParent(window.bodyContainer)
-    # window.stop_button.setStyleSheet("background-color: #f0f0f0;")
+    # window.stop_button.setStyleSheet("background-color: white;")
+
+    window.stop_button = StopButton()
+    window.stop_button.setFixedSize(70, 35)
+    window.stop_button.setParent(window.bodyContainer)
+    window.stop_button.setStyleSheet("background-color: #f0f0f0;")
 
     window.kafka_button = MyButton("Kafka")
     window.kafka_button.setFixedSize(70, 35)
@@ -567,5 +575,5 @@ def initialize_ui(window):
 
     # Install an event filter to catch the resize events of the bodyContainer
     window.bodyContainer.installEventFilter(window)
-
+    window.stop_button.hide()
     window.showMaximized()

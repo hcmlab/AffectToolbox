@@ -5,6 +5,7 @@ from modules.AffectPipeline import AffectPipeline
 from GUI.Components.ImageWindow import ImageWindow
 from GUI.Components.AudioWidget import PlotWidget
 from GUI.Components.TranscriptWidget import TranscriptWidget
+import time
 
 ####################################### Top Half (Microphone Input) #########################################
 def HeadphonesClick(window):
@@ -1174,6 +1175,7 @@ def DominanceClick(window):
 
 def PlayButtonClick(window):
     """Implements the click event for the play button that starts the AffectPipeline"""
+    #window.play_button.hide()
     window.pipe = AffectPipeline(enable_log_to_console=True,
                       enable_vad_loop=window.VOICE_ACTIVITY_LOOP,
                       enable_ser_loop=window.PARA_LOOP,
@@ -1252,23 +1254,31 @@ def PlayButtonClick(window):
     window.START = False # This is set to true when the pipeline is actually started
     
     #Check whether or not certain widgets are enabled
+    window.image = None
     if window.CAMERA_LOOP:
         window.image = ImageWindow(window=window)
         window.image.setParent(window.bodyContainer)
         window.image.show()
+
+    window.audio = None
     if window.MIC_LOOP:
         window.audio = PlotWidget(window=window)
         window.audio.setParent(window.bodyContainer)
         window.audio.show()
         window.audio.playButtonClicked()
+
+    window.transcript = None
     if window.TRANSCRIPT_LOOP:
         window.transcript = TranscriptWidget(window=window)
         window.transcript.setParent(window.bodyContainer)
         window.transcript.show()
+
+    window.skeleton = None
     if window.SKELETON_LOOP:
         window.skeleton = ImageWindow(window=window, name="Skeleton")
         window.skeleton.setParent(window.bodyContainer)
         window.skeleton.show()
+
     if window.VOICE_ACTIVITY_LOOP:
         window.circle4_1.window = window
         window.circle4_1.name = "Voice_Activity"
@@ -1377,11 +1387,17 @@ def PlayButtonClick(window):
             window.rounded8_3.y()
         )
         window.dominance.show()
+
     window.pipe.start(window)
+    time.sleep(1)
+    window.stop_button.show()
+
+
+
 
 def StopButtonClick(window):
     """Implements the click event for the stop button that stops the AffectPipeline"""
-    
+
     window.pipe.stop()
     layout = window.bodyContainer.layout()
     #Check if widgets are enabled and remove them if they are
@@ -1389,95 +1405,96 @@ def StopButtonClick(window):
         layout.removeWidget(window.image)
         window.image.setParent(None)
         del window.image
-        
+
     if window.audio is not None:
         layout.removeWidget(window.audio)
         window.audio.setParent(None)
         del window.audio
-        
+
     if window.transcript is not None:
         layout.removeWidget(window.transcript)
         window.transcript.setParent(None)
         del window.transcript
-        
+
     if window.skeleton is not None:
         layout.removeWidget(window.skeleton)
         window.skeleton.setParent(None)
         del window.skeleton
-        
+
     if window.VOICE_ACTIVITY_LOOP:
         window.circle4_1.window = None
         window.circle4_1.name = ""
         window.circle4_1.color = window.circle4_1.baseColor
         window.circle4_1.update()
-        
+
     if window.FACE_TRACKING_LOOP:
         window.circle4_2.window = None
         window.circle4_2.name = ""
         window.circle4_2.color = window.circle4_2.baseColor
         window.circle4_2.update()
-        
+
     if window.BODY_TRACKING_LOOP:
         window.circle4_3.window = None
         window.circle4_3.name = ""
         window.circle4_3.color = window.circle4_3.baseColor
         window.circle4_3.update()
-        
+
     if window.PARA_PLEASURE:
         layout.removeWidget(window.para_pleasure)
         window.para_pleasure.setParent(None)
         del window.para_pleasure
-        
+
     if window.PARA_AROUSAL:
         layout.removeWidget(window.para_arousal)
         window.para_arousal.setParent(None)
         del window.para_arousal
-        
+
     if window.PARA_DOMINANCE:
         layout.removeWidget(window.para_dominance)
         window.para_dominance.setParent(None)
         del window.para_dominance
-        
+
     if window.SENT_PLEASURE:
         layout.removeWidget(window.sent_pleasure)
         window.sent_pleasure.setParent(None)
         del window.sent_pleasure
-        
+
     if window.FACIAL_PLEASURE:
         layout.removeWidget(window.facial_pleasure)
         window.facial_pleasure.setParent(None)
         del window.facial_pleasure
-        
+
     if window.FACIAL_AROUSAL:
         layout.removeWidget(window.facial_arousal)
         window.facial_arousal.setParent(None)
         del window.facial_arousal
-        
+
     if window.FACIAL_DOMINANCE:
         layout.removeWidget(window.facial_dominance)
         window.facial_dominance.setParent(None)
         del window.facial_dominance
-        
+
     if window.POSE_DOMINANCE:
         layout.removeWidget(window.pose_dominance)
         window.pose_dominance.setParent(None)
         del window.pose_dominance
-        
+
     if window.PLEASURE:
         layout.removeWidget(window.pleasure)
         window.pleasure.setParent(None)
         del window.pleasure
-        
+
     if window.AROUSAL:
         layout.removeWidget(window.arousal)
         window.arousal.setParent(None)
         del window.arousal
-        
+
     if window.DOMINANCE:
         layout.removeWidget(window.dominance)
         window.dominance.setParent(None)
         del window.dominance
-        
+
+    window.play_button.show()
     del window.pipe 
     gc.collect()
 
@@ -1551,4 +1568,4 @@ def connect(window):
     window.udp_button.leftClicked.connect(lambda: udpClick(window))
     
     window.play_button.clicked.connect(lambda: PlayButtonClick(window))
-    # window.stop_button.clicked.connect(lambda: StopButtonClick(window))
+    window.stop_button.clicked.connect(lambda: StopButtonClick(window))

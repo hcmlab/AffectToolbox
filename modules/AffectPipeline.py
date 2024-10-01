@@ -285,6 +285,8 @@ class AffectPipeline():
         self.print_loop_thread = None
         self.send_loop_thread = None
 
+        del self
+
     def microphone_loop(self):
         # data = self.stream.read(self.MICROPHONE_CHUNKS)
         # signal = np.fromstring(data, np.float32)
