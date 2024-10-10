@@ -43,6 +43,8 @@ class DeviceSelector(QWidget):
     def update_audio_devices(self):
         """Function to update the microphone and camera devices in the combo boxes"""
         # Update microphone devices
+        self.microphone_selector.addItem("Local File")
+
         p = pyaudio.PyAudio()
         info = p.get_host_api_info_by_index(0)
         numdevices = info.get('deviceCount')
@@ -55,6 +57,7 @@ class DeviceSelector(QWidget):
         devices = FilterGraph().get_input_devices()
 
         available_cameras = {}
+        self.camera_selector.addItem("Local File")
 
         for device_index, device_name in enumerate(devices):
             available_cameras[device_index] = device_name
@@ -62,8 +65,12 @@ class DeviceSelector(QWidget):
     
     def exp_selected_camera(self):
         """Function to get the selected camera device"""
+        if self.camera_selector.currentText() == "Local File":
+            return -1
         return int(self.camera_selector.currentText().split()[0])
         
     def exp_selected_microphone(self):
         """Function to get the selected microphone device"""
+        if self.microphone_selector.currentText() == "Local File":
+            return -1
         return int(self.microphone_selector.currentText().split()[0])

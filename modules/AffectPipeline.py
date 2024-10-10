@@ -13,7 +13,7 @@ from termcolor import colored
 import os
 import modules.QueueSystem as qs
 import json
-
+import wave
 class AffectPipeline():
     def __init__(self,
                  enable_log_to_console=True,
@@ -61,6 +61,8 @@ class AffectPipeline():
                  stt_window_length=10,
                  stt_model_size="base",
                  sentiment_model='multilingual',
+                 video_path='test.mp4',
+                 audio_path='test.wav',
                  fusion_use_para_v=False,
                  fusion_use_para_a=False,
                  fusion_use_para_d=False,
@@ -136,6 +138,8 @@ class AffectPipeline():
         self._MICROPHONE_ID = microphone_id
 
         self._CAMERA_ID = camera_id
+        self._VIDEO_PATH = video_path
+        self._AUDIO_PATH = audio_path
 
         self._UDP_IP = udp_ip
         self._UDP_PORT = udp_port
@@ -232,19 +236,40 @@ class AffectPipeline():
 
         if self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP:
             self.audio = pyaudio.PyAudio()
-            self.stream = self.audio.open(input_device_index=self._MICROPHONE_ID,
-                                          format=pyaudio.paFloat32,
-                                          channels=self.CHANNELS,
-                                          rate=self.SAMPLE_RATE,
-                                          input=True,
-                                          output=True,
-                                          frames_per_buffer=self.CHUNK_SIZE)
+
+            if self._MICROPHONE_ID == -1:
+                self._LOADED_WAVE_FILE = wave.open(self._AUDIO_PATH)
+                self.SAMPLE_RATE = self._LOADED_WAVE_FILE.getframerate()
+
+                self.CHANNELS = self._LOADED_WAVE_FILE.getnchannels()
+                #self.CHUNK_SIZE = 1024
+                self.stream = self.audio.open(
+                    format=self.audio.get_format_from_width(self._LOADED_WAVE_FILE.getsampwidth()),
+                    channels=self.CHANNELS,
+                    rate=self.SAMPLE_RATE,
+                    output=True,
+                    input=False,
+                    frames_per_buffer=self.CHUNK_SIZE,
+                    stream_callback=self.__recording_callback)
+            else:
+                self.stream = self.audio.open(input_device_index=self._MICROPHONE_ID,
+                                              format=pyaudio.paFloat32,
+                                              channels=self.CHANNELS,
+                                              rate=self.SAMPLE_RATE,
+                                              input=True,
+                                              output=True,
+                                              frames_per_buffer=self.CHUNK_SIZE)
 
         if self.CAMERA_LOOP or self.FACE_ER_LOOP or self.FACE_MESH_LOOP or self.POSE_LOOP:
             import mediapipe as mp
             self.cam_options = {"output_frame_size": 1,
                                 "cam_id": self._CAMERA_ID}
-            self.capture = cv2.VideoCapture(self.cam_options["cam_id"])
+
+            if self._CAMERA_ID == -1:
+                print("ABADFBADB")
+                self.capture = cv2.VideoCapture(self._VIDEO_PATH)
+            else:
+                self.capture = cv2.VideoCapture(self.cam_options["cam_id"])
 
             self.mp_face_detection = mp.solutions.face_detection
             self.mp_mesh_detection = mp.solutions.face_mesh
@@ -287,6 +312,14 @@ class AffectPipeline():
 
         del self
 
+    def __recording_callback(self, in_data, frame_count, time_info, status):
+
+        # read frames
+        in_data = self._LOADED_WAVE_FILE.readframes(frame_count)
+        # decode frames
+        print("CALLBACK!!!")
+        return in_data, pyaudio.paContinue
+
     def microphone_loop(self):
         # data = self.stream.read(self.MICROPHONE_CHUNKS)
         # signal = np.fromstring(data, np.float32)
@@ -300,13 +333,16 @@ class AffectPipeline():
 
     def microphone_loop_func(self):
         while not self.stop_thread:
-            data = self.stream.read(self.MICROPHONE_CHUNKS)
-            signal = np.fromstring(data, np.float32)
-            # signal = np.frombuffer(data, dtype=np.int16)
-            signal_list = signal.tolist()
+            try:
+                data = self.stream.read(self.MICROPHONE_CHUNKS)
+                signal = np.fromstring(data, np.float32)
+                # signal = np.frombuffer(data, dtype=np.int16)
+                signal_list = signal.tolist()
 
-            for n in range(0, len(signal_list)):
-                qs.AUDIO_QUEUE.append(signal_list[n])
+                for n in range(0, len(signal_list)):
+                    qs.AUDIO_QUEUE.append(signal_list[n])
+            except:
+                "Error thrown in Audio "
         print("Thread ended")
     
     def vad_loop(self):
