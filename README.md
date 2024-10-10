@@ -17,6 +17,15 @@ For the standard installation (recommended!) via Python environment do the follo
 - Download ressource folder here: https://hcm-lab.de/cloud/s/5YQk3C3BMb63AC5
 - Unzip, then put the res-Folder in root-Directory of this repository
 - Run it!
-  
 
-
+## **3. Cite us :-)**
+If you use the AffectToolbox (or parts of it) for scientific reasons, please cite us in your publication. 
+```
+@inproceedings{mertes2024affecttoolbox,
+  title={The AffectToolbox: Affect Analysis for Everyone},
+  author={Mertes, Silvan and Schiller, Dominik and Dietz, Michael and Andr{\'e}, Elisabeth and Lingenfelser, Florian},
+  booktitle={2024 12th International conference on affective computing and intelligent interaction (ACII)},
+  year={2024},
+  organization={IEEE}
+}
+```
