@@ -447,7 +447,7 @@ class AffectPipeline():
                         2 * int(self.FACE_PADDING * float(img_h) * float(face_data.relative_bounding_box.height)))
                 bb_height = min(bb_height, img_h - origin_y)
 
-                bb_width = int(img_h * face_data.relative_bounding_box.width) + (
+                bb_width = int(img_w * face_data.relative_bounding_box.width) + (
                         2 * int(self.FACE_PADDING * float(img_w) * float(face_data.relative_bounding_box.width)))
                 bb_width = min(bb_width, img_w - origin_x)
 
