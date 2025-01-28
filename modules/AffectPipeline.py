@@ -60,6 +60,11 @@ class AffectPipeline():
                  microphone_id=0,
                  stt_window_length=10,
                  stt_model_size="base",
+<<<<<<< HEAD
+=======
+                 hr_wsize=10, #seconds
+                 hr_stepsize=1, #seconds
+>>>>>>> master
                  sentiment_model='multilingual',
                  fusion_use_para_v=False,
                  fusion_use_para_a=False,
@@ -153,6 +158,11 @@ class AffectPipeline():
         self.CHUNK_SIZE = int(self.STEP * self.SAMPLE_RATE)
         self._LAST_IMAGE = None
 
+<<<<<<< HEAD
+=======
+        self.HR_WSIZE = int(hr_wsize*camera_loop_rate)
+        self.HR_STEPSIZE = int(hr_stepsize*camera_loop_rate)
+>>>>>>> master
         # self.FUSION_USE_PARA_V = fusion_use_para_v
         # self.FUSION_USE_PARA_A = fusion_use_para_a
         # self.FUSION_USE_PARA_D = fusion_use_para_d
@@ -229,6 +239,14 @@ class AffectPipeline():
         if enable_pose_loop:
             from modules.module_pose import PoseFromCam
             self.POSE_MODULE = PoseFromCam()
+<<<<<<< HEAD
+=======
+        HR_LOOP=True
+        enable_hr_loop=True
+        if enable_hr_loop:
+            from modules.module_hr import HeartRateEstimation
+            self.HR_MODULE = HeartRateEstimation(fps=self._CAMERA_LOOP_RATE)
+>>>>>>> master
 
         if self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP:
             self.audio = pyaudio.PyAudio()
@@ -240,7 +258,11 @@ class AffectPipeline():
                                           output=True,
                                           frames_per_buffer=self.CHUNK_SIZE)
 
+<<<<<<< HEAD
         if self.CAMERA_LOOP or self.FACE_ER_LOOP or self.FACE_MESH_LOOP or self.POSE_LOOP:
+=======
+        if self.CAMERA_LOOP or self.FACE_ER_LOOP or self.FACE_MESH_LOOP or self.POSE_LOOP or HR_LOOP:
+>>>>>>> master
             import mediapipe as mp
             self.cam_options = {"output_frame_size": 1,
                                 "cam_id": self._CAMERA_ID}
@@ -476,6 +498,29 @@ class AffectPipeline():
         self.face_crop_loop_thread = threading.Timer(fc_timer, self.face_crop_loop)
         self.face_crop_loop_thread.start()
 
+<<<<<<< HEAD
+=======
+    def ippg_hr_loop(self):
+
+        if len(qs.IMAGE_FACE_PREPROCESSED)>=self.HR_WSIZE:
+            time_hr_loop_start = time.time()
+
+            clip = np.array(qs.IMAGE_FACE_PREPROCESSED[:-self.HR_WSIZE])
+            hr = self.HR_MODULE.prediction(clip, self.HR_STEPSIZE)
+            qs.HEART_RATE.append(hr)
+            print(hr)
+
+            seconds_hr_loop = time.time() - time_hr_loop_start
+            hr_timer = 1.0 / float(self._CAMERA_LOOP_RATE) - seconds_hr_loop
+            if hr_timer < 0.0:
+                self.LOGGING_MODULE.CAMERA_OK = False
+            else:
+                self.LOGGING_MODULE.CAMERA_OK = True
+            self.face_hr_loop_thread = threading.Timer(hr_timer, self.ippg_hr_loop)
+            self.face_hr_loop_thread.start()
+
+
+>>>>>>> master
     def face_er_loop(self):
         time_er_loop_start = time.time()
         img = qs.IMAGE_FACE_PREPROCESSED[len(qs.IMAGE_FACE_PREPROCESSED) - 1]
