@@ -19,11 +19,21 @@ class HeartRateEstimation():
         self.lowcut = lowcut
         self.highcut = highcut
         self.b, self.a = self._butter_bandpass() 
-        self.ippg_raw = np.zeros()  
 
 
     def predict(self, clip, step_size):
+        ippg_raw = np.zeros(len(clip)) 
 
+        clip_seg = self._threshold(clip, self.prop_sm["lower_cut"], self.prop["upper_cut"])
+        for idx, img in enumerate(clip_seg):
+            ippg_raw[idx] = self._chrom(img)
+        signal = filtfilt(self.b, self.a, ippg_raw)
+        hr = self.fftpeak(signal)
+        return hr
+    
+
+    '''
+    Could be a faster version for development
         if np.all(self.ippg_raw==0):
             clip_seg = self._threshold(clip, self.prop_sm["lower_cut"], self.prop["upper_cut"])
             for idx, img in enumerate(clip_seg):
@@ -40,10 +50,10 @@ class HeartRateEstimation():
             signal = filtfilt(self.b, self.a, self.ippg_raw)
             hr = self.fftpeak(signal)
             return hr
-        
+    '''        
 
     def _butter_bandpass(self, order=5):
-        return butter(order, [self.lowcut, self.highcut], fs=self.fps, btype='band')
+        return butter(order, [self.lowcut, self.highcut], btype='bandpass', fs=self.fps)
     
     
     def fftpeak(self, input, N=2048):
