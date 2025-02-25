@@ -108,7 +108,7 @@ for i in range(0, 100):
     HEART_RATE.append(.0)
 
 IMAGE_FACE_RAW = AffectDeque(maxlen=200)
-IMAGE_FACE_PREPROCESSED = AffectDeque(maxlen=100)
+IMAGE_FACE_PREPROCESSED = AffectDeque(maxlen=200)
 IMAGE_FACE_MESH = AffectDeque(maxlen=100)
 IMAGE_BODY_SKEL = AffectDeque(maxlen=100)
 

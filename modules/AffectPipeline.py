@@ -493,7 +493,7 @@ class AffectPipeline():
             time_hr_loop_start = time.time()
 
             clip = np.array(qs.IMAGE_FACE_PREPROCESSED[:-self.HR_WSIZE])
-            hr = self.HR_MODULE.prediction(clip, self.HR_STEPSIZE)
+            hr = self.HR_MODULE.predict(clip, self.HR_STEPSIZE)
             qs.HEART_RATE.append(hr)
             print(hr)
 
