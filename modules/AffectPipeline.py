@@ -29,6 +29,7 @@ class AffectPipeline():
                  enable_pose_loop=True,
                  enable_fusion_loop=True,
                  enable_sentiment_loop=True,
+                 enable_hr_loop=True,
                  show_face_mesh=True,
                  face_mesh_show_face_edges=True,
                  face_mesh_show_face_pupils=False,
@@ -168,7 +169,7 @@ class AffectPipeline():
 
         self.LOGGING_MODULE = LogModule(enable_log_to_console, enable_vad_loop, enable_ser_loop, enable_stt_loop,
                                         enable_sentiment_loop, enable_face_er_loop, enable_face_mesh_loop,
-                                        enable_pose_loop, enable_fusion_loop)
+                                        enable_pose_loop, enable_fusion_loop, enable_hr_loop)
 
         # Initialize necessary modules
         if enable_fusion_loop:
@@ -234,8 +235,8 @@ class AffectPipeline():
             from modules.module_pose import PoseFromCam
             self.POSE_MODULE = PoseFromCam()
 
-        HR_LOOP=True
-        enable_hr_loop=True
+        self.HR_LOOP=enable_hr_loop
+
         if enable_hr_loop:
             from modules.module_hr import HeartRateEstimation
             self.HR_MODULE = HeartRateEstimation(fps=self._CAMERA_LOOP_RATE)
@@ -488,23 +489,22 @@ class AffectPipeline():
         self.face_crop_loop_thread.start()
 
     def ippg_hr_loop(self):
+        #qs.HEART_RATE.append(len(qs.IMAGE_FACE_PREPROCESSED))
 
-        if len(qs.IMAGE_FACE_PREPROCESSED)>=self.HR_WSIZE:
-            time_hr_loop_start = time.time()
+        time_hr_loop_start = time.time()
+        tmp_clip = qs.IMAGE_FACE_PREPROCESSED[:-self.HR_WSIZE]
+        clip = np.array(tmp_clip)
+        hr = self.HR_MODULE.predict(clip, self.HR_STEPSIZE)
+        qs.HEART_RATE.append(hr)
 
-            clip = np.array(qs.IMAGE_FACE_PREPROCESSED[:-self.HR_WSIZE])
-            hr = self.HR_MODULE.predict(clip, self.HR_STEPSIZE)
-            qs.HEART_RATE.append(hr)
-            print(hr)
-
-            seconds_hr_loop = time.time() - time_hr_loop_start
-            hr_timer = 1.0 / float(self._CAMERA_LOOP_RATE) - seconds_hr_loop
-            if hr_timer < 0.0:
-                self.LOGGING_MODULE.CAMERA_OK = False
-            else:
-                self.LOGGING_MODULE.CAMERA_OK = True
-            self.face_hr_loop_thread = threading.Timer(hr_timer, self.ippg_hr_loop)
-            self.face_hr_loop_thread.start()
+        seconds_hr_loop = time.time() - time_hr_loop_start
+        hr_timer = 1.0 / float(self._CAMERA_LOOP_RATE) - seconds_hr_loop
+        if hr_timer < 0.0:
+            self.LOGGING_MODULE.CAMERA_OK = False
+        else:
+            self.LOGGING_MODULE.CAMERA_OK = True
+        self.face_hr_loop_thread = threading.Timer(hr_timer, self.ippg_hr_loop)
+        self.face_hr_loop_thread.start()
 
 
     def face_er_loop(self):
@@ -645,6 +645,7 @@ class AffectPipeline():
         d_f = qs.DOMINANCE_FACE[len(qs.DOMINANCE_FACE) - 1]
         m_f = qs.FUSION[len(qs.FUSION) - 1]
         p = ''
+        hr = qs.HEART_RATE[len(qs.HEART_RATE) - 1]
         if self.POSE_LOOP:
             p = self.POSE_MODULE.value_string
         img_raw = None
@@ -676,7 +677,8 @@ class AffectPipeline():
                            'a_f': a_f,
                            'd_f': d_f,
                            'm_f': m_f,
-                           'p': p
+                           'p': p,
+                           'hr': hr
                            }
 
         self.LOGGING_MODULE.update_analysis(analysis_values, img_raw, img_preprocessed, img_facemesh, img_bodyskel)
@@ -807,6 +809,8 @@ class AffectPipeline():
 
         if self.FUSION_LOOP:
             self.fusion_loop()
+        if self.HR_LOOP:
+            self.ippg_hr_loop()
 
         window.START = True
 
