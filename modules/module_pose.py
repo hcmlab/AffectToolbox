@@ -139,7 +139,7 @@ class PoseFromCam():
         dominance -= (look_down * 0.25)
         # dominance += overall_activation
 
-        if look_left < 0.75 and look_right < 0.75:
+        if look_left < 0.65 and look_right < 0.65:
             facing_cam = 1.0
         else:
             facing_cam = 0.0
