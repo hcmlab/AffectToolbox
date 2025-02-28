@@ -234,7 +234,7 @@ class AffectPipeline():
             from modules.module_pose import PoseFromCam
             self.POSE_MODULE = PoseFromCam()
 
-        HR_LOOP=True
+        #HR_LOOP=True
         enable_hr_loop=True
         if enable_hr_loop:
             from modules.module_hr import HeartRateEstimation
