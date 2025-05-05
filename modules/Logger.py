@@ -12,7 +12,8 @@ class LogModule():
                  enable_er_loop=True,
                  enable_facemesh_loop=True,
                  enable_pose_loop=True,
-                 enable_fusion_loop=True):
+                 enable_fusion_loop=True,
+                 enable_hr_loop=True):
 
         self.value_string = ''
         self.LOG_TO_CONSOLE = enable_log_to_console
@@ -24,6 +25,7 @@ class LogModule():
         self.PRINT_FACEMESH_LOOP = enable_facemesh_loop
         self.PRINT_FUSION_LOOP = enable_fusion_loop
         self.PRINT_POSE_LOOP = enable_pose_loop
+        self.PRINT_HR_LOOP = enable_hr_loop
 
         self.VOICE_OK = False
         self.SER_OK = False
@@ -97,11 +99,16 @@ class LogModule():
                 color = 'red'
             self.value_string += colored('\n# ', color='blue')
             self.value_string += colored('Body (Features):\t\t' + value_dict['p'], color=color)
+        if self.PRINT_HR_LOOP:
+            color = 'magenta'
+            self.value_string += colored('\n# ', color='blue')
+            self.value_string += colored('Heartrate:\t\t\t%+2.2f' % (value_dict['hr']), color=color)
         if self.PRINT_FUSION_LOOP:
             color = 'blue'
             self.value_string += colored('\n#\n# ', color='blue')
             self.value_string += colored('Fusion (PAD):\t\t\t%+2.2f, %+2.2f, %+2.2f' % (
                 value_dict['m_f'][0], value_dict['m_f'][1], value_dict['m_f'][2]) + "\n#", color=color)
+
 
     def update_analysis(self, value_dict, img_raw, img_preprocessed, img_facemesh, img_bodyskel):
 

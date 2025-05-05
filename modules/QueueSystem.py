@@ -103,9 +103,9 @@ AUDIO_QUEUE = deque(maxlen=100000) # why not AffectDeque?
 for i in range(0, 100000):
     AUDIO_QUEUE.append(.0)
 
-HEART_RATE = AffectDeque(maxlen=100)
-for i in range(0, 100):
-    HEART_RATE.append(.0)
+HEART_RATE = AffectDeque(maxlen=1000)
+for i in range(0, 1000):
+    HEART_RATE.append(0.0)
 
 IMAGE_FACE_RAW = AffectDeque(maxlen=200)
 IMAGE_FACE_PREPROCESSED = AffectDeque(maxlen=200)
