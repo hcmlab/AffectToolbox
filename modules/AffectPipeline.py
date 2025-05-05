@@ -489,13 +489,14 @@ class AffectPipeline():
         self.face_crop_loop_thread.start()
 
     def ippg_hr_loop(self):
-        #qs.HEART_RATE.append(len(qs.IMAGE_FACE_PREPROCESSED))
-
         time_hr_loop_start = time.time()
-        tmp_clip = qs.IMAGE_FACE_PREPROCESSED[:-self.HR_WSIZE]
-        clip = np.array(tmp_clip)
-        hr = self.HR_MODULE.predict(clip, self.HR_STEPSIZE)
-        qs.HEART_RATE.append(hr)
+        if len(qs.IMAGE_FACE_RAW.q)>=200:
+
+            clip = np.array([qs.IMAGE_FACE_RAW.q[i] for i in range(self.HR_WSIZE)])
+            hr = self.HR_MODULE.predict(clip, self.HR_STEPSIZE)
+            qs.HEART_RATE.append(hr)
+        else:
+            qs.HEART_RATE.append(0)
 
         seconds_hr_loop = time.time() - time_hr_loop_start
         hr_timer = 1.0 / float(self._CAMERA_LOOP_RATE) - seconds_hr_loop

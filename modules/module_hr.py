@@ -24,7 +24,7 @@ class HeartRateEstimation():
     def predict(self, clip, step_size):
         ippg_raw = np.zeros(len(clip)) 
 
-        clip_seg = self._threshold(clip, self.prop_sm["lower_cut"], self.prop["upper_cut"])
+        clip_seg = self._threshold(clip, self.prop_sm["lower_cut"], self.prop_sm["upper_cut"])
         for idx, img in enumerate(clip_seg):
             ippg_raw[idx] = self._chrom(img)
         signal = filtfilt(self.b, self.a, ippg_raw)
@@ -85,7 +85,7 @@ class HeartRateEstimation():
 #        return img_seg
 
     
-    def _threshold(images, lower_cut, upper_cut):
+    def _threshold(self, images, lower_cut, upper_cut):
         images_ycrcb = np.stack([cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb) for img in images], axis=0)
         lower_cut = np.array(lower_cut, dtype=np.uint8)
         upper_cut = np.array(upper_cut, dtype=np.uint8)
@@ -96,7 +96,7 @@ class HeartRateEstimation():
         return results
 
 
-    def _chrom(signal):
+    def _chrom(self, signal):
         """
         CHROM method on CPU using Numpy.
 
