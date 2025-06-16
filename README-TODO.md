@@ -22,13 +22,15 @@ To integrate a new functional button into the graphical user interface, several 
 
 The following lists must be extended:
 
-	-	self.button_dependencies: List with dependencies of the buttons when activated.
-	-	self.button_dependencies_visible: List with visible-dependencies of the buttons when
-activated.
-	-	self.button_dependencies_deactivate: List with dependencies of the buttons when deactivated.
-	-	self.header_to_buttons: List with the headings and their corresponding buttons
-	-	self.header_clicked: List with the headings and the buttons that should be
-visible when clicking
+- self.button_dependencies: List with dependencies of the buttons when activated.
+  
+- self.button_dependencies_visible: List with visible-dependencies of the buttons when activated.
+
+- self.button_dependencies_deactivate: List with dependencies of the buttons when deactivated.
+
+- self.header_to_buttons: List with the headings and their corresponding buttons.
+
+- self.header_clicked: List with the headings and the buttons that should be visible when clicking.
 
 To display the new button in the interface, it also needs to be added to the grid layout using grid_layout.addWidget(...) at the desired row and column.
 The figure below illustrates the current layout and can serve as a guide when placing new buttons.
