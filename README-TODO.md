@@ -46,7 +46,10 @@ self.SENTIMENT.setVisible(False)
 self.SENTIMENT.base_text = "SENTIMENT"
 
 Make sure to:
-	•	Use the appropriate button class (e.g., CustomButton, FloatButton, etc.) and refer to similar existing buttons for orientation,
-	•	Connect the button to the toggle_button() method for proper activation handling,
-	•	Set the button to invisible initially if needed (setVisible(False)),
-	•	And define a base_text attribute, which is important for internal logic.
+- Use the appropriate button class (e.g., CustomButton, FloatButton, etc.) and refer to similar existing buttons for orientation,
+  
+- Connect the button to the toggle_button() method for proper activation handling,
+  
+- Set the button to invisible initially if needed (setVisible(False)),
+  
+- And define a base_text attribute, which is important for internal logic.
