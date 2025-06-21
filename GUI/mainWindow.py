@@ -280,13 +280,13 @@ class MainWindow(QMainWindow):
             RightClickWindow.PARAMETERS["enable_kafka"] = False
 
     def fusion_run(self):
-        # Toggle FUSION mode and update style and config
+        # Toggle FUSION mode and update config
         self.fusion_button_active = not self.fusion_button_active
         if self.fusion_button_active:
-            self.buttons_widget.FUSION_1.setStyleSheet(self.active_style)
+            #self.buttons_widget.FUSION_1.setStyleSheet(self.active_style)
             RightClickWindow.PARAMETERS["enable_fusion"] = True
         else:
-            self.buttons_widget.FUSION_1.setStyleSheet(self.inactive_style)
+            #self.buttons_widget.FUSION_1.setStyleSheet(self.inactive_style)
             RightClickWindow.PARAMETERS["enable_fusion"] = False
 
     def load_config(self):
