@@ -133,8 +133,13 @@ class Buttons (QWidget):
         self.FaceTracking.setVisible(False)
         self.FaceTracking.base_text = "FaceTracking"
 
-        self.BodyTracking = StatusButton("BodyTracking", parent=self, main_window=self.main_window)
-        self.BodyTracking.clicked.connect(lambda: self.toggle_button(self.BodyTracking))
+        body_tracking_button = StatusButton("BodyTracking", parent=self, main_window=self.main_window)
+        self.BodyTracking = ImageStreamContainer(
+            "BodyTracking", qs.IMAGE_BODY_SKEL_BLACK,
+            main_window=self.main_window, button=body_tracking_button
+        )
+        self.BodyTracking.stream.setStyleSheet("border: 2px solid green; border-radius: 4px;")
+        self.BodyTracking.button.clicked.connect(lambda: self.toggle_button(self.BodyTracking.button))
         self.BodyTracking.setVisible(False)
         self.BodyTracking.base_text = "BodyTracking"
 
@@ -251,7 +256,7 @@ class Buttons (QWidget):
             self.Camera: [self.Video.button],
             self.Video.button: [self.Skeleton.button, self.FaceTracking.button, self.FACIALEXPRESSION],
             self.FACIALEXPRESSION: [self.Pleasure_3, self.Arousal_2, self.Dominance_2],
-            self.Skeleton.button: [self.BodyTracking, self.POSE],
+            self.Skeleton.button: [self.BodyTracking.button, self.POSE],
             self.POSE: [self.Dominance_3]
         }
 
@@ -297,7 +302,7 @@ class Buttons (QWidget):
         self.header_to_buttons = {
             self.SENSORS: [self.Micro, self.Camera],
             self.DATASTREAMS: [self.Audio.button, self.Transcript.button, self.Video.button, self.Skeleton.button],
-            self.ACTIVITYCHECK: [self.VoiceActivity, self.FaceTracking.button, self.BodyTracking],
+            self.ACTIVITYCHECK: [self.VoiceActivity, self.FaceTracking.button, self.BodyTracking.button],
             self.ANALYSIS: [self.PARALINGUISTIC, self.SENTIMENT, self.FACIALEXPRESSION, self.POSE],
             self.UNIMODALRESULTS: [self.Pleasure_1, self.Arousal_1, self.Dominance_1, self.Pleasure_2, self.Pleasure_3,
                                    self.Arousal_2, self.Dominance_2, self.Dominance_3],
@@ -517,7 +522,7 @@ class Buttons (QWidget):
         extra_connections = {
         self.VoiceActivity: [self.PARALINGUISTIC],
         self.FaceTracking.button: [self.FACIALEXPRESSION],
-        self.BodyTracking: [self.POSE],
+        self.BodyTracking.button: [self.POSE],
         self.Pleasure_1: [self.FUSION_1],
         self.Pleasure_2: [self.FUSION_1],
         self.Pleasure_3: [self.FUSION_1],

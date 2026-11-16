@@ -220,7 +220,7 @@ class MainWindow(QMainWindow):
         # Connect buttons to logging module
         self.buttons_widget.VoiceActivity.set_logging_module(self.logging_module)
         self.buttons_widget.FaceTracking.button.set_logging_module(self.logging_module)
-        self.buttons_widget.BodyTracking.set_logging_module(self.logging_module)
+        self.buttons_widget.BodyTracking.button.set_logging_module(self.logging_module)
 
         self.pipeline.start(self)
         time.sleep(1)
@@ -228,7 +228,7 @@ class MainWindow(QMainWindow):
         print("Pipeline started!")
         self.buttons_widget.VoiceActivity.start_status_timer()
         self.buttons_widget.FaceTracking.button.start_status_timer()
-        self.buttons_widget.BodyTracking.start_status_timer()
+        self.buttons_widget.BodyTracking.button.start_status_timer()
 
         for button in self.buttons_widget.float_buttons:
             button.set_pipeline_running(True)

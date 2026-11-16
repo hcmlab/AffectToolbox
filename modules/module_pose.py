@@ -2,6 +2,7 @@ import math
 
 import cv2
 import mediapipe as mp
+import numpy as np
 
 mp_pose = mp.solutions.pose
 
@@ -13,6 +14,7 @@ class PoseFromCam():
         self.mp_drawing_styles = mp.solutions.drawing_styles
         self.model = self.mp_pose.Pose(min_detection_confidence=0.7, min_tracking_confidence=0.6)
         self.image = None
+        self.skeleton_image = None
         self.value_string = ''
 
         self.look_left_min = math.inf
@@ -44,6 +46,14 @@ class PoseFromCam():
             self.image = cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR)
             self.mp_drawing.draw_landmarks(
                 self.image,
+                landmarks.pose_landmarks,
+                self.mp_pose.POSE_CONNECTIONS,
+                landmark_drawing_spec=self.mp_drawing_styles.get_default_pose_landmarks_style())
+
+        if landmarks.pose_landmarks:
+            self.skeleton_image = np.zeros_like(self.image)
+            self.mp_drawing.draw_landmarks(
+                self.skeleton_image,
                 landmarks.pose_landmarks,
                 self.mp_pose.POSE_CONNECTIONS,
                 landmark_drawing_spec=self.mp_drawing_styles.get_default_pose_landmarks_style())

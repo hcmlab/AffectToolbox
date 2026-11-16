@@ -574,6 +574,8 @@ class AffectPipeline():
         qs.DOMINANCE_POSE.append(self.POSE_MODULE.dominance)
         qs.FACINGCAM_POSE.append(self.POSE_MODULE.facing_cam)
         qs.IMAGE_BODY_SKEL.append(self.POSE_MODULE.image)
+        if self.POSE_MODULE.tracking:
+            qs.IMAGE_BODY_SKEL_BLACK.append(self.POSE_MODULE.skeleton_image)
 
         seconds_pose_loop = time.time() - time_pose_loop_start
         pose_timer = 1.0 / float(self._POSE_LOOP_RATE) - seconds_pose_loop

@@ -107,6 +107,7 @@ IMAGE_FACE_RAW = AffectDeque(maxlen=100)
 IMAGE_FACE_PREPROCESSED = AffectDeque(maxlen=100)
 IMAGE_FACE_MESH = AffectDeque(maxlen=100)
 IMAGE_BODY_SKEL = AffectDeque(maxlen=100)
+IMAGE_BODY_SKEL_BLACK = AffectDeque(maxlen=100)
 
 FACE_MESH_QUEUE = AffectDeque(maxlen=100)
 for i in range(0, 100):
