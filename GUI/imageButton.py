@@ -37,14 +37,19 @@ class ImageStreamWidget(QWidget):
             self.streaming = True
             self.setVisible(True)
 
+    def pause_stream(self):
+        self.timer.stop()
+        self.streaming = False
+
     def stop_stream(self):
-        if self.streaming:
-            self.timer.stop()
-            self.streaming = False
-            self.setVisible(False)
+        self.pause_stream()
+        self.setVisible(False)
 
     def is_stream_running(self):
         return self.streaming
+
+    def clear_display(self):
+        self.label.clear()
 
     def update_refresh_rate(self):
         loop_rate = float(RightClickWindow.PARAMETERS[self.rate_key])
@@ -56,6 +61,8 @@ class ImageStreamWidget(QWidget):
 
     # Called by the timer to update the displayed image
     def update_image(self):
+        if not self.streaming:
+            return
         self.update_refresh_rate()
         if self.queue and len(self.queue) > 0:
             image = self.queue[-1] # Use the latest image in the queue
@@ -82,21 +89,12 @@ class ImageStreamContainer(QWidget):
         self.stream = ImageStreamWidget(queue, rate_key=rate_key)
         self.stream.setVisible(False)
 
-        # Connect button to toggling the stream
-        self.button.clicked.connect(self.toggle_stream)
-
         # Layout with button and image stream
         layout = QVBoxLayout()
         layout.setSpacing(0)
         layout.addWidget(self.button)
         layout.addWidget(self.stream)
         self.setLayout(layout)
-
-    def toggle_stream(self):
-        if self.stream.is_stream_running():
-            self.stream.stop_stream()
-        else:
-            self.stream.start_stream()
 
     def deactivate(self):
         self.setVisible(False)

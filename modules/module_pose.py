@@ -35,6 +35,11 @@ class PoseFromCam():
 
         self.tracking = False
 
+    def close(self):
+        if self.model is not None:
+            self.model.close()
+            self.model = None
+
     def predict(self, img):
         self.image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         landmarks = self.model.process(self.image)

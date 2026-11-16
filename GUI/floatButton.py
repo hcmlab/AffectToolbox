@@ -71,10 +71,12 @@ class FloatButton(QPushButton):
         # Timer to update the float value every second
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_float)
-        self.timer.start(1000)
 
     def update_float(self):
         #pdates the button label to include a float value
+        if self.main_window is not None and not self.main_window.buttons_widget.pipeline_running:
+            self.setText(self.base_text)
+            return
         config = self.button_config.get(self.key_name, None)
         if not config:
             return  # No configuration found
@@ -85,9 +87,7 @@ class FloatButton(QPushButton):
         if config["param_key"]:
             show_float = RightClickWindow.PARAMETERS.get(config["param_key"], False)
         else:
-            # Fallback: if no param_key, rely on active style
-            if self.active_stylesheet and "lightgreen" in self.styleSheet():
-                show_float = True
+            show_float = bool(self.property("selected"))
 
         if show_float:
             value = config["source"]()

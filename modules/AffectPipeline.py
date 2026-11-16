@@ -1,5 +1,4 @@
 from config_defaults import DEFAULT_PARAMETERS
-import gc
 import time
 import numpy as np
 import pyaudio
@@ -16,6 +15,13 @@ import modules.QueueSystem as qs
 import json
 
 class AffectPipeline():
+    _LOOP_THREADS = (
+        "microphone_loop_thread", "vad_loop_thread", "ser_loop_thread",
+        "stt_loop_thread", "sentiment_loop_thread", "face_record_loop_thread",
+        "face_crop_loop_thread", "face_er_loop_thread", "face_mesh_loop_thread",
+        "pose_loop_thread", "fusion_loop_thread", "print_loop_thread", "send_loop_thread",
+    )
+
     def __init__(self,
                  enable_log_to_console=DEFAULT_PARAMETERS["enable_log_to_console"],
                  enable_vad_loop=DEFAULT_PARAMETERS["enable_voiceactivity"],
@@ -93,6 +99,23 @@ class AffectPipeline():
                  fusion_pose_dominance_boost = DEFAULT_PARAMETERS["FUSION_POSE_DOMINANCE_BOOST"]
                  ):
 
+        self._stop_event = threading.Event()
+        self._worker_lock = threading.Lock()
+        self._shutdown_lock = threading.Lock()
+        self._workers = set()
+        self._started = False
+        self.stop_thread = False
+        for name in self._LOOP_THREADS:
+            setattr(self, name, None)
+        self.capture = None
+        self.stream = None
+        self.audio = None
+        self._SOCKET = None
+        self._KAFKA_PRODUCER = None
+        self.face_detection = None
+        self.mp_face_mesh = None
+        self.POSE_MODULE = None
+
         self.LOG_TO_CONSOLE = enable_log_to_console
         self.VAD_LOOP = enable_vad_loop
         self.SER_LOOP = enable_ser_loop
@@ -168,150 +191,163 @@ class AffectPipeline():
                                         enable_sentiment_loop, enable_face_er_loop, enable_face_mesh_loop,
                                         enable_pose_loop, enable_fusion_loop)
 
-        # Initialize necessary modules
-        if enable_fusion_loop:
-            from modules.module_fusion import FusionModule
-            self.FUSION_MODULE = FusionModule()
-
-            self.FUSION_MODULE.FUSION_USE_PARA_V = fusion_use_para_v
-            self.FUSION_MODULE.FUSION_USE_PARA_A = fusion_use_para_a
-            self.FUSION_MODULE.FUSION_USE_PARA_D = fusion_use_para_d
-            self.FUSION_MODULE.FUSION_USE_SENTIMENT_V = fusion_use_sentiment_v
-            self.FUSION_MODULE.FUSION_USE_FACE_V = fusion_use_face_v
-            self.FUSION_MODULE.FUSION_USE_FACE_A = fusion_use_face_a
-            self.FUSION_MODULE.FUSION_USE_FACE_D = fusion_use_face_d
-            self.FUSION_MODULE.FUSION_USE_POSE_D = fusion_use_pose_d
-
-            self.FUSION_MODULE.fusion_speed = fusion_speed
-
-            self.FUSION_MODULE.voice_speed = fusion_voice_speed
-            self.FUSION_MODULE.voice_weight_valence = fusion_voice_valence_weight
-            self.FUSION_MODULE.voice_boost_valence = fusion_voice_valence_boost
-            self.FUSION_MODULE.voice_weight_arousal = fusion_voice_arousal_weight
-            self.FUSION_MODULE.voice_boost_arousal = fusion_voice_arousal_boost
-            self.FUSION_MODULE.voice_weight_dominance = fusion_voice_dominance_weight
-            self.FUSION_MODULE.voice_boost_dominance = fusion_voice_dominance_boost
-
-            self.FUSION_MODULE.face_speed = fusion_face_speed
-            self.FUSION_MODULE.face_weight_valence = fusion_face_valence_weight
-            self.FUSION_MODULE.face_boost_valence = fusion_face_valence_boost
-            self.FUSION_MODULE.face_weight_arousal = fusion_face_arousal_weight
-            self.FUSION_MODULE.face_boost_arousal = fusion_face_arousal_boost
-            self.FUSION_MODULE.face_weight_dominance = fusion_face_dominance_weight
-            self.FUSION_MODULE.face_boost_dominance = fusion_face_dominance_boost
-
-            self.FUSION_MODULE.sentiment_speed = fusion_sentiment_speed
-            self.FUSION_MODULE.sentiment_weight_valence = fusion_sentiment_weight
-            self.FUSION_MODULE.sentiment_boost_valence = fusion_sentiment_boost
-
-            self.FUSION_MODULE.pose_speed = fusion_pose_speed
-            self.FUSION_MODULE.pose_weight_dominance = fusion_pose_dominance_weight
-            self.FUSION_MODULE.pose_boost_dominance = fusion_pose_dominance_boost
-        if enable_vad_loop:
-            from modules.module_vad import VoiceActivity
-            self.VAD_MODULE = VoiceActivity(segment_length=480, sample_rate=16000, threshold=vad_threshold)
+        try:
+            # Initialize necessary modules
             if enable_fusion_loop:
-                self.FUSION_MODULE.voice_activity_tracked = True
-        else:
-            self.LOGGING_MODULE.TRACKING_VOICE = True
-            if enable_fusion_loop:
-                self.FUSION_MODULE.voice_activity_tracked = False
-        if enable_ser_loop:
-            from modules.module_ser import SpeechEmotion
-            self.SER_MODULE = SpeechEmotion(self.SAMPLE_RATE, self.SER_VALENCE_OFFSET, self.SER_AROUSAL_OFFSET, self.SER_DOMINANCE_OFFSET)
-        if enable_stt_loop:
-            from modules.module_stt import SpeechToText
-            self.STT_MODULE = SpeechToText(self.SAMPLE_RATE, self._STT_MODEL_SIZE)
-        if enable_sentiment_loop:
-            from modules.module_sentiment import Sentiment
-            self.SENTIMENT_MODULE = Sentiment(model=sentiment_model)
-        if enable_face_er_loop:
-            from modules.module_ier import EmotionFromCam
-            self.IER_MODULE = EmotionFromCam()
-        if enable_pose_loop:
-            from modules.module_pose import PoseFromCam
-            self.POSE_MODULE = PoseFromCam()
+                from modules.module_fusion import FusionModule
+                self.FUSION_MODULE = FusionModule()
 
-        if self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP:
-            self.audio = pyaudio.PyAudio()
-            self.stream = self.audio.open(input_device_index=self._MICROPHONE_ID,
-                                          format=pyaudio.paFloat32,
-                                          channels=self.CHANNELS,
-                                          rate=self.SAMPLE_RATE,
-                                          input=True,
-                                          output=True,
-                                          frames_per_buffer=self.CHUNK_SIZE)
+                self.FUSION_MODULE.FUSION_USE_PARA_V = fusion_use_para_v
+                self.FUSION_MODULE.FUSION_USE_PARA_A = fusion_use_para_a
+                self.FUSION_MODULE.FUSION_USE_PARA_D = fusion_use_para_d
+                self.FUSION_MODULE.FUSION_USE_SENTIMENT_V = fusion_use_sentiment_v
+                self.FUSION_MODULE.FUSION_USE_FACE_V = fusion_use_face_v
+                self.FUSION_MODULE.FUSION_USE_FACE_A = fusion_use_face_a
+                self.FUSION_MODULE.FUSION_USE_FACE_D = fusion_use_face_d
+                self.FUSION_MODULE.FUSION_USE_POSE_D = fusion_use_pose_d
 
-        if self.CAMERA_LOOP or self.FACE_ER_LOOP or self.FACE_MESH_LOOP or self.POSE_LOOP:
-            import mediapipe as mp
-            self.cam_options = {"output_frame_size": 1,
-                                "cam_id": self._CAMERA_ID}
-            self.capture = cv2.VideoCapture(self.cam_options["cam_id"])
+                self.FUSION_MODULE.fusion_speed = fusion_speed
 
-            self.mp_face_detection = mp.solutions.face_detection
-            self.mp_mesh_detection = mp.solutions.face_mesh
-            self.mp_face_mesh = self.mp_mesh_detection.FaceMesh(static_image_mode=True,
-                                                                max_num_faces=1,
-                                                                refine_landmarks=True,
-                                                                min_detection_confidence=0.5)
-            self.mp_drawing = mp.solutions.drawing_utils
-            self.mp_drawing_styles = mp.solutions.drawing_styles
-            self.mp_pose = mp.solutions.pose
+                self.FUSION_MODULE.voice_speed = fusion_voice_speed
+                self.FUSION_MODULE.voice_weight_valence = fusion_voice_valence_weight
+                self.FUSION_MODULE.voice_boost_valence = fusion_voice_valence_boost
+                self.FUSION_MODULE.voice_weight_arousal = fusion_voice_arousal_weight
+                self.FUSION_MODULE.voice_boost_arousal = fusion_voice_arousal_boost
+                self.FUSION_MODULE.voice_weight_dominance = fusion_voice_dominance_weight
+                self.FUSION_MODULE.voice_boost_dominance = fusion_voice_dominance_boost
 
-            self.face_detection = self.mp_face_detection.FaceDetection(model_selection=0, min_detection_confidence=0.5)
+                self.FUSION_MODULE.face_speed = fusion_face_speed
+                self.FUSION_MODULE.face_weight_valence = fusion_face_valence_weight
+                self.FUSION_MODULE.face_boost_valence = fusion_face_valence_boost
+                self.FUSION_MODULE.face_weight_arousal = fusion_face_arousal_weight
+                self.FUSION_MODULE.face_boost_arousal = fusion_face_arousal_boost
+                self.FUSION_MODULE.face_weight_dominance = fusion_face_dominance_weight
+                self.FUSION_MODULE.face_boost_dominance = fusion_face_dominance_boost
 
-        self._SOCKET = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        self._SOCKET.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 32)
+                self.FUSION_MODULE.sentiment_speed = fusion_sentiment_speed
+                self.FUSION_MODULE.sentiment_weight_valence = fusion_sentiment_weight
+                self.FUSION_MODULE.sentiment_boost_valence = fusion_sentiment_boost
 
-        if self.SEND_KAFKA_LOOP:
+                self.FUSION_MODULE.pose_speed = fusion_pose_speed
+                self.FUSION_MODULE.pose_weight_dominance = fusion_pose_dominance_weight
+                self.FUSION_MODULE.pose_boost_dominance = fusion_pose_dominance_boost
+            if enable_vad_loop:
+                from modules.module_vad import VoiceActivity
+                self.VAD_MODULE = VoiceActivity(segment_length=480, sample_rate=16000, threshold=vad_threshold)
+                if enable_fusion_loop:
+                    self.FUSION_MODULE.voice_activity_tracked = True
+            else:
+                self.LOGGING_MODULE.TRACKING_VOICE = True
+                if enable_fusion_loop:
+                    self.FUSION_MODULE.voice_activity_tracked = False
+            if enable_ser_loop:
+                from modules.module_ser import SpeechEmotion
+                self.SER_MODULE = SpeechEmotion(self.SAMPLE_RATE, self.SER_VALENCE_OFFSET, self.SER_AROUSAL_OFFSET, self.SER_DOMINANCE_OFFSET)
+            if enable_stt_loop:
+                from modules.module_stt import SpeechToText
+                self.STT_MODULE = SpeechToText(self.SAMPLE_RATE, self._STT_MODEL_SIZE)
+            if enable_sentiment_loop:
+                from modules.module_sentiment import Sentiment
+                self.SENTIMENT_MODULE = Sentiment(model=sentiment_model)
+            if enable_face_er_loop:
+                from modules.module_ier import EmotionFromCam
+                self.IER_MODULE = EmotionFromCam()
+            if enable_pose_loop:
+                from modules.module_pose import PoseFromCam
+                self.POSE_MODULE = PoseFromCam()
+
+            if self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP:
+                self.audio = pyaudio.PyAudio()
+                self.stream = self.audio.open(input_device_index=self._MICROPHONE_ID,
+                                              format=pyaudio.paFloat32,
+                                              channels=self.CHANNELS,
+                                              rate=self.SAMPLE_RATE,
+                                              input=True,
+                                              output=True,
+                                              frames_per_buffer=self.CHUNK_SIZE)
+
+            if self.CAMERA_LOOP or self.FACE_ER_LOOP or self.FACE_MESH_LOOP or self.POSE_LOOP:
+                import mediapipe as mp
+                self.cam_options = {"output_frame_size": 1,
+                                    "cam_id": self._CAMERA_ID}
+                self.capture = cv2.VideoCapture(self.cam_options["cam_id"])
+
+                self.mp_face_detection = mp.solutions.face_detection
+                self.mp_mesh_detection = mp.solutions.face_mesh
+                self.mp_face_mesh = self.mp_mesh_detection.FaceMesh(static_image_mode=True,
+                                                                    max_num_faces=1,
+                                                                    refine_landmarks=True,
+                                                                    min_detection_confidence=0.5)
+                self.mp_drawing = mp.solutions.drawing_utils
+                self.mp_drawing_styles = mp.solutions.drawing_styles
+                self.mp_pose = mp.solutions.pose
+
+                self.face_detection = self.mp_face_detection.FaceDetection(model_selection=0, min_detection_confidence=0.5)
+
+            self._SOCKET = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+            self._SOCKET.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 32)
+
+            if self.SEND_KAFKA_LOOP:
+                try:
+                    from kafka import KafkaProducer
+                    kafka_adress = self._KAFKA_IP + ":" + str(self._KAFKA_PORT)
+                    self._KAFKA_PRODUCER = KafkaProducer(bootstrap_servers=kafka_adress,
+                                                         value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+                except Exception as error:
+                    raise RuntimeError("Could not connect to Kafka. Check the server or disable Kafka.") from error
+                    
+        except Exception:
+            self.stop()
+            raise
+
+    def _start_worker(self, name, worker):
+        with self._worker_lock:
+            if self._stop_event.is_set():
+                return
+            setattr(self, name, worker)
+            self._workers.add(worker)
             try:
-                from kafka import KafkaProducer
-                kafka_adress = self._KAFKA_IP + ":" + str(self._KAFKA_PORT)
-                self._KAFKA_PRODUCER = KafkaProducer(bootstrap_servers=kafka_adress,
-                                                     value_serializer=lambda v: json.dumps(v).encode('utf-8'))
-            except:
-                print(colored("NO KAFKA SERVER RUNNING. DISABLE KAFKA OR START KAFKA SERVER AND RETRY.", "red"))
-                os._exit(1)
-                
-        self.stop_thread = False
-        self.vad_loop_thread = None
-        self.ser_loop_thread = None
-        self.stt_loop_thread = None
-        self.sentiment_loop_thread = None
-        self.face_record_loop_thread = None
-        self.face_crop_loop_thread = None
-        self.face_er_loop_thread = None
-        self.face_mesh_loop_thread = None
-        self.pose_loop_thread = None
-        self.fusion_loop_thread = None
-        self.print_loop_thread = None
-        self.send_loop_thread = None
+                worker.start()
+            except Exception:
+                self._workers.discard(worker)
+                setattr(self, name, None)
+                raise
 
-        del self
+    def _schedule_loop(self, name, delay, callback):
+        worker = threading.Timer(max(0.0, delay), self._run_loop, args=(callback,))
+        worker.daemon = True
+        self._start_worker(name, worker)
+
+    def _run_loop(self, callback):
+        try:
+            if not self._stop_event.is_set():
+                callback()
+        except Exception:
+            if not self._stop_event.is_set():
+                raise
+        finally:
+            with self._worker_lock:
+                self._workers.discard(threading.current_thread())
 
     def microphone_loop(self):
-        # data = self.stream.read(self.MICROPHONE_CHUNKS)
-        # signal = np.fromstring(data, np.float32)
-        # # signal = np.frombuffer(data, dtype=np.int16)
-        # signal_list = signal.tolist()
-
-        # for n in range(0, len(signal_list)):
-        #     qs.AUDIO_QUEUE.append(signal_list[n])
-        self.microphone_loop_thread = threading.Thread(target=self.microphone_loop_func)
-        self.microphone_loop_thread.start()
+        worker = threading.Thread(target=self._run_loop, args=(self.microphone_loop_func,), daemon=True)
+        self._start_worker("microphone_loop_thread", worker)
 
     def microphone_loop_func(self):
-        while not self.stop_thread:
-            data = self.stream.read(self.MICROPHONE_CHUNKS)
-            signal = np.fromstring(data, np.float32)
-            # signal = np.frombuffer(data, dtype=np.int16)
-            signal_list = signal.tolist()
+        while not self._stop_event.is_set():
+            # Wait for buffered samples so shutdown does not block in stream.read().
+            if self.stream.get_read_available() < self.MICROPHONE_CHUNKS:
+                self._stop_event.wait(0.01)
+                continue
+            data = self.stream.read(self.MICROPHONE_CHUNKS, exception_on_overflow=False)
+            if self._stop_event.is_set():
+                break
+            signal = np.frombuffer(data, dtype=np.float32)
+            qs.AUDIO_QUEUE.extend(signal.tolist())
 
-            for n in range(0, len(signal_list)):
-                qs.AUDIO_QUEUE.append(signal_list[n])
-        print("Thread ended")
-    
     def vad_loop(self):
+        if self._stop_event.is_set():
+            return
         time_vad_loop_start = time.time()
         signal = []
         local_audio = qs.AUDIO_QUEUE.copy()
@@ -333,10 +369,11 @@ class AffectPipeline():
 
         self.LOGGING_MODULE.TRACKING_VOICE = is_speech and self.LOGGING_MODULE.VOICE_OK
         # os._exit(1)
-        self.vad_loop_thread = threading.Timer(vad_timer, self.vad_loop)
-        self.vad_loop_thread.start()
+        self._schedule_loop("vad_loop_thread", vad_timer, self.vad_loop)
 
     def ser_loop(self):
+        if self._stop_event.is_set():
+            return
         time_ser_loop_start = time.time()
         signal = []
         local_audio = qs.AUDIO_QUEUE.copy()
@@ -357,10 +394,11 @@ class AffectPipeline():
             self.LOGGING_MODULE.SER_OK = False
         else:
             self.LOGGING_MODULE.SER_OK = True
-        self.ser_loop_thread = threading.Timer(ser_timer, self.ser_loop)
-        self.ser_loop_thread.start()
+        self._schedule_loop("ser_loop_thread", ser_timer, self.ser_loop)
 
     def stt_loop(self):
+        if self._stop_event.is_set():
+            return
         time_stt_loop_start = time.time()
         signal = []
         local_audio = qs.AUDIO_QUEUE.copy()
@@ -380,10 +418,11 @@ class AffectPipeline():
             self.LOGGING_MODULE.STT_OK = False
         else:
             self.LOGGING_MODULE.STT_OK = True
-        self.stt_loop_thread = threading.Timer(stt_timer, self.stt_loop)
-        self.stt_loop_thread.start()
+        self._schedule_loop("stt_loop_thread", stt_timer, self.stt_loop)
 
     def sentiment_loop(self):
+        if self._stop_event.is_set():
+            return
         time_sentiment_loop_start = time.time()
         last_text = qs.TRANSCRIPT_SPEECH[-1]
 
@@ -403,12 +442,19 @@ class AffectPipeline():
             self.LOGGING_MODULE.SENTIMENT_OK = False
         else:
             self.LOGGING_MODULE.SENTIMENT_OK = True
-        self.sentiment_loop_thread = threading.Timer(sentiment_timer, self.sentiment_loop)
-        self.sentiment_loop_thread.start()
+        self._schedule_loop("sentiment_loop_thread", sentiment_timer, self.sentiment_loop)
 
     def face_record_loop(self):
+        if self._stop_event.is_set():
+            return
         time_camera_loop_start = time.time()
         ret, img_captured = self.capture.read()
+        if self._stop_event.is_set():
+            return
+        if not ret or img_captured is None:
+            self.LOGGING_MODULE.CAMERA_OK = False
+            self._schedule_loop("face_record_loop_thread", 1.0 / self._CAMERA_LOOP_RATE, self.face_record_loop)
+            return
         img = img_captured.copy()
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # added RGB conversion
         qs.IMAGE_FACE_RAW.append(img_rgb)
@@ -419,11 +465,15 @@ class AffectPipeline():
             self.LOGGING_MODULE.CAMERA_OK = False
         else:
             self.LOGGING_MODULE.CAMERA_OK = True
-        self.face_record_loop_thread = threading.Timer(camera_timer, self.face_record_loop)
-        self.face_record_loop_thread.start()
+        self._schedule_loop("face_record_loop_thread", camera_timer, self.face_record_loop)
 
     def face_crop_loop(self):
+        if self._stop_event.is_set():
+            return
         time_fc_loop_start = time.time()
+        if len(qs.IMAGE_FACE_RAW) == 0:
+            self._schedule_loop("face_crop_loop_thread", 1.0 / self._FC_LOOP_RATE, self.face_crop_loop)
+            return
         img = qs.IMAGE_FACE_RAW[len(qs.IMAGE_FACE_RAW) - 1]
 
         face_detection_results = self.face_detection.process(img[:, :, ::-1])
@@ -469,10 +519,11 @@ class AffectPipeline():
 
         self.LOGGING_MODULE.TRACKING_FACE = found_face and self.LOGGING_MODULE.CAMERA_OK
 
-        self.face_crop_loop_thread = threading.Timer(fc_timer, self.face_crop_loop)
-        self.face_crop_loop_thread.start()
+        self._schedule_loop("face_crop_loop_thread", fc_timer, self.face_crop_loop)
 
     def face_er_loop(self):
+        if self._stop_event.is_set():
+            return
         time_er_loop_start = time.time()
         if qs.FACE_ACTIVITY[-1] and len(qs.IMAGE_FACE_PREPROCESSED) > 0:
             img = qs.IMAGE_FACE_PREPROCESSED[len(qs.IMAGE_FACE_PREPROCESSED) - 1]
@@ -514,10 +565,11 @@ class AffectPipeline():
             self.LOGGING_MODULE.CAMERA_OK = False
         else:
             self.LOGGING_MODULE.CAMERA_OK = True
-        self.face_er_loop_thread = threading.Timer(er_timer, self.face_er_loop)
-        self.face_er_loop_thread.start()
+        self._schedule_loop("face_er_loop_thread", er_timer, self.face_er_loop)
 
     def face_mesh_loop(self):
+        if self._stop_event.is_set():
+            return
         time_fm_loop_start = time.time()
         if qs.FACE_ACTIVITY[-1] and len(qs.IMAGE_FACE_PREPROCESSED) > 0:
             img = qs.IMAGE_FACE_PREPROCESSED[len(qs.IMAGE_FACE_PREPROCESSED) - 1]
@@ -566,11 +618,15 @@ class AffectPipeline():
             self.LOGGING_MODULE.CAMERA_OK = False
         else:
             self.LOGGING_MODULE.CAMERA_OK = True
-        self.face_mesh_loop_thread = threading.Timer(fm_timer, self.face_mesh_loop)
-        self.face_mesh_loop_thread.start()
+        self._schedule_loop("face_mesh_loop_thread", fm_timer, self.face_mesh_loop)
 
     def pose_loop(self):
+        if self._stop_event.is_set():
+            return
         time_pose_loop_start = time.time()
+        if len(qs.IMAGE_FACE_RAW) == 0:
+            self._schedule_loop("pose_loop_thread", 1.0 / self._POSE_LOOP_RATE, self.pose_loop)
+            return
         img = qs.IMAGE_FACE_RAW[len(qs.IMAGE_FACE_RAW) - 1]
         self.POSE_MODULE.predict(img)
         qs.DOMINANCE_POSE.append(self.POSE_MODULE.dominance)
@@ -588,10 +644,11 @@ class AffectPipeline():
 
         self.LOGGING_MODULE.TRACKING_BODY = self.LOGGING_MODULE.CAMERA_OK and self.LOGGING_MODULE.BODY_OK and self.POSE_MODULE.tracking
 
-        self.pose_loop_thread = threading.Timer(pose_timer, self.pose_loop)
-        self.pose_loop_thread.start()
+        self._schedule_loop("pose_loop_thread", pose_timer, self.pose_loop)
 
     def fusion_loop(self):
+        if self._stop_event.is_set():
+            return
         time_fusion_loop_start = time.time()
 
         fusion_result = self.FUSION_MODULE.update_fusion()
@@ -599,10 +656,11 @@ class AffectPipeline():
 
         seconds_fusion_loop = time.time() - time_fusion_loop_start
         fusion_timer = 1.0 / float(self._FUSION_LOOP_RATE) - seconds_fusion_loop
-        self.fusion_loop_thread = threading.Timer(fusion_timer, self.fusion_loop)
-        self.fusion_loop_thread.start()
+        self._schedule_loop("fusion_loop_thread", fusion_timer, self.fusion_loop)
 
     def print_loop(self):
+        if self._stop_event.is_set():
+            return
         v_s = qs.VALENCE_SPEECH[len(qs.VALENCE_SPEECH) - 1]
         a_s = qs.AROUSAL_SPEECH[len(qs.AROUSAL_SPEECH) - 1]
         d_s = qs.DOMINANCE_SPEECH[len(qs.DOMINANCE_SPEECH) - 1]
@@ -651,10 +709,11 @@ class AffectPipeline():
                            }
 
         self.LOGGING_MODULE.update_analysis(analysis_values, img_raw, img_preprocessed, img_facemesh, img_bodyskel)
-        self.print_loop_thread = threading.Timer(0.05, self.print_loop)
-        self.print_loop_thread.start()
+        self._schedule_loop("print_loop_thread", 0.05, self.print_loop)
 
     def send_loop(self):
+        if self._stop_event.is_set():
+            return
         time_send_loop_start = time.time()
         v_s = qs.VALENCE_SPEECH[len(qs.VALENCE_SPEECH) - 1]
         a_s = qs.AROUSAL_SPEECH[len(qs.AROUSAL_SPEECH) - 1]
@@ -744,87 +803,105 @@ class AffectPipeline():
             # print(colored('\nSEND frequency is too high to be maintained. Please lower it and start again.', 'blue'))
             # os._exit(1)
             pass
-        self.send_loop_thread = threading.Timer(send_timer, self.send_loop)
-        self.send_loop_thread.start()
+        self._schedule_loop("send_loop_thread", send_timer, self.send_loop)
 
     def start(self, window):
+        with self._worker_lock:
+            if self._stop_event.is_set() or self._started:
+                raise RuntimeError("Create a new pipeline instance before starting again.")
+            self._started = True
         if self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP:
             self.microphone_loop()
         if self.CAMERA_LOOP or self.FACE_ER_LOOP or self.FACE_MESH_LOOP or self.POSE_LOOP:
-            self.face_record_loop()
-            time.sleep(1)
-            self.face_crop_loop()
+            self._schedule_loop("face_record_loop_thread", 0.0, self.face_record_loop)
+            if self._stop_event.wait(1.0):
+                return
+            self._schedule_loop("face_crop_loop_thread", 0.0, self.face_crop_loop)
 
-        time.sleep(2)
+        if self._stop_event.wait(2.0):
+            return
 
         if self.FACE_ER_LOOP:
-            self.face_er_loop()
+            self._schedule_loop("face_er_loop_thread", 0.0, self.face_er_loop)
         if self.POSE_LOOP:
-            self.pose_loop()
+            self._schedule_loop("pose_loop_thread", 0.0, self.pose_loop)
         if self.VAD_LOOP:
-            self.vad_loop()
+            self._schedule_loop("vad_loop_thread", 0.0, self.vad_loop)
         if self.SER_LOOP:
-            self.ser_loop()
+            self._schedule_loop("ser_loop_thread", 0.0, self.ser_loop)
         if self.STT_LOOP:
-            self.stt_loop()
+            self._schedule_loop("stt_loop_thread", 0.0, self.stt_loop)
         if self.SENTIMENT_LOOP:
-            self.sentiment_loop()
+            self._schedule_loop("sentiment_loop_thread", 0.0, self.sentiment_loop)
         if self.SEND_UDP_LOOP or self.SEND_KAFKA_LOOP:
-            self.send_loop()
+            self._schedule_loop("send_loop_thread", 0.0, self.send_loop)
         if self.PRINT_LOOP:
-            self.print_loop()
+            self._schedule_loop("print_loop_thread", 0.0, self.print_loop)
         if self.FACE_MESH_LOOP:
-            self.face_mesh_loop()
+            self._schedule_loop("face_mesh_loop_thread", 0.0, self.face_mesh_loop)
 
-        time.sleep(0.5)
+        if self._stop_event.wait(0.5):
+            return
 
         if self.FUSION_LOOP:
-            self.fusion_loop()
+            self._schedule_loop("fusion_loop_thread", 0.0, self.fusion_loop)
 
-        window.START = True
+        if not self._stop_event.is_set():
+            window.START = True
+
+    def _close_resource(self, name, methods, errors, **kwargs):
+        resource = getattr(self, name, None)
+        if resource is None:
+            return
+        for method in methods:
+            try:
+                getattr(resource, method)(**kwargs)
+            except Exception as error:
+                errors.append(f"{name}.{method}: {error}")
+            else:
+                if method == methods[-1]:
+                    setattr(self, name, None)
 
     def stop(self):
-        if self.fusion_loop_thread is not None:
-            self.fusion_loop_thread.cancel()
-            del self.fusion_loop_thread
-        if self.sentiment_loop_thread is not None:
-            self.sentiment_loop_thread.cancel()
-            del self.sentiment_loop_thread
-        if self.ser_loop_thread is not None:
-            self.ser_loop_thread.cancel()
-            del self.ser_loop_thread
-        if self.vad_loop_thread is not None:
-            self.vad_loop_thread.cancel()
-            del self.vad_loop_thread
-        if self.stt_loop_thread is not None:
-            self.stt_loop_thread.cancel()
-            del self.stt_loop_thread
-        self.stop_thread = True
-        
-        if self.face_er_loop_thread is not None:
-            self.face_er_loop_thread.cancel()
-            del self.face_er_loop_thread
-        if self.pose_loop_thread is not None:
-            self.pose_loop_thread.cancel()
-            del self.pose_loop_thread
-        if self.face_mesh_loop_thread is not None:
-            self.face_mesh_loop_thread.cancel()
-            del self.face_mesh_loop_thread
-        if self.face_crop_loop_thread is not None:
-            self.face_crop_loop_thread.cancel()
-            del self.face_crop_loop_thread
-        if self.face_record_loop_thread is not None:
-            self.face_record_loop_thread.cancel()
-            del self.face_record_loop_thread
-        if self.print_loop_thread is not None:
-            self.print_loop_thread.cancel()
-            del self.pose_loop_thread
-        if self.send_loop_thread is not None:
-            self.send_loop_thread.cancel()
-            del self.send_loop_thread
-        gc.collect()
-        del self
-        
+        with self._shutdown_lock:
+            # Use the same lock as scheduling so no worker can start after this snapshot.
+            with self._worker_lock:
+                self._stop_event.set()
+                self.stop_thread = True
+                workers = tuple(self._workers)
+            for worker in workers:
+                if isinstance(worker, threading.Timer):
+                    worker.cancel()
+
+            deadline = time.monotonic() + 5.0
+            for worker in workers:
+                if worker is not threading.current_thread():
+                    worker.join(max(0.0, deadline - time.monotonic()))
+            if any(worker.is_alive() for worker in workers):
+                raise RuntimeError("A pipeline worker is still busy. Wait for it to finish and retry stopping.")
+
+            with self._worker_lock:
+                self._workers.clear()
+                for name in self._LOOP_THREADS:
+                    setattr(self, name, None)
+
+            # Close each resource independently, even if another cleanup fails.
+            errors = []
+            self._close_resource("capture", ("release",), errors)
+            self._close_resource("stream", ("stop_stream", "close"), errors)
+            self._close_resource("audio", ("terminate",), errors)
+            self._close_resource("face_detection", ("close",), errors)
+            self._close_resource("mp_face_mesh", ("close",), errors)
+            self._close_resource("POSE_MODULE", ("close",), errors)
+            self._close_resource("_KAFKA_PRODUCER", ("flush", "close"), errors, timeout=5.0)
+            self._close_resource("_SOCKET", ("close",), errors)
+            self._face_mesh_detected = False
+            self.LOGGING_MODULE.TRACKING_FACE = False
+            self.LOGGING_MODULE.TRACKING_BODY = False
+            self.LOGGING_MODULE.TRACKING_VOICE = False
+            if errors:
+                raise RuntimeError("Pipeline cleanup failed: " + "; ".join(errors))
+
 
 if __name__ == "__main__":
     pipe = AffectPipeline()

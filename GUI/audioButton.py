@@ -39,14 +39,20 @@ class AudioStreamWidget(QWidget):
             self.timer.start(100)# update every 100 ms
             self.setVisible(True)
 
-    def stop_stream(self):
+    def pause_stream(self):
         self.streaming = False
         self.timer.stop()
+
+    def stop_stream(self):
+        self.pause_stream()
         self.setFixedHeight(0)
         self.setVisible(False)
 
     def is_stream_running(self):
         return self.streaming
+
+    def clear_display(self):
+        self.plot_widget.clear()
 
     # This method updates the plot with the latest audio data from the queue
     def update_plot(self):
@@ -78,9 +84,6 @@ class AudioStreamContainer(QWidget):
         self.stream.setVisible(False)
         self.stream.setFixedWidth(self.button.width())
 
-        # Connect button click to toggling the stream
-        self.button.clicked.connect(self.toggle_stream)
-
         # Set up the vertical Layout
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -88,12 +91,6 @@ class AudioStreamContainer(QWidget):
         layout.addWidget(self.button, alignment=Qt.AlignmentFlag.AlignHCenter)
         layout.addWidget(self.stream, alignment=Qt.AlignmentFlag.AlignHCenter)
         self.setLayout(layout)
-
-    def toggle_stream(self):
-        if self.stream.is_stream_running():
-            self.stream.stop_stream()
-        else:
-            self.stream.start_stream()
 
     # Deactivates the entire widget
     def deactivate(self):

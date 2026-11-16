@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QPushButton, QWidget, QMainWindow, QVBoxLayout, QHBoxLayout, QFileDialog
+from PySide6.QtWidgets import QPushButton, QWidget, QMainWindow, QVBoxLayout, QHBoxLayout, QFileDialog, QMessageBox
 from PySide6.QtCore import Qt, QTimer, QPoint, QRect, QEvent
 from GUI.buttons import Buttons
 from GUI.styles import active_style, inactive_style, button_stylesheet, green_stylesheet, red_stylesheet
@@ -9,7 +9,6 @@ from GUI.connectionlines import ConnectionOverlay
 from GUI.rightClickWindow import RightClickWindow
 from GUI.connectionlines import is_valid_widget
 from GUI.helpWindow import HelpWindow
-import time
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -19,6 +18,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("AffectToolbox")
         self.setStyleSheet("background-color: black;")
         self.pipeline = None
+        self.logging_module = None
 
         # Set up main layout
         central_widget = QWidget()
@@ -32,10 +32,7 @@ class MainWindow(QMainWindow):
         self.inactive_style = inactive_style
 
         # Button state flags
-        self.udp_button_active = False
-        self.kafka_button_active = False
         self.run_active = False
-        self.fusion_button_active = False
 
         # Create horizontal top bar for control buttons
         top_widget = QWidget()
@@ -88,11 +85,17 @@ class MainWindow(QMainWindow):
     
         # Create main button area
         self.buttons_widget = Buttons(main_window=self)
+        self._preview_containers = (
+            self.buttons_widget.Audio, self.buttons_widget.Transcript,
+            self.buttons_widget.Video, self.buttons_widget.FaceTracking,
+            self.buttons_widget.FaceMesh, self.buttons_widget.Skeleton,
+            self.buttons_widget.BodyTracking,
+        )
+        self._status_buttons = (
+            self.buttons_widget.VoiceActivity, self.buttons_widget.FaceTracking.button,
+            self.buttons_widget.BodyTracking.button, self.buttons_widget.FaceMesh.button,
+        )
         layout.addWidget(self.buttons_widget)
-
-        self.special_clicked_map = {
-            self.buttons_widget.FUSION_1: self.fusion_run
-        }
 
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
@@ -115,6 +118,7 @@ class MainWindow(QMainWindow):
         }
 
         QTimer.singleShot(1000, self.update_connections)
+        self.sync_buttons_with_parameters()
 
     def eventFilter(self, source, event):
         # Update overlay when scroll area is redrawn
@@ -166,7 +170,10 @@ class MainWindow(QMainWindow):
                         print("Error (global map):", e)
                         continue
 
-                    is_active = "lightgreen" in source.styleSheet() and "lightgreen" in target.styleSheet()
+                    is_active = (
+                        self.buttons_widget.is_selected(source)
+                        and self.buttons_widget.is_selected(target)
+                    )
 
                     # Use vertical line for defined straight connections
                     if (source, target) in self.straight_connections:
@@ -210,88 +217,92 @@ class MainWindow(QMainWindow):
         self.help_window.show()
 
     def start_pipeline(self):
-        # Start AffectPipeline with current parameters
-        print("Initializing and starting pipeline...")
+        if self.pipeline is not None:
+            raise RuntimeError("Stop the current pipeline before starting another one.")
+        self._set_configuration_enabled(False)
+        self.pipeline = create_pipeline()
+        self.logging_module = self.pipeline.LOGGING_MODULE
+        try:
+            for button in self._status_buttons:
+                button.set_logging_module(self.logging_module)
+            self.buttons_widget.FaceMesh.button.set_pipeline(self.pipeline)
+            self.pipeline.start(self)
+        except Exception:
+            self.stop_pipeline()
+            raise
 
-        pipeline = create_pipeline()
-        self.logging_module = pipeline.LOGGING_MODULE
-        self.pipeline = pipeline
-
-        # Connect buttons to logging module
-        self.buttons_widget.VoiceActivity.set_logging_module(self.logging_module)
-        self.buttons_widget.FaceTracking.button.set_logging_module(self.logging_module)
-        self.buttons_widget.BodyTracking.button.set_logging_module(self.logging_module)
-        self.buttons_widget.FaceMesh.button.set_pipeline(self.pipeline)
-
-        self.pipeline.start(self)
-        time.sleep(1)
-
-        print("Pipeline started!")
-        self.buttons_widget.VoiceActivity.start_status_timer()
-        self.buttons_widget.FaceTracking.button.start_status_timer()
-        self.buttons_widget.BodyTracking.button.start_status_timer()
-        self.buttons_widget.FaceMesh.button.start_status_timer()
-
+        self.buttons_widget.set_pipeline_running(True)
+        for button in self._status_buttons:
+            button.start_status_timer()
         for button in self.buttons_widget.float_buttons:
-            button.set_pipeline_running(True)
-
-        # Start video stream if not running
-        video_stream_widget = self.buttons_widget.Video.stream
-        if not video_stream_widget.is_stream_running():
-            print("Starting video stream")
-            video_stream_widget.start_stream()
+            button.timer.start(1000)
+        self._update_run_button()
 
     def stop_pipeline(self):
+        self.buttons_widget.set_pipeline_running(False)
+        for button in self._status_buttons:
+            button.timer.stop()
+            button.set_logging_module(None)
+            button.set_status("grey")
+        self.buttons_widget.FaceMesh.button.set_pipeline(None)
+        for button in self.buttons_widget.float_buttons:
+            button.timer.stop()
+            button.setText(button.base_text)
+
         if self.pipeline is not None:
+            # Keep the reference if shutdown fails so cleanup can be retried.
             self.pipeline.stop()
             self.pipeline = None
-            self.buttons_widget.FaceMesh.button.set_pipeline(None)
-            self.buttons_widget.FaceMesh.button.set_status("grey")
-            for button in self.buttons_widget.float_buttons:
-                if hasattr(button, "set_pipeline_running"):
-                    button.set_pipeline_running(False)
+        self.logging_module = None
+        self.START = False
+        self._update_run_button()
+
+    def _update_run_button(self):
+        self.run_active = self.pipeline is not None
+        self.run_button.setText("Stop" if self.run_active else "Run")
+        self.run_button.setStyleSheet(self.red_stylesheet if self.run_active else self.green_stylesheet)
+        self._set_configuration_enabled(not self.run_active)
+        self._update_output_buttons()
+        self.update_connections()
 
     def run(self):
-        # Toggle pipeline run/stop
-        self.run_active = not self.run_active
-        if self.run_active:
-            self.run_button.setText("Stop")
-            self.run_button.setStyleSheet(self.red_stylesheet)
-            self.start_pipeline()
-        else:
-            self.run_button.setText("Run")
-            self.run_button.setStyleSheet(self.green_stylesheet)
-            self.stop_pipeline()
+        try:
+            if self.pipeline is None:
+                self.start_pipeline()
+            else:
+                self.stop_pipeline()
+        except Exception as error:
+            QMessageBox.warning(self, "Pipeline error", str(error))
+        finally:
+            self._update_run_button()
+
+    def _set_configuration_enabled(self, enabled):
+        # Lock controls individually so preview labels keep their normal colours.
+        for button in self.buttons_widget.findChildren(QPushButton):
+            button.setEnabled(enabled)
+        plot = self.buttons_widget.Audio.stream.plot_widget
+        plot.setMenuEnabled(enabled)
+        plot.setMouseEnabled(x=enabled, y=enabled)
+        for button in (self.udp_button, self.kafka_button, self.load_button, self.save_button):
+            button.setEnabled(enabled)
+
+    def _update_output_buttons(self):
+        for button, key in ((self.udp_button, "enable_udp"), (self.kafka_button, "enable_kafka")):
+            self.buttons_widget.set_selected(button, RightClickWindow.PARAMETERS[key])
 
     def udp_run(self):
-        # Toggle UDP state and update parameter + button style
-        self.udp_button_active = not self.udp_button_active
-        if self.udp_button_active:
-            self.udp_button.setStyleSheet(self.green_stylesheet)
-            RightClickWindow.PARAMETERS["enable_udp"] = True
-        else:
-            self.udp_button.setStyleSheet(self.button_stylesheet)
-            RightClickWindow.PARAMETERS["enable_udp"] = False
+        params = RightClickWindow.PARAMETERS
+        params["enable_udp"] = not params["enable_udp"]
+        self.buttons_widget.previews_enabled = True
+        self.buttons_widget.refresh_selections()
+        self._update_output_buttons()
 
     def kafka_run(self):
-        # Toggle Kafka state and update parameter + button style
-        self.kafka_button_active = not self.kafka_button_active
-        if self.kafka_button_active:
-            self.kafka_button.setStyleSheet(self.green_stylesheet)
-            RightClickWindow.PARAMETERS["enable_kafka"] = True
-        else:
-            self.kafka_button.setStyleSheet(self.button_stylesheet)
-            RightClickWindow.PARAMETERS["enable_kafka"] = False
-
-    def fusion_run(self):
-        # Toggle FUSION mode and update config
-        self.fusion_button_active = not self.fusion_button_active
-        if self.fusion_button_active:
-            #self.buttons_widget.FUSION_1.setStyleSheet(self.active_style)
-            RightClickWindow.PARAMETERS["enable_fusion"] = True
-        else:
-            #self.buttons_widget.FUSION_1.setStyleSheet(self.inactive_style)
-            RightClickWindow.PARAMETERS["enable_fusion"] = False
+        params = RightClickWindow.PARAMETERS
+        params["enable_kafka"] = not params["enable_kafka"]
+        self.buttons_widget.previews_enabled = True
+        self.buttons_widget.refresh_selections()
+        self._update_output_buttons()
 
     def load_config(self):
         # Load parameters from a JSON config file and update buttons
@@ -317,6 +328,7 @@ class MainWindow(QMainWindow):
                 print("Failed to save configuration.")
 
     def sync_buttons_with_parameters(self):
+        self.buttons_widget.previews_enabled = True
         RightClickWindow.PARAMETERS["show_face_mesh"] = RightClickWindow.PARAMETERS["enable_face_mesh_loop"]
         # Method for visualizing and activating the buttons
         # that have the value True as parameter value in the loaded .json file
@@ -351,71 +363,34 @@ class MainWindow(QMainWindow):
             "fusion_use_pose_d": self.buttons_widget.Dominance_3,
         }
 
-        for key, button in button_map.items():
-            param_key = f"enable_{key}"
-            if param_key in RightClickWindow.PARAMETERS:
-                enabled = RightClickWindow.PARAMETERS[param_key]
+        params = RightClickWindow.PARAMETERS
+        for key, component in button_map.items():
+            selected = params.get(f"enable_{key}", False)
+            button = component.button if hasattr(component, "button") else component
+            self.buttons_widget.set_selected(button, selected)
+            if selected:
+                component.setVisible(True)
+                self.buttons_widget.propagate_visibility(button)
 
-                actual_button = button.button if hasattr(button, "button") else button
+        for key, button in unimodal_results_map.items():
+            selected = params.get(key, False)
+            self.buttons_widget.set_selected(button, selected)
+            if selected:
+                button.setVisible(True)
 
-                if key == "udp":
-                    if enabled:
-                        actual_button.setStyleSheet(self.green_stylesheet)
-                        self.udp_button_active = True
-                    else:
-                        actual_button.setStyleSheet(self.button_stylesheet)
-                        self.udp_button_active = False
-
-                elif key == "kafka":
-                    if enabled:
-                        actual_button.setStyleSheet(self.green_stylesheet)
-                        self.kafka_button_active = True
-                    else:
-                        actual_button.setStyleSheet(self.button_stylesheet)
-                        self.kafka_button_active = False
-
-                elif key == "fusion":
-                    if enabled:
-                        actual_button.setStyleSheet(self.active_style)
-                        actual_button.setVisible(True)
-                        self.buttons_widget.Pleasure_4.setStyleSheet(self.active_style)
-                        self.buttons_widget.Arousal_3.setStyleSheet(self.active_style)
-                        self.buttons_widget.Dominance_4.setStyleSheet(self.active_style)
-                        self.buttons_widget.Pleasure_4.setVisible(True)
-                        self.buttons_widget.Arousal_3.setVisible(True)
-                        self.buttons_widget.Dominance_4.setVisible(True)
-                        self.fusion_button_active = True
-                    else:
-                        actual_button.setStyleSheet(self.inactive_style)
-                        self.fusion_button_active = False
-
-                else:
-                    if enabled:
-                        actual_button.setStyleSheet(self.active_style)
-                        button.setVisible(True)
-
-                        if hasattr(button, "stream") and hasattr(button.stream, "start_stream"):
-                            button.stream.start_stream()
-
-                        if button in self.special_clicked_map:
-                            self.special_clicked_map[button]()
-
-                        # Set visibility recursively
-                        self.buttons_widget.propagate_visibility(actual_button)
-                    else:
-                        actual_button.setStyleSheet(self.inactive_style)
-                        if hasattr(button, "stream"):
-                            button.stream.stop_stream()
-        for param_key, button in unimodal_results_map.items():
-            if param_key in RightClickWindow.PARAMETERS:
-                enabled = RightClickWindow.PARAMETERS[param_key]
-                if enabled:
-                    button.setStyleSheet(self.active_style)
-                    button.setVisible(True)
-                else:
-                    button.setStyleSheet(self.inactive_style)
+        for button in (self.buttons_widget.Pleasure_4, self.buttons_widget.Arousal_3, self.buttons_widget.Dominance_4):
+            self.buttons_widget.set_selected(button, params["enable_fusion"])
+            if params["enable_fusion"]:
+                button.setVisible(True)
+        self.buttons_widget.refresh_selections()
+        self._update_output_buttons()
+        self.update_connections()
 
     def closeEvent(self, event):
-        # Stop pipeline when window is closed
-        self.stop_pipeline()
+        try:
+            self.stop_pipeline()
+        except Exception as error:
+            QMessageBox.warning(self, "Shutdown incomplete", str(error))
+            event.ignore()
+            return
         event.accept()

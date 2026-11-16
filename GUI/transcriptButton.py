@@ -50,15 +50,19 @@ class TranscriptWidget(QWidget):
             self.update_transcript()
             self.timer.start()
 
+    def pause_stream(self):
+        self.streaming = False
+        self.timer.stop()
+
     def stop_stream(self):
-        #Stops displaying the transcript and hides the widget
-        if self.streaming:
-            self.streaming = False
-            self.setVisible(False)
-            self.timer.stop()
+        self.pause_stream()
+        self.setVisible(False)
 
     def is_stream_running(self):
         return self.streaming
+
+    def clear_display(self):
+        self.label.clear()
 
     def update_transcript(self):
         #Updates the label with the last few transcript entries from the queue
@@ -82,22 +86,12 @@ class TranscriptContainer(QWidget):
         self.stream = TranscriptWidget(queue)
         self.stream.setVisible(False)
 
-        # Connect button to toggle functionality
-        self.button.clicked.connect(self.toggle_stream)
-
         # Layout with button and transcript
         layout = QVBoxLayout()
         layout.addWidget(self.button, alignment=Qt.AlignmentFlag.AlignHCenter)
         layout.setSpacing(0)
         layout.addWidget(self.stream)
         self.setLayout(layout)
-
-    def toggle_stream(self):
-        #Toggles the transcript stream on or off
-        if self.stream.is_stream_running():
-            self.stream.stop_stream()
-        else:
-            self.stream.start_stream()
 
     def deactivate(self):
         # Deactivates the component visually and functionally

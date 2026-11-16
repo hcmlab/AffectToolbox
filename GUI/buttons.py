@@ -15,6 +15,8 @@ class Buttons (QWidget):
     def __init__(self, main_window=None):
         super().__init__()
         self.main_window = main_window
+        self.pipeline_running = False
+        self.previews_enabled = True
         self.setWindowTitle("AffectToolbox")
         self.setAttribute(Qt.WA_TranslucentBackground, True)
 
@@ -181,7 +183,6 @@ class Buttons (QWidget):
 
         #Buttons FUSION
         self.FUSION_1 = CustomButton("FUSION", self, main_window=self)
-        self.FUSION_1.clicked.connect(self.main_window.fusion_run)
         self.FUSION_1.clicked.connect(lambda: self.toggle_button(self.FUSION_1))
         self.FUSION_1.setVisible(False)
         self.FUSION_1.base_text = "FUSION"
@@ -372,7 +373,8 @@ class Buttons (QWidget):
         grid_layout.addItem(spacer1, 1, 0, 1, -1)  # Zwischen erster und zweiter Zeile
         spacer2 = QSpacerItem(0, 40)
         grid_layout.addItem(spacer2, 8, 7, 1, -1)
-        grid_layout.addItem(spacer2, 11, 10, 1, -1)
+        spacer3 = QSpacerItem(0, 40)
+        grid_layout.addItem(spacer3, 11, 10, 1, -1)
 
         # Final layout assembly
         self.adjust_button_sizes()
@@ -427,7 +429,7 @@ class Buttons (QWidget):
     def make_dependent_buttons_visible_factory(self, source_button, targets):
         def handler():
             # Only make it visible when the button has just become active
-            if source_button.styleSheet() == self.active_style:
+            if self.is_selected(source_button):
                 for t in targets:
                     t.setVisible(True)
 
@@ -442,102 +444,93 @@ class Buttons (QWidget):
             elif hasattr(target, "parent") and isinstance(target.parent(), QWidget):
                 target.parent().setVisible(True)
 
-    def toggle_button(self, button):
-        # Toggles the button's active state (color) and updates dependencies and parameters
-        is_active = button.styleSheet() == self.active_style
-        # Generates the key automatically
-        param_key = f"enable_{button.base_text.lower()}"
-        custom_param_key = self.button_to_parameter_mapping.get(button)
+    def _parameter_key(self, button):
+        if button in self.button_to_parameter_mapping:
+            return self.button_to_parameter_mapping[button]
+        key = f"enable_{button.base_text.lower()}"
+        return key if key in RightClickWindow.PARAMETERS else None
 
-        if is_active:
-            # Deactivate the button and make dependent buttons invisible
-            button.setStyleSheet(self.inactive_style)
-            if param_key in RightClickWindow.PARAMETERS:
-                RightClickWindow.PARAMETERS[param_key] = False
-            if custom_param_key:
-                RightClickWindow.PARAMETERS[custom_param_key] = False
+    def is_selected(self, button):
+        key = self._parameter_key(button)
+        if key is not None:
+            return bool(RightClickWindow.PARAMETERS[key])
+        return bool(button.property("selected"))
 
-            # Deactivate all dependent buttons
-            if button in self.button_dependencies_deactivate:
-                for dependent_button in self.button_dependencies_deactivate[button]:
-                    self.fully_deactivate_button(dependent_button)
-
-        else:
-            # Activate the button and make dependent buttons visible
-            button.setStyleSheet(self.active_style)
-            if button in self.button_dependencies:
-                for dependent_button in self.button_dependencies[button]:
-                    dependent_button.setVisible(True)
-
-            # If this button has a dependency, then activate all previous buttons
-            self.activate_dependencies(button)
-            if custom_param_key:
-                RightClickWindow.PARAMETERS[custom_param_key] = True
-            elif param_key in RightClickWindow.PARAMETERS:
-                RightClickWindow.PARAMETERS[param_key] = True
+    def set_selected(self, button, selected):
+        selected = bool(selected)
+        key = self._parameter_key(button)
+        if key is not None:
+            RightClickWindow.PARAMETERS[key] = selected
+        button.setProperty("selected", selected)
+        button.setStyleSheet(self.active_style if selected else self.inactive_style)
         if button is self.FaceMesh.button:
-            RightClickWindow.PARAMETERS["show_face_mesh"] = not is_active
-        # Update connection lines
+            RightClickWindow.PARAMETERS["show_face_mesh"] = selected
+        if not selected:
+            if isinstance(button, StatusButton):
+                button.set_status("grey")
+            if isinstance(button, FloatButton):
+                button.setText(button.base_text)
+
+        container = button.parentWidget()
+        if hasattr(container, "stream"):
+            if selected and self.previews_enabled:
+                container.stream.start_stream()
+            elif selected:
+                container.stream.pause_stream()
+            else:
+                container.stream.stop_stream()
+
+    def set_pipeline_running(self, running):
+        self.pipeline_running = running
+        self.previews_enabled = running
+        self.refresh_selections()
+
+    def refresh_selections(self):
+        for buttons in self.header_to_buttons.values():
+            for button in buttons:
+                self.set_selected(button, self.is_selected(button))
+
+    def toggle_button(self, button):
+        if not button.isEnabled():
+            return
+        self.previews_enabled = True
+        selected = not self.is_selected(button)
+        self.set_selected(button, selected)
+        if selected:
+            for dependent in self.button_dependencies.get(button, []):
+                dependent.setVisible(True)
+                if button is self.FUSION_1:
+                    self.set_selected(dependent, True)
+            self.activate_dependencies(button)
+        else:
+            for dependent in self.button_dependencies_deactivate.get(button, []):
+                self.fully_deactivate_button(dependent)
+
+        self.refresh_selections()
         if self.main_window and hasattr(self.main_window, "connection_overlay"):
             self.main_window.update_connections()
 
     def activate_dependencies(self, button):
-        # Ensures parent buttons in the dependency chain are activated when a dependent is turned on
-
         for parent_button, dependent_buttons in self.button_dependencies.items():
             if button in dependent_buttons:
-                if parent_button.styleSheet() != self.active_style:
-                    parent_button.setStyleSheet(self.active_style)
-                    param_key = f"enable_{parent_button.base_text.lower()}"
-                    if param_key in RightClickWindow.PARAMETERS:
-                        RightClickWindow.PARAMETERS[param_key] = True
-
-                    # If it is a widget: start automatically
-                    if hasattr(parent_button, "stream"):
-                        parent_button.stream.start_stream()
-                    elif hasattr(parent_button, "parent"):
-                        parent = parent_button.parent()
-                        if hasattr(parent, "stream") and hasattr(parent.stream, "start_stream"):
-                            parent.stream.start_stream()
-                        else:
-                            # If no stream available, but container then make visible
-                            if isinstance(parent, QWidget):
-                                parent.setVisible(True)
-
-                # Recursive call if the parent button also has dependencies
+                self.set_selected(parent_button, True)
+                container = parent_button.parentWidget()
+                if hasattr(container, "stream"):
+                    container.setVisible(True)
                 self.activate_dependencies(parent_button)
 
-    def fully_deactivate_button(self, btn):
-        # Fully deactivates a button or container and updates related parameters
-
-        if hasattr(btn, "button") and hasattr(btn, "deactivate"):
-            btn.deactivate()
-            btn.button.setStyleSheet(self.inactive_style)
+    def fully_deactivate_button(self, component):
+        if hasattr(component, "button"):
+            component.deactivate()
+            button = component.button
         else:
-            btn.setVisible(False)
-            btn.setStyleSheet(self.inactive_style)
-
-        base_text = getattr(btn, "base_text", None)
-
-        if not base_text and hasattr(btn, "button"):
-            base_text = getattr(btn.button, "base_text", btn.button.text())
-
-        elif not base_text:
-            base_text = btn.text()
-
-        key = f"enable_{base_text.lower()}"
-        if key in RightClickWindow.PARAMETERS:
-            RightClickWindow.PARAMETERS[key] = False
-
-        actual_button = btn.button if hasattr(btn, "button") else btn
-        if actual_button is self.FaceMesh.button:
-            RightClickWindow.PARAMETERS["show_face_mesh"] = False
-        if actual_button in self.button_to_parameter_mapping:
-            RightClickWindow.PARAMETERS[self.button_to_parameter_mapping[actual_button]] = False
+            component.setVisible(False)
+            button = component
+        self.set_selected(button, False)
 
     def get_connections(self):
         #Returns all valid connection lines between buttons based on defined dependencies
-        all_connections = dict(self.button_dependencies)
+        all_connections = {source: list(targets) for source, targets in self.button_dependencies.items()}
 
         extra_connections = {
         self.VoiceActivity: [self.PARALINGUISTIC],

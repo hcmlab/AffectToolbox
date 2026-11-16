@@ -29,7 +29,6 @@ class StatusButton(CustomButton):
     def start_status_timer(self):
         # Starts the internal timer for automatic status updates every second
         self.timer.start(1000)
-        QTimer.singleShot(2000, lambda: print(f"Test-Timer for {self.base_text}"))
 
     def update_text(self):
         # Updates the button label to include the status circle
@@ -54,7 +53,7 @@ class StatusButton(CustomButton):
     def trafficLight(self):
         #Checks system status from the logging module and updates the button's state
         if self.base_text == "FaceMesh":
-            if "lightgreen" not in self.styleSheet() or self.pipeline is None or not self.pipeline.FACE_MESH_LOOP:
+            if not self.property("selected") or self.pipeline is None or not self.pipeline.FACE_MESH_LOOP:
                 self.set_status("grey")
             elif self.pipeline._face_mesh_detected:
                 self.set_status("green")
@@ -62,11 +61,11 @@ class StatusButton(CustomButton):
                 self.set_status("yellow")
             return
 
-        if not hasattr(self, "logging_module"):
+        if getattr(self, "logging_module", None) is None:
             return
 
         # If the button is not currently active, reset status to grey
-        if "lightgreen" not in self.styleSheet():
+        if not self.property("selected"):
             self.set_status("grey")
             return
 
