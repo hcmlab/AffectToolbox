@@ -19,6 +19,7 @@ class StatusButton(CustomButton):
         super().__init__(label_text, parent=parent, main_window=main_window)
         self.base_text = label_text
         self.current_status = "grey"
+        self.pipeline = None
         self.update_text()
 
         # Timer to regularly check and update status
@@ -47,8 +48,20 @@ class StatusButton(CustomButton):
         #Links an external module that provides real-time tracking status
         self.logging_module = logging_module
 
+    def set_pipeline(self, pipeline):
+        self.pipeline = pipeline
+
     def trafficLight(self):
         #Checks system status from the logging module and updates the button's state
+        if self.base_text == "FaceMesh":
+            if "lightgreen" not in self.styleSheet() or self.pipeline is None or not self.pipeline.FACE_MESH_LOOP:
+                self.set_status("grey")
+            elif self.pipeline._face_mesh_detected:
+                self.set_status("green")
+            else:
+                self.set_status("yellow")
+            return
+
         if not hasattr(self, "logging_module"):
             return
 

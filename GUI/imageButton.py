@@ -8,9 +8,10 @@ import cv2
 
 # This widget displays images from a queue in a QLabel using a timer-based update
 class ImageStreamWidget(QWidget):
-    def __init__(self, queue):
+    def __init__(self, queue, rate_key="CAMERA_LOOP_RATE"):
         super().__init__()
         self.queue = queue # Image source
+        self.rate_key = rate_key
         self.streaming = False
 
         # Display label for the image
@@ -46,10 +47,10 @@ class ImageStreamWidget(QWidget):
         return self.streaming
 
     def update_refresh_rate(self):
-        camera_loop_rate = float(RightClickWindow.PARAMETERS["CAMERA_LOOP_RATE"])
-        if camera_loop_rate <= 0:
-            camera_loop_rate = DEFAULT_PARAMETERS["CAMERA_LOOP_RATE"]
-        interval_ms = max(1, round(1000 / camera_loop_rate))
+        loop_rate = float(RightClickWindow.PARAMETERS[self.rate_key])
+        if loop_rate <= 0:
+            loop_rate = DEFAULT_PARAMETERS[self.rate_key]
+        interval_ms = max(1, round(1000 / loop_rate))
         if self.timer.interval() != interval_ms:
             self.timer.setInterval(interval_ms)
 
@@ -68,7 +69,7 @@ class ImageStreamWidget(QWidget):
 
 # This container combines a toggle button with the image stream widget
 class ImageStreamContainer(QWidget):
-    def __init__(self, name, queue, main_window=None, button=None):
+    def __init__(self, name, queue, main_window=None, button=None, rate_key="CAMERA_LOOP_RATE"):
         super().__init__()
         self.main_window = main_window
 
@@ -78,7 +79,7 @@ class ImageStreamContainer(QWidget):
         self.button = button
 
         # Set up the image stream widget
-        self.stream = ImageStreamWidget(queue)
+        self.stream = ImageStreamWidget(queue, rate_key=rate_key)
         self.stream.setVisible(False)
 
         # Connect button to toggling the stream

@@ -221,6 +221,7 @@ class MainWindow(QMainWindow):
         self.buttons_widget.VoiceActivity.set_logging_module(self.logging_module)
         self.buttons_widget.FaceTracking.button.set_logging_module(self.logging_module)
         self.buttons_widget.BodyTracking.button.set_logging_module(self.logging_module)
+        self.buttons_widget.FaceMesh.button.set_pipeline(self.pipeline)
 
         self.pipeline.start(self)
         time.sleep(1)
@@ -229,6 +230,7 @@ class MainWindow(QMainWindow):
         self.buttons_widget.VoiceActivity.start_status_timer()
         self.buttons_widget.FaceTracking.button.start_status_timer()
         self.buttons_widget.BodyTracking.button.start_status_timer()
+        self.buttons_widget.FaceMesh.button.start_status_timer()
 
         for button in self.buttons_widget.float_buttons:
             button.set_pipeline_running(True)
@@ -243,6 +245,8 @@ class MainWindow(QMainWindow):
         if self.pipeline is not None:
             self.pipeline.stop()
             self.pipeline = None
+            self.buttons_widget.FaceMesh.button.set_pipeline(None)
+            self.buttons_widget.FaceMesh.button.set_status("grey")
             for button in self.buttons_widget.float_buttons:
                 if hasattr(button, "set_pipeline_running"):
                     button.set_pipeline_running(False)
@@ -313,6 +317,7 @@ class MainWindow(QMainWindow):
                 print("Failed to save configuration.")
 
     def sync_buttons_with_parameters(self):
+        RightClickWindow.PARAMETERS["show_face_mesh"] = RightClickWindow.PARAMETERS["enable_face_mesh_loop"]
         # Method for visualizing and activating the buttons
         # that have the value True as parameter value in the loaded .json file
         button_map = {
@@ -324,6 +329,7 @@ class MainWindow(QMainWindow):
             "sentiment": self.buttons_widget.SENTIMENT,
             "camera": self.buttons_widget.Camera,
             "video": self.buttons_widget.Video,
+            "face_mesh_loop": self.buttons_widget.FaceMesh,
             "facetracking": self.buttons_widget.FaceTracking,
             "facialexpression": self.buttons_widget.FACIALEXPRESSION,
             "skeleton": self.buttons_widget.Skeleton,

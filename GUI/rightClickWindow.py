@@ -1,5 +1,5 @@
 from config_defaults import DEFAULT_PARAMETERS
-from PySide6.QtWidgets import QMainWindow, QWidget, QDialog, QVBoxLayout, QSpacerItem, QSizePolicy, QDoubleSpinBox, QLabel, QLineEdit, QSpinBox
+from PySide6.QtWidgets import QMainWindow, QWidget, QDialog, QVBoxLayout, QSpacerItem, QSizePolicy, QDoubleSpinBox, QLabel, QLineEdit, QSpinBox, QCheckBox
 from PySide6.QtCore import Qt
 from GUI.deviceSelector import DeviceSelector
 
@@ -25,7 +25,11 @@ class RightClickWindow(QDialog):
         "Transcript": ["STT_LOOP_RATE", "STT_WINDOW_SIZE"],
         "SENTIMENT": ["SENTIMENT_LOOP_RATE", "FUSION_SENTIMENT_SPEED", "FUSION_SENTIMENT_WEIGHT", "FUSION_SENTIMENT_BOOST"],
         "Video": ["CAMERA_LOOP_RATE"],
-        "FaceTracking": ["FACE_PADDING", "FACE_MESH_RATE"],
+        "FaceTracking": ["FACE_PADDING"],
+        "FaceMesh": [
+            "FACE_MESH_RATE",
+            "face_mesh_show_face_edges", "face_mesh_show_face_contour", "face_mesh_show_face_pupils"
+        ],
         "FACIALEXPRESSION": [
             "ER_LOOP_RATE", "FUSION_FACE_SPEED", "FUSION_FACE_VALENCE_WEIGHT", "FUSION_FACE_VALENCE_BOOST",
             "FUSION_FACE_AROUSAL_WEIGHT", "FUSION_FACE_AROUSAL_BOOST",
@@ -68,7 +72,9 @@ class RightClickWindow(QDialog):
             if param_value is None:
                 continue
 
-            if "PORT" in param_name and isinstance(param_value, int):
+            if isinstance(param_value, bool):
+                self.add_checkbox(param_name, param_value)
+            elif "PORT" in param_name and isinstance(param_value, int):
                 self.add_port_input(param_name, param_value)
             elif "TOPIC" in param_name and isinstance(param_value, str):
                 self.add_topic_input(param_name, param_value)
@@ -86,6 +92,12 @@ class RightClickWindow(QDialog):
         if self.name == "Camera":
             selector = DeviceSelector(parent=self, parameters=self.PARAMETERS, name="Camera")
             self.layout.addWidget(selector)
+
+    def add_checkbox(self, variable_name, value):
+        checkbox = QCheckBox(variable_name)
+        checkbox.setChecked(value)
+        checkbox.toggled.connect(lambda checked: self.on_value_changed(checked, variable_name))
+        self.layout.addWidget(checkbox)
 
     def add_int_spinbox(self, variableName, baseValue):
         label = QLabel(f"{variableName}:")

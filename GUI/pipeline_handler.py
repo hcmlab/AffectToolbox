@@ -25,7 +25,7 @@ def create_pipeline():
         enable_pose_loop=params["enable_skeleton"],
         enable_fusion_loop=params["enable_fusion"],
         enable_sentiment_loop=params["enable_sentiment"],
-        show_face_mesh=params["show_face_mesh"],
+        show_face_mesh=params["enable_face_mesh_loop"],
         face_mesh_show_face_edges=params["face_mesh_show_face_edges"],
         face_mesh_show_face_pupils=params["face_mesh_show_face_pupils"],
         face_mesh_show_face_contour=params["face_mesh_show_face_contour"],

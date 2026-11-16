@@ -43,7 +43,7 @@ DEFAULT_PARAMETERS = {
     "FACE_MESH_RATE": 4.0,
     "ER_LOOP_RATE": 2.0,
     "show_face_mesh": False,
-    "face_mesh_show_face_edges": False,
+    "face_mesh_show_face_edges": True,
     "face_mesh_show_face_pupils": False,
     "face_mesh_show_face_contour": False,
     "FUSION_FACE_SPEED": 5000,

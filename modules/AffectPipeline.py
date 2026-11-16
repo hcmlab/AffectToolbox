@@ -524,11 +524,13 @@ class AffectPipeline():
             results = self.mp_face_mesh.process(img)
             self._face_mesh_detected = bool(results.multi_face_landmarks)
 
+            if self._face_mesh_detected:
+                for face_landmarks in results.multi_face_landmarks:
+                    qs.FACE_MESH_QUEUE.append(face_landmarks.landmark)
+
             if self._face_mesh_detected and self.SHOW_FACE_MESH:
                 annotated_image = np.zeros_like(img)
                 for face_landmarks in results.multi_face_landmarks:
-                    qs.FACE_MESH_QUEUE.append(face_landmarks.landmark)
-                    # print('face_landmarks:', face_landmarks)
                     if self.FACE_MESH_SHOW_FACE_EDGES:
                         self.mp_drawing.draw_landmarks(
                             image=annotated_image,
@@ -674,7 +676,7 @@ class AffectPipeline():
 
         face_mesh = ""
         i = 0
-        if isinstance(face_mesh_raw, str):
+        if not self.FACE_MESH_LOOP or isinstance(face_mesh_raw, str):
             face_mesh = ""
         else:
             for lm in face_mesh_raw:

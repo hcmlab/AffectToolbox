@@ -117,6 +117,16 @@ class Buttons (QWidget):
         self.Video.setVisible(False)
         self.Video.base_text = "Video"
 
+        face_mesh_button = StatusButton("FaceMesh", parent=self, main_window=self.main_window)
+        self.FaceMesh = ImageStreamContainer(
+            "FaceMesh", qs.IMAGE_FACE_MESH,
+            main_window=self.main_window, button=face_mesh_button, rate_key="FACE_MESH_RATE"
+        )
+        self.FaceMesh.stream.setStyleSheet("border: 2px solid green; border-radius: 4px;")
+        self.FaceMesh.button.clicked.connect(lambda: self.toggle_button(self.FaceMesh.button))
+        self.FaceMesh.setVisible(False)
+        self.FaceMesh.base_text = "FaceMesh"
+
         self.Skeleton = ImageStreamContainer("Skeleton", qs.IMAGE_BODY_SKEL, main_window=self.main_window)
         self.Skeleton.stream.setStyleSheet("border: 2px solid green; border-radius: 4px;")
         self.Skeleton.button.clicked.connect(lambda: self.toggle_button(self.Skeleton.button))
@@ -229,6 +239,7 @@ class Buttons (QWidget):
 
         #Camera Buttons
         grid_layout.addWidget(self.Camera, 12, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
+        grid_layout.addWidget(self.FaceMesh, 10, 3, alignment=Qt.AlignmentFlag.AlignHCenter)
         grid_layout.addWidget(self.Video, 12, 1, alignment=Qt.AlignmentFlag.AlignHCenter)
         grid_layout.addWidget(self.FaceTracking, 11, 2, alignment=Qt.AlignmentFlag.AlignHCenter)
         grid_layout.addWidget(self.FACIALEXPRESSION, 12, 3, alignment=Qt.AlignmentFlag.AlignHCenter)
@@ -255,6 +266,7 @@ class Buttons (QWidget):
             self.SENTIMENT: [self.Pleasure_2],
             self.Camera: [self.Video.button],
             self.Video.button: [self.Skeleton.button, self.FaceTracking.button, self.FACIALEXPRESSION],
+            self.FaceTracking.button: [self.FaceMesh.button],
             self.FACIALEXPRESSION: [self.Pleasure_3, self.Arousal_2, self.Dominance_2],
             self.Skeleton.button: [self.BodyTracking.button, self.POSE],
             self.POSE: [self.Dominance_3]
@@ -269,6 +281,7 @@ class Buttons (QWidget):
             self.SENTIMENT: [self.Pleasure_2],
             self.Camera: [self.Video],
             self.Video.button: [self.Skeleton, self.FaceTracking, self.FACIALEXPRESSION],
+            self.FaceTracking.button: [self.FaceMesh],
             self.FACIALEXPRESSION: [self.Pleasure_3, self.Arousal_2, self.Dominance_2],
             self.Skeleton.button: [self.BodyTracking, self.POSE],
             self.POSE: [self.Dominance_3],
@@ -290,8 +303,9 @@ class Buttons (QWidget):
             self.PARALINGUISTIC: [self.Pleasure_1, self.Arousal_1, self.Dominance_1],
             self.Transcript.button: [self.SENTIMENT, self.Pleasure_2],
             self.SENTIMENT: [self.Pleasure_2],
-            self.Camera: [self.Video, self.Skeleton, self.FaceTracking, self.FACIALEXPRESSION, self.BodyTracking, self.POSE, self.Pleasure_3, self.Arousal_2, self.Dominance_2, self.Dominance_3],
-            self.Video.button: [self.Skeleton, self.BodyTracking, self.POSE, self.Dominance_3, self.FaceTracking, self.FACIALEXPRESSION, self.Pleasure_3, self.Arousal_2, self.Dominance_2],
+            self.Camera: [self.Video, self.Skeleton, self.FaceMesh, self.FaceTracking, self.FACIALEXPRESSION, self.BodyTracking, self.POSE, self.Pleasure_3, self.Arousal_2, self.Dominance_2, self.Dominance_3],
+            self.Video.button: [self.Skeleton, self.FaceMesh, self.BodyTracking, self.POSE, self.Dominance_3, self.FaceTracking, self.FACIALEXPRESSION, self.Pleasure_3, self.Arousal_2, self.Dominance_2],
+            self.FaceTracking.button: [self.FaceMesh],
             self.FACIALEXPRESSION: [self.Pleasure_3, self.Arousal_2, self.Dominance_2],
             self.Skeleton.button: [self.BodyTracking, self.POSE, self.Dominance_3],
             self.POSE: [self.Dominance_3],
@@ -303,7 +317,7 @@ class Buttons (QWidget):
             self.SENSORS: [self.Micro, self.Camera],
             self.DATASTREAMS: [self.Audio.button, self.Transcript.button, self.Video.button, self.Skeleton.button],
             self.ACTIVITYCHECK: [self.VoiceActivity, self.FaceTracking.button, self.BodyTracking.button],
-            self.ANALYSIS: [self.PARALINGUISTIC, self.SENTIMENT, self.FACIALEXPRESSION, self.POSE],
+            self.ANALYSIS: [self.PARALINGUISTIC, self.SENTIMENT, self.FaceMesh.button, self.FACIALEXPRESSION, self.POSE],
             self.UNIMODALRESULTS: [self.Pleasure_1, self.Arousal_1, self.Dominance_1, self.Pleasure_2, self.Pleasure_3,
                                    self.Arousal_2, self.Dominance_2, self.Dominance_3],
             self.FUSION_2: [self.FUSION_1],
@@ -315,7 +329,7 @@ class Buttons (QWidget):
             self.SENSORS: [self.Micro, self.Camera],
             self.DATASTREAMS: [self.Audio, self.Transcript, self.Video, self.Skeleton],
             self.ACTIVITYCHECK: [self.VoiceActivity, self.FaceTracking, self.BodyTracking],
-            self.ANALYSIS: [self.PARALINGUISTIC, self.SENTIMENT, self.FACIALEXPRESSION, self.POSE],
+            self.ANALYSIS: [self.PARALINGUISTIC, self.SENTIMENT, self.FaceMesh, self.FACIALEXPRESSION, self.POSE],
             self.UNIMODALRESULTS: [self.Pleasure_1, self.Arousal_1, self.Dominance_1, self.Pleasure_2, self.Pleasure_3,
                                    self.Arousal_2, self.Dominance_2, self.Dominance_3],
             self.FUSION_2: [self.FUSION_1],
@@ -324,6 +338,7 @@ class Buttons (QWidget):
 
         #Dictionary that assigns the buttons to their individual parameters
         self.button_to_parameter_mapping = {
+            self.FaceMesh.button: "enable_face_mesh_loop",
             self.Pleasure_1: "fusion_use_para_v",
             self.Arousal_1: "fusion_use_para_a",
             self.Dominance_1: "fusion_use_para_d",
@@ -460,6 +475,8 @@ class Buttons (QWidget):
                 RightClickWindow.PARAMETERS[custom_param_key] = True
             elif param_key in RightClickWindow.PARAMETERS:
                 RightClickWindow.PARAMETERS[param_key] = True
+        if button is self.FaceMesh.button:
+            RightClickWindow.PARAMETERS["show_face_mesh"] = not is_active
         # Update connection lines
         if self.main_window and hasattr(self.main_window, "connection_overlay"):
             self.main_window.update_connections()
@@ -512,8 +529,11 @@ class Buttons (QWidget):
         if key in RightClickWindow.PARAMETERS:
             RightClickWindow.PARAMETERS[key] = False
 
-        if btn in self.button_to_parameter_mapping:
-            RightClickWindow.PARAMETERS[self.button_to_parameter_mapping[btn]] = False
+        actual_button = btn.button if hasattr(btn, "button") else btn
+        if actual_button is self.FaceMesh.button:
+            RightClickWindow.PARAMETERS["show_face_mesh"] = False
+        if actual_button in self.button_to_parameter_mapping:
+            RightClickWindow.PARAMETERS[self.button_to_parameter_mapping[actual_button]] = False
 
     def get_connections(self):
         #Returns all valid connection lines between buttons based on defined dependencies
