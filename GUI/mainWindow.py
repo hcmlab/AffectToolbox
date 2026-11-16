@@ -219,7 +219,7 @@ class MainWindow(QMainWindow):
 
         # Connect buttons to logging module
         self.buttons_widget.VoiceActivity.set_logging_module(self.logging_module)
-        self.buttons_widget.FaceTracking.set_logging_module(self.logging_module)
+        self.buttons_widget.FaceTracking.button.set_logging_module(self.logging_module)
         self.buttons_widget.BodyTracking.set_logging_module(self.logging_module)
 
         self.pipeline.start(self)
@@ -227,7 +227,7 @@ class MainWindow(QMainWindow):
 
         print("Pipeline started!")
         self.buttons_widget.VoiceActivity.start_status_timer()
-        self.buttons_widget.FaceTracking.start_status_timer()
+        self.buttons_widget.FaceTracking.button.start_status_timer()
         self.buttons_widget.BodyTracking.start_status_timer()
 
         for button in self.buttons_widget.float_buttons:
@@ -398,6 +398,8 @@ class MainWindow(QMainWindow):
                         self.buttons_widget.propagate_visibility(actual_button)
                     else:
                         actual_button.setStyleSheet(self.inactive_style)
+                        if hasattr(button, "stream"):
+                            button.stream.stop_stream()
         for param_key, button in unimodal_results_map.items():
             if param_key in RightClickWindow.PARAMETERS:
                 enabled = RightClickWindow.PARAMETERS[param_key]

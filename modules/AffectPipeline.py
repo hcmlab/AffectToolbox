@@ -1,3 +1,4 @@
+from config_defaults import DEFAULT_PARAMETERS
 import gc
 import time
 import numpy as np
@@ -16,80 +17,80 @@ import json
 
 class AffectPipeline():
     def __init__(self,
-                 enable_log_to_console=True,
-                 enable_vad_loop=True,
-                 enable_ser_loop=True,
-                 enable_stt_loop=True,
-                 enable_camera_loop=True,
-                 enable_print_loop=True,
-                 enable_send_udp_loop=True,
-                 enable_send_kafka_loop=True,
-                 enable_face_er_loop=True,
-                 enable_face_mesh_loop=True,
-                 enable_pose_loop=True,
-                 enable_fusion_loop=True,
-                 enable_sentiment_loop=True,
-                 show_face_mesh=True,
-                 face_mesh_show_face_edges=True,
-                 face_mesh_show_face_pupils=False,
-                 face_mesh_show_face_contour=False,
-                 camera_id=0,
-                 ser_loop_rate=2.0,
-                 ser_valence_offset=0.0,
-                 ser_arousal_offset=0.0,
-                 ser_dominance_offset=0.0,
-                 stt_loop_rate=0.1,
-                 sentiment_loop_rate=2.0,
-                 vad_loop_rate=20.0,
-                 er_loop_rate=5.0,
-                 pose_loop_rate=10.0,
-                 fusion_loop_rate=10.0,
-                 send_loop_rate=2.0,
-                 camera_loop_rate=20.0,
-                 logging_loop_rate=20.0,
-                 face_mesh_rate=1.0,
-                 udp_ip='127.0.0.1',
-                 udp_port=5006,
-                 kafka_ip='127.0.0.1',
-                 kafka_port=9092,
-                 kafka_topic_name='AffectToolbox',
-                 sample_rate=16000,
-                 vad_threshold=0.6,
-                 face_padding=0.2,
-                 microphone_chunks=16000,
-                 microphone_id=0,
-                 stt_window_length=10,
-                 stt_model_size="base",
-                 sentiment_model='multilingual',
-                 fusion_use_para_v=False,
-                 fusion_use_para_a=False,
-                 fusion_use_para_d=False,
-                 fusion_use_sentiment_v=False,
-                 fusion_use_face_v=False,
-                 fusion_use_face_a=False,
-                 fusion_use_face_d=False,
-                 fusion_use_pose_d=False,
-                 fusion_speed=1000,
-                 fusion_voice_speed = 5000,
-                 fusion_voice_valence_weight = 1.0,
-                 fusion_voice_valence_boost = 1.0,
-                 fusion_voice_arousal_weight = 1.0,
-                 fusion_voice_arousal_boost = 1.0,
-                 fusion_voice_dominance_weight = 1.0,
-                 fusion_voice_dominance_boost = 1.0,
-                 fusion_face_speed = 5000,
-                 fusion_face_valence_weight = 1.0,
-                 fusion_face_valence_boost = 1.0,
-                 fusion_face_arousal_weight = 1.0,
-                 fusion_face_arousal_boost = 1.0,
-                 fusion_face_dominance_weight = 1.0,
-                 fusion_face_dominance_boost = 1.0,
-                 fusion_sentiment_speed = 5000,
-                 fusion_sentiment_weight = 1.0,
-                 fusion_sentiment_boost = 1.0,
-                 fusion_pose_speed = 1.0,
-                 fusion_pose_dominance_weight = 1.0,
-                 fusion_pose_dominance_boost = 1.0
+                 enable_log_to_console=DEFAULT_PARAMETERS["enable_log_to_console"],
+                 enable_vad_loop=DEFAULT_PARAMETERS["enable_voiceactivity"],
+                 enable_ser_loop=DEFAULT_PARAMETERS["enable_paralinguistic"],
+                 enable_stt_loop=DEFAULT_PARAMETERS["enable_transcript"],
+                 enable_camera_loop=DEFAULT_PARAMETERS["enable_camera"],
+                 enable_print_loop=DEFAULT_PARAMETERS["enable_print_loop"],
+                 enable_send_udp_loop=DEFAULT_PARAMETERS["enable_udp"],
+                 enable_send_kafka_loop=DEFAULT_PARAMETERS["enable_kafka"],
+                 enable_face_er_loop=DEFAULT_PARAMETERS["enable_facialexpression"],
+                 enable_face_mesh_loop=DEFAULT_PARAMETERS["enable_face_mesh_loop"],
+                 enable_pose_loop=DEFAULT_PARAMETERS["enable_skeleton"],
+                 enable_fusion_loop=DEFAULT_PARAMETERS["enable_fusion"],
+                 enable_sentiment_loop=DEFAULT_PARAMETERS["enable_sentiment"],
+                 show_face_mesh=DEFAULT_PARAMETERS["show_face_mesh"],
+                 face_mesh_show_face_edges=DEFAULT_PARAMETERS["face_mesh_show_face_edges"],
+                 face_mesh_show_face_pupils=DEFAULT_PARAMETERS["face_mesh_show_face_pupils"],
+                 face_mesh_show_face_contour=DEFAULT_PARAMETERS["face_mesh_show_face_contour"],
+                 camera_id=DEFAULT_PARAMETERS["camera_id"],
+                 ser_loop_rate=DEFAULT_PARAMETERS["SER_LOOP_RATE"],
+                 ser_valence_offset=DEFAULT_PARAMETERS["SER_VALENCE_OFFSET"],
+                 ser_arousal_offset=DEFAULT_PARAMETERS["SER_AROUSAL_OFFSET"],
+                 ser_dominance_offset=DEFAULT_PARAMETERS["SER_DOMINANCE_OFFSET"],
+                 stt_loop_rate=DEFAULT_PARAMETERS["STT_LOOP_RATE"],
+                 sentiment_loop_rate=DEFAULT_PARAMETERS["SENTIMENT_LOOP_RATE"],
+                 vad_loop_rate=DEFAULT_PARAMETERS["VAD_LOOP_RATE"],
+                 er_loop_rate=DEFAULT_PARAMETERS["ER_LOOP_RATE"],
+                 pose_loop_rate=DEFAULT_PARAMETERS["POSE_LOOP_RATE"],
+                 fusion_loop_rate=DEFAULT_PARAMETERS["FUSION_LOOP_RATE"],
+                 send_loop_rate=DEFAULT_PARAMETERS["SEND_LOOP_RATE"],
+                 camera_loop_rate=DEFAULT_PARAMETERS["CAMERA_LOOP_RATE"],
+                 logging_loop_rate=DEFAULT_PARAMETERS["logging_loop_rate"],
+                 face_mesh_rate=DEFAULT_PARAMETERS["FACE_MESH_RATE"],
+                 udp_ip=DEFAULT_PARAMETERS["UDP_IP"],
+                 udp_port=DEFAULT_PARAMETERS["UDP_PORT"],
+                 kafka_ip=DEFAULT_PARAMETERS["KAFKA_IP"],
+                 kafka_port=DEFAULT_PARAMETERS["KAFKA_PORT"],
+                 kafka_topic_name=DEFAULT_PARAMETERS["KAFKA_TOPIC"],
+                 sample_rate=DEFAULT_PARAMETERS["SAMPLE_RATE"],
+                 vad_threshold=DEFAULT_PARAMETERS["VAD_THRESHOLD"],
+                 face_padding=DEFAULT_PARAMETERS["FACE_PADDING"],
+                 microphone_chunks=DEFAULT_PARAMETERS["MIC_CHUNKS"],
+                 microphone_id=DEFAULT_PARAMETERS["microphone_id"],
+                 stt_window_length=DEFAULT_PARAMETERS["STT_WINDOW_SIZE"],
+                 stt_model_size=DEFAULT_PARAMETERS["stt_model_size"],
+                 sentiment_model=DEFAULT_PARAMETERS["sentiment_model"],
+                 fusion_use_para_v=DEFAULT_PARAMETERS["fusion_use_para_v"],
+                 fusion_use_para_a=DEFAULT_PARAMETERS["fusion_use_para_a"],
+                 fusion_use_para_d=DEFAULT_PARAMETERS["fusion_use_para_d"],
+                 fusion_use_sentiment_v=DEFAULT_PARAMETERS["fusion_use_sentiment_v"],
+                 fusion_use_face_v=DEFAULT_PARAMETERS["fusion_use_face_v"],
+                 fusion_use_face_a=DEFAULT_PARAMETERS["fusion_use_face_a"],
+                 fusion_use_face_d=DEFAULT_PARAMETERS["fusion_use_face_d"],
+                 fusion_use_pose_d=DEFAULT_PARAMETERS["fusion_use_pose_d"],
+                 fusion_speed=DEFAULT_PARAMETERS["FUSION_SPEED"],
+                 fusion_voice_speed = DEFAULT_PARAMETERS["FUSION_VOICE_SPEED"],
+                 fusion_voice_valence_weight = DEFAULT_PARAMETERS["FUSION_VOICE_VALENCE_WEIGHT"],
+                 fusion_voice_valence_boost = DEFAULT_PARAMETERS["FUSION_VOICE_VALENCE_BOOST"],
+                 fusion_voice_arousal_weight = DEFAULT_PARAMETERS["FUSION_VOICE_AROUSAL_WEIGHT"],
+                 fusion_voice_arousal_boost = DEFAULT_PARAMETERS["FUSION_VOICE_AROUSAL_BOOST"],
+                 fusion_voice_dominance_weight = DEFAULT_PARAMETERS["FUSION_VOICE_DOMINANCE_WEIGHT"],
+                 fusion_voice_dominance_boost = DEFAULT_PARAMETERS["FUSION_VOICE_DOMINANCE_BOOST"],
+                 fusion_face_speed = DEFAULT_PARAMETERS["FUSION_FACE_SPEED"],
+                 fusion_face_valence_weight = DEFAULT_PARAMETERS["FUSION_FACE_VALENCE_WEIGHT"],
+                 fusion_face_valence_boost = DEFAULT_PARAMETERS["FUSION_FACE_VALENCE_BOOST"],
+                 fusion_face_arousal_weight = DEFAULT_PARAMETERS["FUSION_FACE_AROUSAL_WEIGHT"],
+                 fusion_face_arousal_boost = DEFAULT_PARAMETERS["FUSION_FACE_AROUSAL_BOOST"],
+                 fusion_face_dominance_weight = DEFAULT_PARAMETERS["FUSION_FACE_DOMINANCE_WEIGHT"],
+                 fusion_face_dominance_boost = DEFAULT_PARAMETERS["FUSION_FACE_DOMINANCE_BOOST"],
+                 fusion_sentiment_speed = DEFAULT_PARAMETERS["FUSION_SENTIMENT_SPEED"],
+                 fusion_sentiment_weight = DEFAULT_PARAMETERS["FUSION_SENTIMENT_WEIGHT"],
+                 fusion_sentiment_boost = DEFAULT_PARAMETERS["FUSION_SENTIMENT_BOOST"],
+                 fusion_pose_speed = DEFAULT_PARAMETERS["FUSION_POSE_SPEED"],
+                 fusion_pose_dominance_weight = DEFAULT_PARAMETERS["FUSION_POSE_DOMINANCE_WEIGHT"],
+                 fusion_pose_dominance_boost = DEFAULT_PARAMETERS["FUSION_POSE_DOMINANCE_BOOST"]
                  ):
 
         self.LOG_TO_CONSOLE = enable_log_to_console
@@ -106,6 +107,7 @@ class AffectPipeline():
         self.SEND_KAFKA_LOOP = enable_send_kafka_loop
         self.FACE_ER_LOOP = enable_face_er_loop
         self.FACE_MESH_LOOP = enable_face_mesh_loop
+        self._face_mesh_detected = False
 
         self.SHOW_FACE_MESH = show_face_mesh
         self.FACE_MESH_SHOW_FACE_EDGES = face_mesh_show_face_edges
@@ -451,18 +453,12 @@ class AffectPipeline():
                         2 * int(self.FACE_PADDING * float(img_w) * float(face_data.relative_bounding_box.width)))
                 bb_width = min(bb_width, img_w - origin_x)
 
-        if found_face == True:
-            qs.FACE_ACTIVITY.append(1.0)
+        if found_face:
             cropped_img = img[origin_y:origin_y + bb_height, origin_x:origin_x + bb_width]
-            img = cropped_img
+            qs.IMAGE_FACE_PREPROCESSED.append(cropped_img)
         else:
-            qs.FACE_ACTIVITY.append(0.0)
-
-        # if type(img) == np.ndarray:
-            # img2 = cv2.normalize(img, None, -1.0, 1.0, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
-            # self.video_shower_preprocessed.frame = (img2 + 1) / 2
-
-        qs.IMAGE_FACE_PREPROCESSED.append(img)
+            self._face_mesh_detected = False
+        qs.FACE_ACTIVITY.append(float(found_face))
 
         seconds_fc_loop = time.time() - time_fc_loop_start
         fc_timer = 1.0 / float(self._FC_LOOP_RATE) - seconds_fc_loop
@@ -478,38 +474,39 @@ class AffectPipeline():
 
     def face_er_loop(self):
         time_er_loop_start = time.time()
-        img = qs.IMAGE_FACE_PREPROCESSED[len(qs.IMAGE_FACE_PREPROCESSED) - 1]
-        img = cv2.normalize(img, None, -1.0, 1.0, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
+        if qs.FACE_ACTIVITY[-1] and len(qs.IMAGE_FACE_PREPROCESSED) > 0:
+            img = qs.IMAGE_FACE_PREPROCESSED[len(qs.IMAGE_FACE_PREPROCESSED) - 1]
+            img = cv2.normalize(img, None, -1.0, 1.0, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
 
-        if type(img) == np.ndarray:
-            prediction = self.IER_MODULE.predict(img)
-            qs.VALENCE_FACE.append(prediction[0][0])
-            qs.AROUSAL_FACE.append(prediction[0][1])
+            if type(img) == np.ndarray:
+                prediction = self.IER_MODULE.predict(img)
+                qs.VALENCE_FACE.append(prediction[0][0])
+                qs.AROUSAL_FACE.append(prediction[0][1])
 
-            # DERIVE PERCEIVED DOMINANCE FROM VALENCE/AROUSAL
-            dominance_face_latest = 0.0
-            valence_face_latest = prediction[0][0]
-            arousal_face_latest = prediction[0][1]
+                # DERIVE PERCEIVED DOMINANCE FROM VALENCE/AROUSAL
+                dominance_face_latest = 0.0
+                valence_face_latest = prediction[0][0]
+                arousal_face_latest = prediction[0][1]
 
-            if arousal_face_latest < 0.0:
-                dominance_face_latest = -1.0
-            elif arousal_face_latest > 0.5:
-                dominance_face_latest = 1.0
-            elif abs(valence_face_latest) > (-2.0 * arousal_face_latest + 1.0):
-                dominance_face_latest = 1.0
-            else:
-                dominance_face_latest = -1.0
+                if arousal_face_latest < 0.0:
+                    dominance_face_latest = -1.0
+                elif arousal_face_latest > 0.5:
+                    dominance_face_latest = 1.0
+                elif abs(valence_face_latest) > (-2.0 * arousal_face_latest + 1.0):
+                    dominance_face_latest = 1.0
+                else:
+                    dominance_face_latest = -1.0
 
-            # NORMALIZE PERCEIVED DOMINANCE
-            if dominance_face_latest == 1.0:
-                dominance_face_latest = (math.sqrt(
-                    math.pow(valence_face_latest, 2.0) + math.pow(arousal_face_latest, 2.0))) / 1.4
-            else:
-                dominance_face_latest = (math.sqrt(
-                    math.pow(valence_face_latest, 2.0) + math.pow(arousal_face_latest, 2.0))) / -1.4
+                # NORMALIZE PERCEIVED DOMINANCE
+                if dominance_face_latest == 1.0:
+                    dominance_face_latest = (math.sqrt(
+                        math.pow(valence_face_latest, 2.0) + math.pow(arousal_face_latest, 2.0))) / 1.4
+                else:
+                    dominance_face_latest = (math.sqrt(
+                        math.pow(valence_face_latest, 2.0) + math.pow(arousal_face_latest, 2.0))) / -1.4
 
-            # FACE - PERCEIVED DOMINANCE
-            qs.DOMINANCE_FACE.append(dominance_face_latest)
+                # FACE - PERCEIVED DOMINANCE
+                qs.DOMINANCE_FACE.append(dominance_face_latest)
 
         seconds_er_loop = time.time() - time_er_loop_start
         er_timer = 1.0 / float(self._ER_LOOP_RATE) - seconds_er_loop
@@ -522,13 +519,12 @@ class AffectPipeline():
 
     def face_mesh_loop(self):
         time_fm_loop_start = time.time()
-        img = qs.IMAGE_FACE_PREPROCESSED[len(qs.IMAGE_FACE_PREPROCESSED) - 1]
-        results = self.mp_face_mesh.process(img)
+        if qs.FACE_ACTIVITY[-1] and len(qs.IMAGE_FACE_PREPROCESSED) > 0:
+            img = qs.IMAGE_FACE_PREPROCESSED[len(qs.IMAGE_FACE_PREPROCESSED) - 1]
+            results = self.mp_face_mesh.process(img)
+            self._face_mesh_detected = bool(results.multi_face_landmarks)
 
-        if results.multi_face_landmarks is None:
-            pass
-        else:
-            if self.SHOW_FACE_MESH:
+            if self._face_mesh_detected and self.SHOW_FACE_MESH:
                 annotated_image = np.zeros_like(img)
                 for face_landmarks in results.multi_face_landmarks:
                     qs.FACE_MESH_QUEUE.append(face_landmarks.landmark)
@@ -559,6 +555,8 @@ class AffectPipeline():
                             .get_default_face_mesh_iris_connections_style())
 
                 qs.IMAGE_FACE_MESH.append(annotated_image)
+        else:
+            self._face_mesh_detected = False
 
         seconds_fm_loop = time.time() - time_fm_loop_start
         fm_timer = 1.0 / float(self._FM_LOOP_RATE) - seconds_fm_loop
@@ -668,6 +666,8 @@ class AffectPipeline():
         m_f = qs.FUSION[len(qs.FUSION) - 1]
         v_act = qs.VOICE_ACTIVITY[len(qs.VOICE_ACTIVITY) - 1]
         f_act = qs.FACE_ACTIVITY[len(qs.FACE_ACTIVITY) - 1]
+        if self.FACE_MESH_LOOP:
+            f_act = float(bool(f_act) and self._face_mesh_detected)
         f_facing = qs.FACINGCAM_POSE[len(qs.FACINGCAM_POSE) - 1]
 
         face_mesh = ""

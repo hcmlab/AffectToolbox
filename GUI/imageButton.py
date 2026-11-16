@@ -1,7 +1,9 @@
+from config_defaults import DEFAULT_PARAMETERS
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
 from PySide6.QtCore import QTimer, Qt
 from PySide6.QtGui import QPixmap, QImage
 from GUI.custom_button import CustomButton
+from GUI.rightClickWindow import RightClickWindow
 import cv2
 
 # This widget displays images from a queue in a QLabel using a timer-based update
@@ -29,7 +31,8 @@ class ImageStreamWidget(QWidget):
 
     def start_stream(self):
         if not self.streaming:
-            self.timer.start(500) # update every 500 ms
+            self.update_refresh_rate()
+            self.timer.start()
             self.streaming = True
             self.setVisible(True)
 
@@ -42,8 +45,17 @@ class ImageStreamWidget(QWidget):
     def is_stream_running(self):
         return self.streaming
 
+    def update_refresh_rate(self):
+        camera_loop_rate = float(RightClickWindow.PARAMETERS["CAMERA_LOOP_RATE"])
+        if camera_loop_rate <= 0:
+            camera_loop_rate = DEFAULT_PARAMETERS["CAMERA_LOOP_RATE"]
+        interval_ms = max(1, round(1000 / camera_loop_rate))
+        if self.timer.interval() != interval_ms:
+            self.timer.setInterval(interval_ms)
+
     # Called by the timer to update the displayed image
     def update_image(self):
+        self.update_refresh_rate()
         if self.queue and len(self.queue) > 0:
             image = self.queue[-1] # Use the latest image in the queue
             if hasattr(image, "shape"):
@@ -56,12 +68,14 @@ class ImageStreamWidget(QWidget):
 
 # This container combines a toggle button with the image stream widget
 class ImageStreamContainer(QWidget):
-    def __init__(self, name, queue, main_window=None):
+    def __init__(self, name, queue, main_window=None, button=None):
         super().__init__()
         self.main_window = main_window
 
         # Create a labeled button and link it to the main window
-        self.button = CustomButton(f"{name}", parent=self, main_window=self.main_window)
+        if button is None:
+            button = CustomButton(f"{name}", parent=self, main_window=self.main_window)
+        self.button = button
 
         # Set up the image stream widget
         self.stream = ImageStreamWidget(queue)
