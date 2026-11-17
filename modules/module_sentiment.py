@@ -1,4 +1,4 @@
-import numpy as np
+import torch
 from scipy.special import softmax
 
 class Sentiment:
@@ -11,7 +11,6 @@ class Sentiment:
             self.predict_func = self._process_german_sentiment
         elif model == 'multilingual':
             from transformers import AutoModelForSequenceClassification
-            from transformers import TFAutoModelForSequenceClassification
             from transformers import AutoTokenizer, AutoConfig
 
             model = f"cardiffnlp/twitter-xlm-roberta-base-sentiment"
@@ -21,11 +20,12 @@ class Sentiment:
 
             # PT
             self.model = AutoModelForSequenceClassification.from_pretrained(model)
+            self.model.eval()
             #model.save_pretrained(model)
             self.predict_func = self._process_cardiff_multilingual
 
         else:
-            print(f'ERROR: Unknown sentimentmodel {model}')
+            raise ValueError(f'Unknown sentimentmodel {model}')
 
 
     def process(self, text):
@@ -37,7 +37,8 @@ class Sentiment:
     # German Sentiment
     def _process_german_sentiment(self, text):
         classes, probabilities = self.model.predict_sentiment([text], output_probabilities = True)
-        return probabilities
+        scores = dict(probabilities[0])
+        return [[label, float(scores[label])] for label in ('positive', 'negative', 'neutral')]
 
     # Cardiff NLP twitter-xlm-roberta-base-sentiment
     def _preprocess_cardiff_multilingual(self, text):
@@ -50,11 +51,13 @@ class Sentiment:
 
     def _process_cardiff_multilingual(self, text):
         text = self._preprocess_cardiff_multilingual(text)
-        encoded_input = self.tokenizer(text, return_tensors='pt')
-        output = self.model(**encoded_input)
-        scores = output[0][0].detach().numpy()
+        encoded_input = self.tokenizer(text, return_tensors='pt', truncation=True)
+        with torch.inference_mode():
+            output = self.model(**encoded_input)
+        scores = output.logits[0].cpu().numpy()
         scores = softmax(scores)
-        return [[self.config.id2label[i], s] for i,s in enumerate(scores)]
+        scores = {self.config.id2label[i].lower(): float(s) for i, s in enumerate(scores)}
+        return [[label, scores[label]] for label in ('positive', 'negative', 'neutral')]
 
 
         # Print labels and scores

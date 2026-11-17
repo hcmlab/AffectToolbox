@@ -1,6 +1,6 @@
 import numpy as np
 
-import tensorflow as tf
+from ai_edge_litert.interpreter import Interpreter
 import cv2
 import os
 
@@ -9,7 +9,7 @@ class EmotionFromCam():
 
         #cv2.imwrite("test_out.jpg", res)
         ## Load TFLite model and allocate tensors.
-        self.interpreter = tf.lite.Interpreter(model_path=os.path.join("res","ier_model","valence_arousal_model.tflite"))
+        self.interpreter = Interpreter(model_path=os.path.join("res","ier_model","valence_arousal_model.tflite"))
         self.interpreter.allocate_tensors()
 
         # Get input and output tensors.

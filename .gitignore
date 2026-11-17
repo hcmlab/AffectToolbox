@@ -8,4 +8,5 @@ share
 Testing
 .venv*/
 .uv-cache/
+.verification/
 .vscode

@@ -233,7 +233,7 @@ class AffectPipeline():
                 self.FUSION_MODULE.pose_boost_dominance = fusion_pose_dominance_boost
             if enable_vad_loop:
                 from modules.module_vad import VoiceActivity
-                self.VAD_MODULE = VoiceActivity(segment_length=480, sample_rate=16000, threshold=vad_threshold)
+                self.VAD_MODULE = VoiceActivity(sample_rate=self.SAMPLE_RATE, threshold=vad_threshold)
                 if enable_fusion_loop:
                     self.FUSION_MODULE.voice_activity_tracked = True
             else:
@@ -272,17 +272,20 @@ class AffectPipeline():
                                     "cam_id": self._CAMERA_ID}
                 self.capture = cv2.VideoCapture(self.cam_options["cam_id"])
 
-                self.mp_face_detection = mp.solutions.face_detection
-                self.mp_mesh_detection = mp.solutions.face_mesh
-                self.mp_face_mesh = self.mp_mesh_detection.FaceMesh(static_image_mode=True,
-                                                                    max_num_faces=1,
-                                                                    refine_landmarks=True,
-                                                                    min_detection_confidence=0.5)
-                self.mp_drawing = mp.solutions.drawing_utils
-                self.mp_drawing_styles = mp.solutions.drawing_styles
-                self.mp_pose = mp.solutions.pose
-
-                self.face_detection = self.mp_face_detection.FaceDetection(model_selection=0, min_detection_confidence=0.5)
+                from mediapipe.tasks.python.vision import drawing_utils, drawing_styles
+                self.mp = mp
+                self.mp_mesh_detection = mp.tasks.vision.FaceLandmarksConnections
+                self.mp_drawing = drawing_utils
+                self.mp_drawing_styles = drawing_styles
+                self.face_detection = mp.tasks.vision.FaceDetector.create_from_options(
+                    mp.tasks.vision.FaceDetectorOptions(
+                        base_options=mp.tasks.BaseOptions(model_asset_path='res/face_model/face_detector.tflite'),
+                        min_detection_confidence=0.5))
+                if self.FACE_MESH_LOOP:
+                    self.mp_face_mesh = mp.tasks.vision.FaceLandmarker.create_from_options(
+                        mp.tasks.vision.FaceLandmarkerOptions(
+                            base_options=mp.tasks.BaseOptions(model_asset_path='res/face_model/face_landmarker.task'),
+                            num_faces=1, min_face_detection_confidence=0.5))
 
             self._SOCKET = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
             self._SOCKET.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 32)
@@ -476,31 +479,32 @@ class AffectPipeline():
             return
         img = qs.IMAGE_FACE_RAW[len(qs.IMAGE_FACE_RAW) - 1]
 
-        face_detection_results = self.face_detection.process(img[:, :, ::-1])
+        image = self.mp.Image(image_format=self.mp.ImageFormat.SRGB, data=np.ascontiguousarray(img))
+        face_detection_results = self.face_detection.detect(image)
 
         found_face = False
         if face_detection_results.detections:
             found_face = True
             for face_no, face in enumerate(face_detection_results.detections):
-                face_data = face.location_data
+                face_data = face.bounding_box
 
                 img_h = img.shape[0]
                 img_w = img.shape[1]
 
-                origin_x = int(img_w * face_data.relative_bounding_box.xmin) - int(
-                    self.FACE_PADDING * float(img_w) * float(face_data.relative_bounding_box.width))
-                origin_y = int(img_h * face_data.relative_bounding_box.ymin) - int(
-                    self.FACE_PADDING * float(img_h) * float(face_data.relative_bounding_box.height))
+                origin_x = int(face_data.origin_x) - int(
+                    self.FACE_PADDING * float(face_data.width))
+                origin_y = int(face_data.origin_y) - int(
+                    self.FACE_PADDING * float(face_data.height))
 
                 origin_x = max(0, origin_x)
                 origin_y = max(0, origin_y)
 
-                bb_height = int(img_h * face_data.relative_bounding_box.height) + (
-                        2 * int(self.FACE_PADDING * float(img_h) * float(face_data.relative_bounding_box.height)))
+                bb_height = int(face_data.height) + (
+                        2 * int(self.FACE_PADDING * float(face_data.height)))
                 bb_height = min(bb_height, img_h - origin_y)
 
-                bb_width = int(img_w * face_data.relative_bounding_box.width) + (
-                        2 * int(self.FACE_PADDING * float(img_w) * float(face_data.relative_bounding_box.width)))
+                bb_width = int(face_data.width) + (
+                        2 * int(self.FACE_PADDING * float(face_data.width)))
                 bb_width = min(bb_width, img_w - origin_x)
 
         if found_face:
@@ -573,21 +577,22 @@ class AffectPipeline():
         time_fm_loop_start = time.time()
         if qs.FACE_ACTIVITY[-1] and len(qs.IMAGE_FACE_PREPROCESSED) > 0:
             img = qs.IMAGE_FACE_PREPROCESSED[len(qs.IMAGE_FACE_PREPROCESSED) - 1]
-            results = self.mp_face_mesh.process(img)
-            self._face_mesh_detected = bool(results.multi_face_landmarks)
+            image = self.mp.Image(image_format=self.mp.ImageFormat.SRGB, data=np.ascontiguousarray(img))
+            results = self.mp_face_mesh.detect(image)
+            self._face_mesh_detected = bool(results.face_landmarks)
 
             if self._face_mesh_detected:
-                for face_landmarks in results.multi_face_landmarks:
-                    qs.FACE_MESH_QUEUE.append(face_landmarks.landmark)
+                for face_landmarks in results.face_landmarks:
+                    qs.FACE_MESH_QUEUE.append(face_landmarks)
 
             if self._face_mesh_detected and self.SHOW_FACE_MESH:
                 annotated_image = np.zeros_like(img)
-                for face_landmarks in results.multi_face_landmarks:
+                for face_landmarks in results.face_landmarks:
                     if self.FACE_MESH_SHOW_FACE_EDGES:
                         self.mp_drawing.draw_landmarks(
                             image=annotated_image,
                             landmark_list=face_landmarks,
-                            connections=self.mp_mesh_detection.FACEMESH_TESSELATION,
+                            connections=self.mp_mesh_detection.FACE_LANDMARKS_TESSELATION,
                             landmark_drawing_spec=None,
                             connection_drawing_spec=self.mp_drawing_styles
                             .get_default_face_mesh_tesselation_style())
@@ -595,7 +600,7 @@ class AffectPipeline():
                         self.mp_drawing.draw_landmarks(
                             image=annotated_image,
                             landmark_list=face_landmarks,
-                            connections=self.mp_mesh_detection.FACEMESH_CONTOURS,
+                            connections=self.mp_mesh_detection.FACE_LANDMARKS_CONTOURS,
                             landmark_drawing_spec=None,
                             connection_drawing_spec=self.mp_drawing_styles
                             .get_default_face_mesh_contours_style())
@@ -603,7 +608,7 @@ class AffectPipeline():
                         self.mp_drawing.draw_landmarks(
                             image=annotated_image,
                             landmark_list=face_landmarks,
-                            connections=self.mp_mesh_detection.FACEMESH_IRISES,
+                            connections=(self.mp_mesh_detection.FACE_LANDMARKS_LEFT_IRIS + self.mp_mesh_detection.FACE_LANDMARKS_RIGHT_IRIS),
                             landmark_drawing_spec=None,
                             connection_drawing_spec=self.mp_drawing_styles
                             .get_default_face_mesh_iris_connections_style())

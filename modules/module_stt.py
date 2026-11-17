@@ -1,39 +1,24 @@
-import torch
-import whisper
-from torchaudio import transforms as audio_transforms
+import math
+import numpy as np
+from faster_whisper import WhisperModel
+from scipy.signal import resample_poly
 
 
 class SpeechToText:
-    """Includes all the necessary files to run this script"""
-
     def __init__(self, sample_rate=16000, model='base', min_signal_threshold=0.1):
-        self.model = whisper.load_model(model)
-        self.data = None
-        self.predictions = None
-        self.resample = audio_transforms.Resample(sample_rate, 16000)
+        self.model = WhisperModel(model, device='cpu', compute_type='int8')
+        self.sample_rate = sample_rate
         self.min_signal_threshold = min_signal_threshold
 
     def process(self, signal):
-
-        # if signal is empty - return empty text
-        if not signal.any() or abs(signal.min()) < self.min_signal_threshold and abs(signal.max()) < self.min_signal_threshold:
+        signal = np.asarray(signal, dtype=np.float32).reshape(-1)
+        if signal.size == 0 or np.max(np.abs(signal)) < self.min_signal_threshold:
             return ''
 
-        # to tensor
-        signal_tensor = torch.from_numpy(signal)
+        if self.sample_rate != 16000:
+            divisor = math.gcd(self.sample_rate, 16000)
+            signal = resample_poly(signal, 16000 // divisor, self.sample_rate // divisor)
 
-        # resample audio
-        signal_resampled = self.resample(signal_tensor)
-
-        # load audio and pad/trim it to fit 30 seconds
-        signal_pad = whisper.pad_or_trim(signal_resampled)
-
-        # make log-Mel spectrogram and move to the same device as the model
-        signal_mel = whisper.log_mel_spectrogram(signal_pad).to(self.model.device)
-
-        # decode the audio
-        options = whisper.DecodingOptions(fp16=False,language="en")
-        result = whisper.decode(self.model, signal_mel, options)
-
-        return result.text
-
+        segments, _ = self.model.transcribe(signal, language='en', beam_size=1,
+                                            condition_on_previous_text=False)
+        return ''.join(segment.text for segment in segments).strip()

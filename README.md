@@ -13,18 +13,23 @@ And here is how it looks:
 For the standard installation (recommended!) via Python environment do the following:
 - Clone repository
 - Install [uv](https://docs.astral.sh/uv/getting-started/installation/) (Windows: `winget install --id astral-sh.uv -e`), then restart your terminal or IDE.
-- Run `uv sync --locked --managed-python` in the repository root. uv downloads the Python 3.9 version in `.python-version`, creates `.venv`, and installs the locked dependencies. The current environment targets Windows x64.
+- Run `uv sync --locked --managed-python` in the repository root. uv downloads the Python 3.13 version in `.python-version`, creates `.venv`, and installs the locked dependencies. The current environment targets Windows x64.
 - Download ressource folder here: ToDo
 - Unzip, then put the res-Folder in root-Directory of this repository
+- Run `uv run --locked python scripts/download_models.py` to download any missing MediaPipe Tasks models. The original `res/ier_model/valence_arousal_model.tflite` and `res/ser_model/model.onnx` plus `model.yaml` are still required.
 - Run `uv run --locked main.py`.
 
 In PyCharm, select `.venv\Scripts\python.exe` as the project interpreter after syncing. You can run `main.py` normally from the IDE.
 
-Dependencies are maintained in `pyproject.toml`; `uv.lock` records the resolved versions. Commit both files and `.python-version`, but never commit virtual environments. To change a dependency, use `uv add "package==version"` and verify the application before committing the updated lockfile. Legacy package versions are retained for this migration, including explicit build constraints for Whisper's older build script.
+Dependencies are maintained in `pyproject.toml`; `uv.lock` records the resolved versions. Commit both files and `.python-version`, but never commit virtual environments. To change a dependency, use `uv add "package==version"` and verify the application before committing the updated lockfile.
+
+The original speech emotion, facial emotion, and Cardiff multilingual sentiment models remain the defaults. Facial inference uses LiteRT, speech emotion uses audonnx/ONNX Runtime, tracking uses MediaPipe Tasks, transcription uses faster-whisper (`base`, CPU INT8), and voice activity uses Silero ONNX. Transcription retains the existing English language setting. Whisper and sentiment weights download on first use; internet access is required until cached.
+
+Fusion still receives valence/arousal/dominance in the existing order and scale. Sentiment valence is positive probability minus negative probability, resolved by label name. Facial and pose dominance retain their existing heuristic calculations. `VAD_THRESHOLD` now compares the mean Silero speech probability over the audio window; it no longer represents a fraction of WebRTC speech frames and may need adjustment for your microphone.
 
 `requirements.txt` is a compatibility export, not the dependency source. Regenerate it after dependency changes with `uv export --locked --format requirements-txt --no-hashes --output-file requirements.txt`.
 
-To run the existing automated checks: `uv run --locked python -m unittest discover -s tests -v`. Model resources, FFmpeg where required, and camera/microphone devices are external prerequisites; uv does not install them.
+To run the automated checks: `uv run --locked python -m unittest discover -s tests -v`. Model resources and camera/microphone devices are external prerequisites; uv does not install them. faster-whisper's audio decoding uses PyAV's bundled FFmpeg libraries, so a separate FFmpeg installation is not required for transcription.
 
 ## **3. Cite us :-)**
 If you use the AffectToolbox (or parts of it) for scientific reasons, please cite us in your publication. 

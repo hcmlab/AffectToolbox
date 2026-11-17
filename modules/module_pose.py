@@ -1,18 +1,21 @@
 import math
 
-import cv2
 import mediapipe as mp
 import numpy as np
+from mediapipe.tasks.python.vision import drawing_utils, drawing_styles
 
-mp_pose = mp.solutions.pose
+mp_pose = mp.tasks.vision
 
 class PoseFromCam():
 
     def __init__(self):
-        self.mp_pose = mp.solutions.pose
-        self.mp_drawing = mp.solutions.drawing_utils
-        self.mp_drawing_styles = mp.solutions.drawing_styles
-        self.model = self.mp_pose.Pose(min_detection_confidence=0.7, min_tracking_confidence=0.6)
+        self.mp_pose = mp.tasks.vision
+        self.mp_drawing = drawing_utils
+        self.mp_drawing_styles = drawing_styles
+        self.model = self.mp_pose.PoseLandmarker.create_from_options(
+            self.mp_pose.PoseLandmarkerOptions(
+                base_options=mp.tasks.BaseOptions(model_asset_path='res/pose_model/pose_landmarker.task'),
+                min_pose_detection_confidence=0.7, min_tracking_confidence=0.6))
         self.image = None
         self.skeleton_image = None
         self.value_string = ''
@@ -41,55 +44,43 @@ class PoseFromCam():
             self.model = None
 
     def predict(self, img):
-        self.image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        landmarks = self.model.process(self.image)
-
-        #print(landmarks.pose_world_landmarks)
-
-        if self.image is not None:
-            self.image.flags.writeable = True
-            self.image = cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR)
+        image = mp.Image(image_format=mp.ImageFormat.SRGB, data=np.ascontiguousarray(img))
+        result = self.model.detect(image)
+        landmarks = result.pose_landmarks[0] if result.pose_landmarks else []
+        self.image = img.copy()
+        self.skeleton_image = np.zeros_like(img)
+        connections = self.mp_pose.PoseLandmarksConnections.POSE_LANDMARKS
+        for image in (self.image, self.skeleton_image):
             self.mp_drawing.draw_landmarks(
-                self.image,
-                landmarks.pose_landmarks,
-                self.mp_pose.POSE_CONNECTIONS,
+                image, landmarks, connections,
                 landmark_drawing_spec=self.mp_drawing_styles.get_default_pose_landmarks_style())
-
-        if landmarks.pose_landmarks:
-            self.skeleton_image = np.zeros_like(self.image)
-            self.mp_drawing.draw_landmarks(
-                self.skeleton_image,
-                landmarks.pose_landmarks,
-                self.mp_pose.POSE_CONNECTIONS,
-                landmark_drawing_spec=self.mp_drawing_styles.get_default_pose_landmarks_style())
-
         self.features(landmarks)
 
     def features(self, landmarks):
-        if not landmarks.pose_landmarks:
+        if not landmarks:
             self.tracking = False
             return
         self.tracking = True
 
-        look_left = self.distance(landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE],
-                                   landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_EAR])
+        look_left = self.distance(landmarks[mp_pose.PoseLandmark.NOSE],
+                                   landmarks[mp_pose.PoseLandmark.RIGHT_EAR])
 
-        look_right = self.distance(landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE],
-                                   landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_EAR])
+        look_right = self.distance(landmarks[mp_pose.PoseLandmark.NOSE],
+                                   landmarks[mp_pose.PoseLandmark.LEFT_EAR])
 
         norm = (look_left + look_right)
         look_left = look_left / norm
         look_right = look_right / norm
 
-        look_up_1 = self.distance(landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.MOUTH_LEFT],
-                                   landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ELBOW])
-        look_up_2 = self.distance(landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.MOUTH_RIGHT],
-                                   landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ELBOW])
+        look_up_1 = self.distance(landmarks[mp_pose.PoseLandmark.MOUTH_LEFT],
+                                   landmarks[mp_pose.PoseLandmark.LEFT_ELBOW])
+        look_up_2 = self.distance(landmarks[mp_pose.PoseLandmark.MOUTH_RIGHT],
+                                   landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW])
 
-        look_down_1 = self.distance(landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.MOUTH_LEFT],
-                                    landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_EAR])
-        look_down_2 = self.distance(landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.MOUTH_RIGHT],
-                                    landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_EAR])
+        look_down_1 = self.distance(landmarks[mp_pose.PoseLandmark.MOUTH_LEFT],
+                                    landmarks[mp_pose.PoseLandmark.LEFT_EAR])
+        look_down_2 = self.distance(landmarks[mp_pose.PoseLandmark.MOUTH_RIGHT],
+                                    landmarks[mp_pose.PoseLandmark.RIGHT_EAR])
 
         look_up = (look_up_1 + look_up_2) * 0.5
         look_down = (look_down_1 + look_down_2) * 0.5
@@ -99,18 +90,18 @@ class PoseFromCam():
         look_down = look_down / norm
 
         oa_left = self.overall_activation_left_last
-        if landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_WRIST].visibility >= 0.5:
-            oa_left = self.distance(landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_WRIST],
-                                    landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_SHOULDER])
+        if landmarks[mp_pose.PoseLandmark.LEFT_WRIST].visibility >= 0.5:
+            oa_left = self.distance(landmarks[mp_pose.PoseLandmark.LEFT_WRIST],
+                                    landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER])
 
         oa_left_delta = math.fabs(oa_left - self.overall_activation_left_last)
         self.overall_activation_left_last = oa_left
 
 
         oa_right = self.overall_activation_right_last
-        if landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].visibility >= 0.5:
-            oa_right = self.distance(landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST],
-                                    landmarks.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_SHOULDER])
+        if landmarks[mp_pose.PoseLandmark.RIGHT_WRIST].visibility >= 0.5:
+            oa_right = self.distance(landmarks[mp_pose.PoseLandmark.RIGHT_WRIST],
+                                    landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER])
 
         oa_right_delta = math.fabs(oa_right - self.overall_activation_right_last)
         self.overall_activation_right_last = oa_right
