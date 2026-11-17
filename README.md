@@ -12,11 +12,19 @@ And here is how it looks:
 
 For the standard installation (recommended!) via Python environment do the following:
 - Clone repository
-- Create Python environment (use Python 3.9!)
-- Install packages listed in requirements.txt
-- Download ressource folder here: https://hcm-lab.de/cloud/s/5YQk3C3BMb63AC5
+- Install [uv](https://docs.astral.sh/uv/getting-started/installation/) (Windows: `winget install --id astral-sh.uv -e`), then restart your terminal or IDE.
+- Run `uv sync --locked --managed-python` in the repository root. uv downloads the Python 3.9 version in `.python-version`, creates `.venv`, and installs the locked dependencies. The current environment targets Windows x64.
+- Download ressource folder here: ToDo
 - Unzip, then put the res-Folder in root-Directory of this repository
-- Run it!
+- Run `uv run --locked main.py`.
+
+In PyCharm, select `.venv\Scripts\python.exe` as the project interpreter after syncing. You can run `main.py` normally from the IDE.
+
+Dependencies are maintained in `pyproject.toml`; `uv.lock` records the resolved versions. Commit both files and `.python-version`, but never commit virtual environments. To change a dependency, use `uv add "package==version"` and verify the application before committing the updated lockfile. Legacy package versions are retained for this migration, including explicit build constraints for Whisper's older build script.
+
+`requirements.txt` is a compatibility export, not the dependency source. Regenerate it after dependency changes with `uv export --locked --format requirements-txt --no-hashes --output-file requirements.txt`.
+
+To run the existing automated checks: `uv run --locked python -m unittest discover -s tests -v`. Model resources, FFmpeg where required, and camera/microphone devices are external prerequisites; uv does not install them.
 
 ## **3. Cite us :-)**
 If you use the AffectToolbox (or parts of it) for scientific reasons, please cite us in your publication. 

@@ -240,7 +240,7 @@ class Buttons (QWidget):
 
         #Camera Buttons
         grid_layout.addWidget(self.Camera, 12, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
-        grid_layout.addWidget(self.FaceMesh, 10, 3, alignment=Qt.AlignmentFlag.AlignHCenter)
+        grid_layout.addWidget(self.FaceMesh, 11, 3, alignment=Qt.AlignmentFlag.AlignHCenter)
         grid_layout.addWidget(self.Video, 12, 1, alignment=Qt.AlignmentFlag.AlignHCenter)
         grid_layout.addWidget(self.FaceTracking, 11, 2, alignment=Qt.AlignmentFlag.AlignHCenter)
         grid_layout.addWidget(self.FACIALEXPRESSION, 12, 3, alignment=Qt.AlignmentFlag.AlignHCenter)

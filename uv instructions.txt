@@ -1,0 +1,33 @@
+Install uv from a PowerShell terminal:
+winget install --id astral-sh.uv -e
+
+Create a separate environment, preserving your working .venv. In PyCharm’s terminal, run:
+uv python install 3.9
+uv venv --python 3.9 --managed-python .venv-uv
+
+This downloads uv’s managed Python 3.9 and creates .venv-uv using it.
+
+Install your dependencies, including the workaround for the old Whisper build:
+uv pip install --python .venv-uv\Scripts\python.exe "setuptools==68.2.2" wheel
+uv pip install --python .venv-uv\Scripts\python.exe --no-build-isolation -r requirements.txt
+
+THEN
+
+You can now develop normally in PyCharm.
+Select the new interpreter: Settings → Python Interpreter → choose your new environment’s Scripts\python.exe.
+Run main.py using PyCharm’s Run button. Set the working directory to C:\_Projects\AffectToolbox.
+Edit your .py files, run, and debug as usual. You don’t edit anything inside .venv.
+When you need another library, use PyCharm’s terminal:
+uv add package-name
+
+This updates the environment, pyproject.toml, and uv.lock. To remove one:
+uv remove package-name
+
+Run the existing tests after relevant changes:
+uv run --locked python -m unittest discover -s tests -v
+
+Commit your code changes together with any changes to pyproject.toml, uv.lock, and .python-version. Keep .venv out of Git.
+After pulling changes that include updated dependencies, run:
+uv sync --locked
+
+For ordinary code edits, you don’t need to run uv commands—just edit, run, and debug.

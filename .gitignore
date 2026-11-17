@@ -6,4 +6,6 @@ pyvenv.cfg
 Scripts
 share
 Testing
+.venv*/
+.uv-cache/
 .vscode
