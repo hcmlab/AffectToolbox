@@ -15,6 +15,7 @@ class AudioStreamWidget(QWidget):
 
         # Set up the plotting area using pyqtgraph
         self.plot_widget = pg.PlotWidget()
+        self.plot_widget.setBackground("black")
         self.plot_widget.plotItem.hideAxis('bottom')
         self.plot_widget.plotItem.hideAxis('left')
         self.plot_widget.setFixedHeight(100)
@@ -87,6 +88,7 @@ class AudioStreamContainer(QWidget):
         # Set up the vertical Layout
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.setContentsMargins(9, 9, 9, 9)
         layout.setSpacing(0)
         layout.addWidget(self.button, alignment=Qt.AlignmentFlag.AlignHCenter)
         layout.addWidget(self.stream, alignment=Qt.AlignmentFlag.AlignHCenter)

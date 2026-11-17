@@ -88,6 +88,7 @@ class TranscriptContainer(QWidget):
 
         # Layout with button and transcript
         layout = QVBoxLayout()
+        layout.setContentsMargins(9, 9, 9, 9)
         layout.addWidget(self.button, alignment=Qt.AlignmentFlag.AlignHCenter)
         layout.setSpacing(0)
         layout.addWidget(self.stream)

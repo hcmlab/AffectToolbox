@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QWidget, QPushButton, QGridLayout, QVBoxLayout, QScrollArea, QSpacerItem
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QWidget, QPushButton, QGridLayout, QVBoxLayout, QScrollArea
+from PySide6.QtCore import Qt, QTimer, QEvent
 from GUI.rightClickWindow import RightClickWindow
 from GUI.custom_button import CustomButton
 from GUI.floatButton import FloatButton
@@ -31,8 +31,10 @@ class Buttons (QWidget):
         background-color: transparent;
     }
     QPushButton {
+        color: black;
         background-color: lightgrey;
-        border: 1px darkgrey;
+        border: 1px solid darkgrey;
+        min-height: 14px;
         padding: 6px;
         border-radius: 5px;
     }
@@ -214,17 +216,22 @@ class Buttons (QWidget):
 
         #Layout
         grid_layout = QGridLayout()
+        grid_layout.setContentsMargins(9, 9, 9, 9)
+        grid_layout.setHorizontalSpacing(6)
+        grid_layout.setVerticalSpacing(6)
 
-        # Add Buttons to the layout
-        #Header Buttons
-        grid_layout.addWidget(self.SENSORS, 0, 0)
-        grid_layout.addWidget(self.DATASTREAMS, 0, 1)
-        grid_layout.addWidget(self.ACTIVITYCHECK, 0, 2)
-        grid_layout.addWidget(self.ANALYSIS, 0, 3)
-        grid_layout.addWidget(self.UNIMODALRESULTS, 0, 4)
-        grid_layout.addWidget(self.FUSION_2, 0, 5)
-        grid_layout.addWidget(self.MULTIMODALRESULTS, 0, 6)
-
+        # Keep category buttons above the scrollable components.
+        self.header_viewport = QWidget()
+        self.header_widget = QWidget(self.header_viewport)
+        self.header_layout = QGridLayout(self.header_widget)
+        self.header_layout.setContentsMargins(9, 9, 9, 9)
+        self.header_layout.setSpacing(6)
+        headers = (self.SENSORS, self.DATASTREAMS, self.ACTIVITYCHECK, self.ANALYSIS,
+                   self.UNIMODALRESULTS, self.FUSION_2, self.MULTIMODALRESULTS)
+        for col, header in enumerate(headers):
+            self.header_layout.addWidget(header, 0, col)
+            grid_layout.setColumnMinimumWidth(col, header.sizeHint().width())
+        self.header_viewport.setFixedHeight(self.header_widget.sizeHint().height())
 
         #Micro Buttons
         grid_layout.addWidget(self.Micro, 3, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
@@ -367,20 +374,23 @@ class Buttons (QWidget):
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setWidget(content_widget)
+        content_widget.installEventFilter(self)
+        self.scroll_area.viewport().installEventFilter(self)
+        self.scroll_area.horizontalScrollBar().valueChanged.connect(self.adjust_button_sizes)
 
-        #Add vertical spacers to structure layout better
-        spacer1 = QSpacerItem(0, 20)  # 20 Pixel hoher Abstand
-        grid_layout.addItem(spacer1, 1, 0, 1, -1)  # Zwischen erster und zweiter Zeile
-        spacer2 = QSpacerItem(0, 40)
-        grid_layout.addItem(spacer2, 8, 7, 1, -1)
-        spacer3 = QSpacerItem(0, 40)
-        grid_layout.addItem(spacer3, 11, 10, 1, -1)
+        # Space between sections without adding extra grid columns.
+        grid_layout.setRowMinimumHeight(1, 20)
+        grid_layout.setRowMinimumHeight(8, 40)
+        grid_layout.setRowMinimumHeight(11, 40)
 
         # Final layout assembly
-        self.adjust_button_sizes()
         main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(9, 9, 9, 9)
+        main_layout.setSpacing(6)
+        main_layout.addWidget(self.header_viewport)
         main_layout.addWidget(self.scroll_area)
         self.setLayout(main_layout)
+        QTimer.singleShot(0, self.adjust_button_sizes)
 
         #Auto clicked method to make Buttons visible
         self.create_auto_click_methods()
@@ -400,7 +410,17 @@ class Buttons (QWidget):
             header.clicked.connect(make_cascading_show_handler(header))
 
     def adjust_button_sizes(self):
-        #  Dynamically adjust the width of each button depending on its header
+        # Match the pinned headers to the component columns, including horizontal scrolling.
+        content = self.scroll_area.widget()
+        grid = content.layout()
+        self.header_widget.setGeometry(
+            self.scroll_area.viewport().x() - self.scroll_area.horizontalScrollBar().value(),
+            0, content.width(), self.header_viewport.height())
+        for col in range(7):
+            self.header_layout.setColumnMinimumWidth(col, grid.cellRect(2, col).width())
+        self.header_layout.activate()
+
+        # Dynamically adjust the width of each button depending on its header.
 
         for header, buttons in self.header_to_buttons.items():
             header_width = header.width()
@@ -417,10 +437,15 @@ class Buttons (QWidget):
                 btn.setMaximumWidth(min_width)
 
 
+    def eventFilter(self, source, event):
+        if event.type() in (QEvent.Type.Resize, QEvent.Type.LayoutRequest):
+            QTimer.singleShot(0, self.adjust_button_sizes)
+        return super().eventFilter(source, event)
+
     def resizeEvent(self, event):
         #Overridden resize event to update button sizes
         super().resizeEvent(event)
-        self.adjust_button_sizes()
+        QTimer.singleShot(0, self.adjust_button_sizes)
 
     def create_auto_click_methods(self):
         for button, dependent_buttons in self.button_dependencies_visible.items():

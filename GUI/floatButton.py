@@ -1,5 +1,7 @@
-from PySide6.QtWidgets import QPushButton
-from PySide6.QtCore import QTimer
+import math
+from PySide6.QtWidgets import QPushButton, QStyle, QStyleOptionButton, QStylePainter
+from PySide6.QtCore import QTimer, Qt, QSize
+from PySide6.QtGui import QFont, QFontMetrics
 import modules.QueueSystem as qs
 from GUI.rightClickWindow import RightClickWindow
 
@@ -67,10 +69,44 @@ class FloatButton(QPushButton):
         self.key_name = name # Key used to access button_config
         self.main_window = main_window
         self.active_stylesheet = active_stylesheet
+        self.label_font = QFont("Segoe UI", 9)
+        self.value_font = QFont("Consolas", 16)
+        self.value_font.setBold(True)
 
         # Timer to update the float value every second
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_float)
+
+    def sizeHint(self):
+        size = super().sizeHint()
+        label_metrics = QFontMetrics(self.label_font)
+        value_metrics = QFontMetrics(self.value_font)
+        width = max(label_metrics.horizontalAdvance(self.base_text),
+                    value_metrics.horizontalAdvance("\u22120.00")) + 24
+        height = label_metrics.height() + value_metrics.height() + 16
+        return QSize(width, max(size.height(), height))
+
+    def paintEvent(self, event):
+        # Keep the normal button background, hover, focus and click handling.
+        option = QStyleOptionButton()
+        self.initStyleOption(option)
+        option.text = ""
+        painter = QStylePainter(self)
+        painter.drawControl(QStyle.ControlElement.CE_PushButton, option)
+        painter.setPen(Qt.GlobalColor.black)
+        if self.isDown():
+            painter.translate(1, 1)
+
+        label_rect = self.rect().adjusted(8, 6, -8, -6)
+        label_rect.setHeight(QFontMetrics(self.label_font).height())
+        painter.setFont(self.label_font)
+        painter.drawText(label_rect, Qt.AlignmentFlag.AlignCenter, self.base_text)
+
+        value = self.text()[len(self.base_text):].strip()
+        value = value.replace("-", "\u2212").rjust(5) if value else "\u2014"
+        value_rect = self.rect().adjusted(8, label_rect.bottom() + 2, -8, -6)
+        painter.setFont(self.value_font)
+        painter.drawText(value_rect, Qt.AlignmentFlag.AlignCenter, value)
 
     def update_float(self):
         #pdates the button label to include a float value
@@ -91,7 +127,7 @@ class FloatButton(QPushButton):
 
         if show_float:
             value = config["source"]()
-            if value is not None:
+            if value is not None and math.isfinite(value):
                 self.setText(f"{self.base_text} {value:.2f}")
             else:
                 self.setText(self.base_text)

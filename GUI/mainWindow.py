@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QPushButton, QWidget, QMainWindow, QVBoxLayout, QHBoxLayout, QFileDialog, QMessageBox
 from PySide6.QtCore import Qt, QTimer, QPoint, QRect, QEvent
+from PySide6.QtGui import QFont
 from GUI.buttons import Buttons
 from GUI.styles import active_style, inactive_style, button_stylesheet, green_stylesheet, red_stylesheet
 from GUI.config_handler import load_config, save_config, deep_update
@@ -16,13 +17,22 @@ class MainWindow(QMainWindow):
 
         # Set up window appearance and title
         self.setWindowTitle("AffectToolbox")
-        self.setStyleSheet("background-color: black;")
+        self.setFont(QFont("Segoe UI", 9))
+        self.setStyleSheet("""
+            QWidget { background-color: black; color: white; }
+            QPushButton { color: black; }
+            QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox {
+                background-color: white; color: black;
+            }
+        """)
         self.pipeline = None
         self.logging_module = None
 
         # Set up main layout
         central_widget = QWidget()
         layout = QVBoxLayout()
+        layout.setContentsMargins(9, 9, 9, 9)
+        layout.setSpacing(6)
 
         # Load styles as instance variables
         self.green_stylesheet = green_stylesheet
@@ -38,6 +48,8 @@ class MainWindow(QMainWindow):
         top_widget = QWidget()
         top_widget.setStyleSheet("background-color: darkgrey;")
         top_button_layout = QHBoxLayout(top_widget)
+        top_button_layout.setContentsMargins(9, 9, 9, 9)
+        top_button_layout.setSpacing(6)
 
         # Initialize control buttons
         self.run_button = QPushButton("Run")

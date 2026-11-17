@@ -91,6 +91,7 @@ class ImageStreamContainer(QWidget):
 
         # Layout with button and image stream
         layout = QVBoxLayout()
+        layout.setContentsMargins(9, 9, 9, 9)
         layout.setSpacing(0)
         layout.addWidget(self.button)
         layout.addWidget(self.stream)

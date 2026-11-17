@@ -1,8 +1,9 @@
 # Standard-Stylesheet for Buttons
 active_style = """
 QPushButton {
+    color: black;
     background-color: lightgreen;
-    border: 1px darkgrey;
+    border: 1px solid darkgrey;
     padding: 6px;
     border-radius: 5px;
 }
@@ -12,8 +13,9 @@ QPushButton:hover {
 """
 inactive_style = """
 QPushButton {
+    color: black;
     background-color: lightgrey;
-    border: 1px darkgrey;
+    border: 1px solid darkgrey;
     padding: 6px;
     border-radius: 5px;
 }
@@ -23,6 +25,7 @@ QPushButton:hover {
 """
 button_stylesheet = """
 QPushButton {
+    color: black;
     background-color: lightgrey;
     border: 1px solid rgb(120, 120, 120);
     padding: 5px;
@@ -35,6 +38,7 @@ QPushButton:hover {
 # Stylesheet for green Buttons
 green_stylesheet = """
 QPushButton {
+    color: black;
     background-color: lightgreen;
     border: 1px solid darkgreen;
     padding: 5px;
