@@ -13,6 +13,8 @@ from termcolor import colored
 import os
 import modules.QueueSystem as qs
 import json
+import queue
+from modules.audioBuffer import AudioBuffer
 
 class AffectPipeline():
     _LOOP_THREADS = (
@@ -36,6 +38,11 @@ class AffectPipeline():
                  enable_pose_loop=DEFAULT_PARAMETERS["enable_skeleton"],
                  enable_fusion_loop=DEFAULT_PARAMETERS["enable_fusion"],
                  enable_sentiment_loop=DEFAULT_PARAMETERS["enable_sentiment"],
+                 enable_audio_loop=DEFAULT_PARAMETERS["enable_audio"],
+                 ser_window_length=DEFAULT_PARAMETERS["SER_WINDOW_SIZE"],
+                 ser_min_speech=DEFAULT_PARAMETERS["SER_MIN_SPEECH"],
+                 stt_silence=DEFAULT_PARAMETERS["STT_SILENCE"],
+                 stt_pre_roll=DEFAULT_PARAMETERS["STT_PRE_ROLL"],
                  show_face_mesh=DEFAULT_PARAMETERS["show_face_mesh"],
                  face_mesh_show_face_edges=DEFAULT_PARAMETERS["face_mesh_show_face_edges"],
                  face_mesh_show_face_pupils=DEFAULT_PARAMETERS["face_mesh_show_face_pupils"],
@@ -119,7 +126,8 @@ class AffectPipeline():
         self.LOG_TO_CONSOLE = enable_log_to_console
         self.VAD_LOOP = enable_vad_loop
         self.SER_LOOP = enable_ser_loop
-        self.STT_LOOP = enable_stt_loop
+        self.STT_LOOP = enable_stt_loop or enable_sentiment_loop
+        self.AUDIO_LOOP = enable_audio_loop
         self.SENTIMENT_LOOP = enable_sentiment_loop
         self.POSE_LOOP = enable_pose_loop
         self.FUSION_LOOP = enable_fusion_loop
@@ -175,7 +183,27 @@ class AffectPipeline():
 
         self.SAMPLE_RATE = sample_rate
 
-        self.CHUNK_SIZE = int(self.STEP * self.SAMPLE_RATE)
+        if self.SAMPLE_RATE != 16000:
+            raise ValueError('Audio capture currently requires SAMPLE_RATE=16000 Hz for all models.')
+        if not isinstance(microphone_chunks, int) or microphone_chunks <= 0:
+            raise ValueError('MIC_CHUNKS must be a positive sample count.')
+        # Older config files used one-second reads; never delay capture that long.
+        self.MICROPHONE_CHUNKS = min(microphone_chunks, 512)
+        self._STT_LOOP_RATE = max(stt_loop_rate, 10.0)
+        for rate in (ser_loop_rate, stt_loop_rate, sentiment_loop_rate):
+            if not math.isfinite(rate) or rate <= 0:
+                raise ValueError('Audio processing rates must be positive and finite.')
+        if not 0 <= vad_threshold <= 1:
+            raise ValueError('VAD_THRESHOLD must be between 0 and 1.')
+        self.CHUNK_SIZE = self.MICROPHONE_CHUNKS
+        self.audio_buffer = AudioBuffer(ser_window_length, ser_min_speech, stt_window_length,
+                                        stt_silence, stt_pre_roll)
+        self._audio_frames = queue.Queue(maxsize=math.ceil(self.audio_buffer.samples.maxlen / 512))
+        self._segments = queue.Queue(maxsize=8)
+        self._transcripts = queue.Queue(maxsize=8)
+        self._last_ser_sample = 0
+        self._audio_input = np.empty(0, dtype=np.float32)
+        self._needs_audio = self.AUDIO_LOOP or self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP
         self._LAST_IMAGE = None
 
         # self.FUSION_USE_PARA_V = fusion_use_para_v
@@ -231,19 +259,17 @@ class AffectPipeline():
                 self.FUSION_MODULE.pose_speed = fusion_pose_speed
                 self.FUSION_MODULE.pose_weight_dominance = fusion_pose_dominance_weight
                 self.FUSION_MODULE.pose_boost_dominance = fusion_pose_dominance_boost
-            if enable_vad_loop:
+            if self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP:
                 from modules.module_vad import VoiceActivity
                 self.VAD_MODULE = VoiceActivity(sample_rate=self.SAMPLE_RATE, threshold=vad_threshold)
-                if enable_fusion_loop:
-                    self.FUSION_MODULE.voice_activity_tracked = True
-            else:
-                self.LOGGING_MODULE.TRACKING_VOICE = True
-                if enable_fusion_loop:
-                    self.FUSION_MODULE.voice_activity_tracked = False
+            self.LOGGING_MODULE.TRACKING_VOICE = not self.VAD_LOOP
+            if enable_fusion_loop:
+                # Speech emotion is gated using speech inside its own audio window.
+                self.FUSION_MODULE.voice_activity_tracked = False
             if enable_ser_loop:
                 from modules.module_ser import SpeechEmotion
                 self.SER_MODULE = SpeechEmotion(self.SAMPLE_RATE, self.SER_VALENCE_OFFSET, self.SER_AROUSAL_OFFSET, self.SER_DOMINANCE_OFFSET)
-            if enable_stt_loop:
+            if self.STT_LOOP:
                 from modules.module_stt import SpeechToText
                 self.STT_MODULE = SpeechToText(self.SAMPLE_RATE, self._STT_MODEL_SIZE)
             if enable_sentiment_loop:
@@ -256,14 +282,14 @@ class AffectPipeline():
                 from modules.module_pose import PoseFromCam
                 self.POSE_MODULE = PoseFromCam()
 
-            if self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP:
+            if self._needs_audio:
                 self.audio = pyaudio.PyAudio()
                 self.stream = self.audio.open(input_device_index=self._MICROPHONE_ID,
                                               format=pyaudio.paFloat32,
                                               channels=self.CHANNELS,
                                               rate=self.SAMPLE_RATE,
                                               input=True,
-                                              output=True,
+                                              output=False,
                                               frames_per_buffer=self.CHUNK_SIZE)
 
             if self.CAMERA_LOOP or self.FACE_ER_LOOP or self.FACE_MESH_LOOP or self.POSE_LOOP:
@@ -346,106 +372,98 @@ class AffectPipeline():
             if self._stop_event.is_set():
                 break
             signal = np.frombuffer(data, dtype=np.float32)
-            qs.AUDIO_QUEUE.extend(signal.tolist())
+            self._audio_input = np.concatenate((self._audio_input, signal))
+            while len(self._audio_input) >= 512:
+                frame = self._audio_input[:512].copy()
+                self._audio_input = self._audio_input[512:]
+                try:
+                    self._audio_frames.put_nowait(frame)
+                except queue.Full:
+                    self.LOGGING_MODULE.VOICE_OK = False
+                    raise RuntimeError('Audio processing cannot keep up with microphone capture.')
 
     def vad_loop(self):
-        if self._stop_event.is_set():
-            return
-        time_vad_loop_start = time.time()
-        signal = []
-        local_audio = qs.AUDIO_QUEUE.copy()
-        _LEN_VAD_SIGNAL = 1024
-        m = (len(local_audio)) - _LEN_VAD_SIGNAL
-        for i in range(0, _LEN_VAD_SIGNAL):
-            signal.append(local_audio[m + i - 1])
-        signal = np.asarray(signal, dtype=np.float32)
-        is_speech = self.VAD_MODULE.process(signal)
-        is_speech = 1 if is_speech == True else 0
-        qs.VOICE_ACTIVITY.append(is_speech)
-        seconds_vad_loop = time.time() - time_vad_loop_start
-        vad_timer = 1.0 / float(self._VAD_LOOP_RATE) - seconds_vad_loop
-        if vad_timer < 0.0:
-            # print(colored('VAD frequency is too high to be maintained. Please lower it and start again.', 'blue'))
-            self.LOGGING_MODULE.VOICE_OK = False
-        else:
+        # Consume every new frame once; keep inference out of the capture thread.
+        while not self._stop_event.is_set():
+            try:
+                frame = self._audio_frames.get(timeout=0.1)
+            except queue.Empty:
+                continue
+            if self._stop_event.is_set():
+                return
+            is_speech = False
+            if self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP:
+                probability = self.VAD_MODULE.speech_probability(frame)
+                is_speech = probability >= self._VAD_THRESHOLD
+            completed = self.audio_buffer.append(frame, is_speech)
+            if self.VAD_LOOP:
+                qs.VOICE_ACTIVITY.append(int(is_speech))
+                self.LOGGING_MODULE.TRACKING_VOICE = is_speech
             self.LOGGING_MODULE.VOICE_OK = True
-
-        self.LOGGING_MODULE.TRACKING_VOICE = is_speech and self.LOGGING_MODULE.VOICE_OK
-        # os._exit(1)
-        self._schedule_loop("vad_loop_thread", vad_timer, self.vad_loop)
+            if self.STT_LOOP:
+                for segment in completed:
+                    try:
+                        self._segments.put_nowait(segment)
+                    except queue.Full:
+                        self.LOGGING_MODULE.STT_OK = False
+                        raise RuntimeError('Transcription cannot keep up with speech segments.')
 
     def ser_loop(self):
         if self._stop_event.is_set():
             return
-        time_ser_loop_start = time.time()
-        signal = []
-        local_audio = qs.AUDIO_QUEUE.copy()
-        m = (len(local_audio)) - self.SAMPLE_RATE
-        for i in range(0, self.SAMPLE_RATE):
-            signal.append(local_audio[m + i - 1])
-
-        signal = np.asarray(signal, dtype=np.float32)
-        ser_prediction, _ = self.SER_MODULE.process(signal.astype(np.float32), extract_embeddings=False)
-        valence, arousal, dominance = ser_prediction[0], ser_prediction[1], ser_prediction[2]
-        qs.VALENCE_SPEECH.append(valence)
-        qs.AROUSAL_SPEECH.append(arousal)
-        qs.DOMINANCE_SPEECH.append(dominance)
-        seconds_ser_loop = time.time() - time_ser_loop_start
-        # print(seconds_ser_loop)
-        ser_timer = 1.0 / float(self._SER_LOOP_RATE) - seconds_ser_loop
-        if ser_timer < 0.0:
-            self.LOGGING_MODULE.SER_OK = False
-        else:
-            self.LOGGING_MODULE.SER_OK = True
-        self._schedule_loop("ser_loop_thread", ser_timer, self.ser_loop)
+        started = time.monotonic()
+        window = self.audio_buffer.emotion_window()
+        if window is not None:
+            signal, sample_count = window
+            if sample_count != self._last_ser_sample:
+                self._last_ser_sample = sample_count
+                prediction, _ = self.SER_MODULE.process(signal, extract_embeddings=False)
+                qs.VALENCE_SPEECH.append(prediction[0])
+                qs.AROUSAL_SPEECH.append(prediction[1])
+                qs.DOMINANCE_SPEECH.append(prediction[2])
+        delay = 1.0 / self._SER_LOOP_RATE - (time.monotonic() - started)
+        self.LOGGING_MODULE.SER_OK = delay >= 0
+        self._schedule_loop("ser_loop_thread", delay, self.ser_loop)
 
     def stt_loop(self):
         if self._stop_event.is_set():
             return
-        time_stt_loop_start = time.time()
-        signal = []
-        local_audio = qs.AUDIO_QUEUE.copy()
-
-        m = int((len(local_audio)) - self._STT_WINDOW_LENGTH * self.SAMPLE_RATE)
-        for i in range(0, int(self._STT_WINDOW_LENGTH) * self.SAMPLE_RATE):
-            signal.append(local_audio[m + i - 1])
-
-        signal = np.asarray(signal, dtype=np.float32)
-        stt_prediction = self.STT_MODULE.process(signal.astype(np.float32))
-        qs.TRANSCRIPT_SPEECH.append(stt_prediction)
-
-        seconds_stt_loop = time.time() - time_stt_loop_start
-        # print(seconds_stt_loop)
-        stt_timer = 1.0 / float(self._STT_LOOP_RATE) - seconds_stt_loop
-        if stt_timer < 0.0:
-            self.LOGGING_MODULE.STT_OK = False
+        started = time.monotonic()
+        try:
+            signal = self._segments.get_nowait()
+        except queue.Empty:
+            pass
         else:
-            self.LOGGING_MODULE.STT_OK = True
-        self._schedule_loop("stt_loop_thread", stt_timer, self.stt_loop)
+            text = self.STT_MODULE.process(signal)
+            if text.strip():
+                qs.TRANSCRIPT_SPEECH.append(text)
+                if self.SENTIMENT_LOOP:
+                    try:
+                        self._transcripts.put_nowait(text)
+                    except queue.Full:
+                        self.LOGGING_MODULE.SENTIMENT_OK = False
+                        raise RuntimeError('Sentiment processing cannot keep up with transcripts.')
+        delay = 1.0 / self._STT_LOOP_RATE - (time.monotonic() - started)
+        self.LOGGING_MODULE.STT_OK = self._segments.qsize() < 2
+        self._schedule_loop("stt_loop_thread", delay, self.stt_loop)
 
     def sentiment_loop(self):
         if self._stop_event.is_set():
             return
-        time_sentiment_loop_start = time.time()
-        last_text = qs.TRANSCRIPT_SPEECH[-1]
-
-        prediction = self.SENTIMENT_MODULE.process(last_text)[0]
-        # Remove magic numbers
-        qs.POS_SENTIMENT.append(prediction[0][1])
-        qs.NEG_SENTIMENT.append(prediction[1][1])
-        qs.NEU_SENTIMENT.append(prediction[2][1])
-
-        qs.VALENCE_SENTIMENT.append(prediction[0][1] - prediction[1][1])
-
-        seconds_sentiment_loop = time.time() - time_sentiment_loop_start
-        # print(seconds_sentiment_loop)
-
-        sentiment_timer = 1.0 / float(self._SENTIMENT_LOOP_RATE) - seconds_sentiment_loop
-        if sentiment_timer < 0.0:
-            self.LOGGING_MODULE.SENTIMENT_OK = False
+        started = time.monotonic()
+        try:
+            text = self._transcripts.get_nowait()
+        except queue.Empty:
+            pass
         else:
-            self.LOGGING_MODULE.SENTIMENT_OK = True
-        self._schedule_loop("sentiment_loop_thread", sentiment_timer, self.sentiment_loop)
+            prediction = self.SENTIMENT_MODULE.process(text)[0]
+            qs.POS_SENTIMENT.append(prediction[0][1])
+            qs.NEG_SENTIMENT.append(prediction[1][1])
+            qs.NEU_SENTIMENT.append(prediction[2][1])
+            qs.VALENCE_SENTIMENT.append(prediction[0][1] - prediction[1][1])
+        delay = 1.0 / self._SENTIMENT_LOOP_RATE - (time.monotonic() - started)
+        self.LOGGING_MODULE.SENTIMENT_OK = delay >= 0
+        self._schedule_loop("sentiment_loop_thread", delay, self.sentiment_loop)
 
     def face_record_loop(self):
         if self._stop_event.is_set():
@@ -815,7 +833,27 @@ class AffectPipeline():
             if self._stop_event.is_set() or self._started:
                 raise RuntimeError("Create a new pipeline instance before starting again.")
             self._started = True
-        if self.VAD_LOOP or self.SER_LOOP or self.STT_LOOP:
+        # Start each run with fresh processing history; stopped GUI previews are retained.
+        qs.AUDIO_QUEUE = self.audio_buffer.samples
+        for history, initial in ((qs.VALENCE_SPEECH, 0.0), (qs.AROUSAL_SPEECH, 0.0),
+                                 (qs.DOMINANCE_SPEECH, 0.0), (qs.VOICE_ACTIVITY, 0),
+                                 (qs.TRANSCRIPT_SPEECH, ''), (qs.POS_SENTIMENT, 0.0),
+                                 (qs.NEG_SENTIMENT, 0.0), (qs.NEU_SENTIMENT, 1.0),
+                                 (qs.VALENCE_SENTIMENT, 0.0)):
+            history.q.clear()
+            history.time.clear()
+            history.append(initial)
+            history.records.clear()  # Initial display values are not completed processing results.
+        if self.FUSION_LOOP:
+            from modules.module_fusion import EVENTS_VALENCE, EVENTS_AROUSAL, EVENTS_DOMINANCE
+            for events in (EVENTS_VALENCE, EVENTS_AROUSAL, EVENTS_DOMINANCE):
+                events.q.clear()
+                events.time.clear()
+                events.weight.clear()
+                events.speed.clear()
+        if self._needs_audio:
+            worker = threading.Thread(target=self._run_loop, args=(self.vad_loop,), daemon=True)
+            self._start_worker("vad_loop_thread", worker)
             self.microphone_loop()
         if self.CAMERA_LOOP or self.FACE_ER_LOOP or self.FACE_MESH_LOOP or self.POSE_LOOP:
             self._schedule_loop("face_record_loop_thread", 0.0, self.face_record_loop)
@@ -830,8 +868,6 @@ class AffectPipeline():
             self._schedule_loop("face_er_loop_thread", 0.0, self.face_er_loop)
         if self.POSE_LOOP:
             self._schedule_loop("pose_loop_thread", 0.0, self.pose_loop)
-        if self.VAD_LOOP:
-            self._schedule_loop("vad_loop_thread", 0.0, self.vad_loop)
         if self.SER_LOOP:
             self._schedule_loop("ser_loop_thread", 0.0, self.ser_loop)
         if self.STT_LOOP:

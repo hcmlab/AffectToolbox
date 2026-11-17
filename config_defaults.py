@@ -8,7 +8,7 @@ DEFAULT_PARAMETERS = {
     "camera_id": 0,
     "microphone_id": 0,
     "SAMPLE_RATE": 16000,
-    "MIC_CHUNKS": 16000,
+    "MIC_CHUNKS": 512,
 
     # Voice activity
     "VAD_LOOP_RATE": 4.0,
@@ -16,6 +16,8 @@ DEFAULT_PARAMETERS = {
 
     # Speech emotion recognition and voice fusion
     "SER_LOOP_RATE": 1.0,
+    "SER_WINDOW_SIZE": 3.0,
+    "SER_MIN_SPEECH": 0.5,
     "SER_VALENCE_OFFSET": 0.0,
     "SER_AROUSAL_OFFSET": 0.0,
     "SER_DOMINANCE_OFFSET": 0.0,
@@ -28,8 +30,10 @@ DEFAULT_PARAMETERS = {
     "FUSION_VOICE_DOMINANCE_BOOST": 1.0,
 
     # Transcription and sentiment
-    "STT_LOOP_RATE": 0.2,
-    "STT_WINDOW_SIZE": 5.0,
+    "STT_LOOP_RATE": 10.0,
+    "STT_WINDOW_SIZE": 10.0,
+    "STT_SILENCE": 0.6,
+    "STT_PRE_ROLL": 0.2,
     "stt_model_size": "base",
     "SENTIMENT_LOOP_RATE": 1.0,
     "sentiment_model": "multilingual",

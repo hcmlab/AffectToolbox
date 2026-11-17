@@ -61,7 +61,7 @@ class AudioStreamWidget(QWidget):
             return
 
         try:
-            audio_data = list(qs.AUDIO_QUEUE)[-1000:]  #Get last 1000 samples
+            audio_data = list(qs.AUDIO_QUEUE)[-16000:]  # Show the latest second at 16 kHz.
             if not audio_data:
                 return
 

@@ -25,7 +25,24 @@ Dependencies are maintained in `pyproject.toml`; `uv.lock` records the resolved 
 
 The original speech emotion, facial emotion, and Cardiff multilingual sentiment models remain the defaults. Facial inference uses LiteRT, speech emotion uses audonnx/ONNX Runtime, tracking uses MediaPipe Tasks, transcription uses faster-whisper (`base`, CPU INT8), and voice activity uses Silero ONNX. Transcription retains the existing English language setting. Whisper and sentiment weights download on first use; internet access is required until cached.
 
-Fusion still receives valence/arousal/dominance in the existing order and scale. Sentiment valence is positive probability minus negative probability, resolved by label name. Facial and pose dominance retain their existing heuristic calculations. `VAD_THRESHOLD` now compares the mean Silero speech probability over the audio window; it no longer represents a fraction of WebRTC speech frames and may need adjustment for your microphone.
+Fusion still receives valence/arousal/dominance in the existing order and scale. Sentiment valence is positive probability minus negative probability, resolved by label name. Facial and pose dominance retain their existing heuristic calculations.
+
+Audio capture uses mono float32 at **16 kHz** with reads of at most 512 samples (32 ms). Other capture rates are rejected to avoid feeding the speech emotion model incorrectly sampled audio. Silero processes every new 512-sample frame once, retaining recurrent state for the run. `VAD_THRESHOLD` compares each frame's speech probability (default 0.25). The Audio preview also starts capture when no analysis module is selected.
+
+Audio settings are available through the existing right-click dialogs:
+
+| Dialog | Setting | Default | Meaning |
+|---|---|---|---|
+| PARALINGUISTIC | `SER_WINDOW_SIZE` | 3.0 s | Latest audio used for emotion inference |
+| PARALINGUISTIC | `SER_MIN_SPEECH` | 0.5 s | Minimum detected speech within that window |
+| PARALINGUISTIC | `SER_LOOP_RATE` | 1 Hz | Emotion update frequency |
+| Transcript | `STT_WINDOW_SIZE` | 10.0 s | Maximum utterance length before splitting |
+| Transcript | `STT_SILENCE` | 0.6 s | Silence required to finish an utterance |
+| Transcript | `STT_PRE_ROLL` | 0.2 s | Audio retained before detected speech starts |
+
+The rolling buffer grows to accommodate the longest configured window plus margin. Windows use exact sample counts, including fractional seconds, and emotion inference waits for enough recorded audio. Transcription runs on completed segments; sentiment runs once per new nonempty transcript. Silences and boundaries are resolved to 32 ms frames, except the exact maximum segment length. Continuous speech is split at the configured maximum without dropping speech samples. Stopping discards an unfinished utterance.
+
+All fusion inputs are timestamped when their processing step finishes. Fusion uses that completion time for decay and expiry, consumes each result once, and includes a single valid event. Inference latency does not reduce a result's lifetime; sentiment starts its lifetime when sentiment inference finishes. Results that have already spent their entire lifetime waiting after completion expire normally. Processing history resets on Run; stopped GUI previews remain visible. Legacy `VAD_LOOP_RATE` no longer controls speech detection, old microphone chunk sizes are capped at 512, and the internal transcription queue is polled at least ten times per second. Existing saved settings override the new window defaults; review them when loading an older config.
 
 `requirements.txt` is a compatibility export, not the dependency source. Regenerate it after dependency changes with `uv export --locked --format requirements-txt --no-hashes --output-file requirements.txt`.
 

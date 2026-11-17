@@ -15,14 +15,14 @@ class RightClickWindow(QDialog):
     # Mapping buttons to the relevant parameters
     BUTTON_PARAMETER_MAPPING = {
         "Audio": ["SAMPLE_RATE", "MIC_CHUNKS"],
-        "VoiceActivity": ["VAD_LOOP_RATE", "VAD_THRESHOLD"],
+        "VoiceActivity": ["VAD_THRESHOLD"],
         "PARALINGUISTIC": [
-            "SER_LOOP_RATE", "FUSION_VOICE_SPEED", "SER_VALENCE_OFFSET",
+            "SER_LOOP_RATE", "SER_WINDOW_SIZE", "SER_MIN_SPEECH", "FUSION_VOICE_SPEED", "SER_VALENCE_OFFSET",
             "FUSION_VOICE_VALENCE_WEIGHT", "FUSION_VOICE_VALENCE_BOOST",
             "SER_AROUSAL_OFFSET", "FUSION_VOICE_AROUSAL_WEIGHT", "FUSION_VOICE_AROUSAL_BOOST",
             "SER_DOMINANCE_OFFSET", "FUSION_VOICE_DOMINANCE_WEIGHT", "FUSION_VOICE_DOMINANCE_BOOST"
         ],
-        "Transcript": ["STT_LOOP_RATE", "STT_WINDOW_SIZE"],
+        "Transcript": ["STT_WINDOW_SIZE", "STT_SILENCE", "STT_PRE_ROLL"],
         "SENTIMENT": ["SENTIMENT_LOOP_RATE", "FUSION_SENTIMENT_SPEED", "FUSION_SENTIMENT_WEIGHT", "FUSION_SENTIMENT_BOOST"],
         "Video": ["CAMERA_LOOP_RATE"],
         "FaceTracking": ["FACE_PADDING"],
@@ -106,6 +106,11 @@ class RightClickWindow(QDialog):
         spinBox.setMinimum(-100000)
         spinBox.setMaximum(48000)
         spinBox.setSingleStep(1000)
+        if variableName == "SAMPLE_RATE":
+            spinBox.setRange(16000, 16000)
+        elif variableName == "MIC_CHUNKS":
+            spinBox.setRange(32, 512)
+            spinBox.setSingleStep(32)
         spinBox.setValue(baseValue)
         spinBox.valueChanged.connect(lambda value: self.on_value_changed(value, variableName))
 

@@ -5,14 +5,14 @@ from scipy.signal import resample_poly
 
 
 class SpeechToText:
-    def __init__(self, sample_rate=16000, model='base', min_signal_threshold=0.1):
+    def __init__(self, sample_rate=16000, model='base', min_signal_threshold=0.0):
         self.model = WhisperModel(model, device='cpu', compute_type='int8')
         self.sample_rate = sample_rate
         self.min_signal_threshold = min_signal_threshold
 
     def process(self, signal):
         signal = np.asarray(signal, dtype=np.float32).reshape(-1)
-        if signal.size == 0 or np.max(np.abs(signal)) < self.min_signal_threshold:
+        if signal.size == 0 or np.max(np.abs(signal)) <= self.min_signal_threshold:
             return ''
 
         if self.sample_rate != 16000:

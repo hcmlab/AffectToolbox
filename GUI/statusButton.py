@@ -28,7 +28,7 @@ class StatusButton(CustomButton):
 
     def start_status_timer(self):
         # Starts the internal timer for automatic status updates every second
-        self.timer.start(1000)
+        self.timer.start(100 if self.base_text == "VoiceActivity" else 1000)
 
     def update_text(self):
         # Updates the button label to include the status circle

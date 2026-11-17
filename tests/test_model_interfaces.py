@@ -34,6 +34,7 @@ class ModelInterfaceTests(unittest.TestCase):
                 result = sentiment.process('test sentence')[0]
                 self.assertEqual([item[0] for item in result], ['positive', 'negative', 'neutral'])
                 self.assertAlmostEqual(sum(item[1] for item in result), 1., places=6)
+                pipeline._transcripts.put('test sentence')
                 pipeline.sentiment_loop()
                 self.assertGreater(sign * qs.VALENCE_SENTIMENT[-1], 0.9)
                 self.assertGreaterEqual(qs.VALENCE_SENTIMENT[-1], -1.)

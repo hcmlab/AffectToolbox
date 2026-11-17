@@ -11,14 +11,19 @@ class AffectDeque():
     def __init__(self, maxlen):
         self.q = deque(maxlen=maxlen)
         self.time = deque(maxlen=maxlen)
+        self.records = deque(maxlen=maxlen)
+        self.sequence = 0
         self.observers = []
 
     def register_observer(self, observer):
         self.observers.append(observer)
     
     def append(self, x) -> None:
+        timestamp = round(time.time()*1000) - start_time
         self.q.append(x)
-        self.time.append(round(time.time()*1000) - start_time)
+        self.time.append(timestamp)
+        self.sequence += 1
+        self.records.append((self.sequence, x, timestamp))
         # print(len(self.observers))
         for observer in self.observers:
             observer(x)
@@ -99,9 +104,7 @@ FACINGCAM_POSE = AffectDeque(maxlen=1000)
 for i in range(0, 1000):
     FACINGCAM_POSE.append(.0)
 
-AUDIO_QUEUE = deque(maxlen=100000) # why not AffectDeque?
-for i in range(0, 100000):
-    AUDIO_QUEUE.append(.0)
+AUDIO_QUEUE = deque(maxlen=192000)
 
 IMAGE_FACE_RAW = AffectDeque(maxlen=100)
 IMAGE_FACE_PREPROCESSED = AffectDeque(maxlen=100)

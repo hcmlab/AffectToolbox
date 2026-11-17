@@ -6,6 +6,10 @@ from silero_vad import load_silero_vad
 
 
 class VoiceActivity:
+    def speech_probability(self, frame):
+        # Consecutive 512-sample frames share Silero's recurrent state.
+        return self.model(torch.from_numpy(frame), 16000).item()
+
     # Silero probabilities are averaged over 32 ms frames of the current window.
     def __init__(self, sample_rate=16000, threshold=0.6):
         self.model = load_silero_vad(onnx=True)
